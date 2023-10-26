@@ -32,7 +32,7 @@ class User(db.Model):
 class Product (db.Model):
     __tablename__ = 'Product'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, unique=True, nullable=False)
+    name = db.Column(db.String(80), unique=True, nullable=False)
     pricing = db.Column(db.Float, nullable=False)
     weight = db.Column(db.Float)
     stock = db.Column(db.Integer)
@@ -57,8 +57,8 @@ class Bill (db.Model):
     total_price = db.Column(db.Float, nullable=False)
     status = db.Column(db.Enum) #Enum???
     user_id =
-    bill_address = db.Column(db.String, nullable=False)
-    delivery_address = db.Column(db.String)
+    bill_address = db.Column(db.String(180), nullable=False)
+    delivery_address = db.Column(db.String(180))
     payment_method = db.Column(db.Enum, nullable=False) #Enum??
 
 
@@ -83,14 +83,14 @@ class Reviews (db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id
     product_id
-    comment = db.Column(db.String)
+    comment = db.Column(db.String(500))
     stars = db.Column(db.Integer)
 
 
 class Categories (db.Model):
     __tablename__ = 'Categories'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, unique=True, nullable=False)
+    name = db.Column(db.String(80), unique=True, nullable=False)
 
 
 class Offerts (db.Model):
@@ -116,11 +116,11 @@ class Ticket_costumer_support (db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id
     bill_id
-    request = db.Column(db.String, nullable=False)
+    request = db.Column(db.String(500), nullable=False)
     start_date = db.Column(db.DateTime)
     close_date = db.Column(db.DateTime)
     status = db.Column(db.Enum) #Enum??
-    resolution = db.Column(db.String, nullable=False)
+    resolution = db.Column(db.String(500), nullable=False)
 
 
 
