@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, Float
 
 
 
@@ -33,42 +33,42 @@ class Product (db.Model):
     __tablename__ = 'Product'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True, nullable=False)
-    pricing
-    weight
-    stock
-    categorie_id
-    subscribeable
-    image_url #cloudinary? crear una base de album? producto-url hasta 3/5 fotos con su url
+    pricing = db.Column(db.Float, nullable=False)
+    weight = db.Column(db.Float)
+    stock = db.Column(db.Integer)
+    categorie_id = db.Column(db.Enum) #Enum???
+    subscribeable = db.Column(db.Boolean)
+    image_url = db.Column(db.String, nullable=false ) #cloudinary? crear una base de album? producto-url hasta 3/5 fotos con su url
 
 
 class Shopping_cart (db.Model): #otra tabla de shopping?
     __tablename__ = 'Shopping_cart'
     id = db.Column(db.Integer, primary_key=True)
-    product_id
-    user_id
-    quantity
-    item_price
+    product_id =
+    user_id =
+    quantity = db.Column(db.Integer)
+    item_price = db.Column(db.Float)
 
 
 class Bill (db.Model):
     __tablename__ = 'Bill'
     id = db.Column(db.Integer, primary_key=True)
-    created_at
-    total_price
-    status
-    user_id
-    bill_address
-    delivery_address
-    payment_method
+    created_at = db.Column(db.DateTime)
+    total_price = db.Column(db.Float, nullable=False)
+    status = db.Column(db.Enum) #Enum???
+    user_id =
+    bill_address = db.Column(db.String, nullable=False)
+    delivery_address = db.Column(db.String)
+    payment_method = db.Column(db.Enum, nullable=False) #Enum??
 
 
 class Bill_item (db.Model):
     __tablename__ = 'Bill_item'
     id = db.Column(db.Integer, primary_key=True)
-    bill_id
+    bill_id 
     product_id
-    price_per_unit
-    quantity
+    price_per_unit = db.Column(db.Float, nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
 
 
 class Favourites (db.Model):
@@ -83,23 +83,23 @@ class Reviews (db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id
     product_id
-    comment
-    stars
+    comment = db.Column(db.String)
+    stars = db.Column(db.Integer)
 
 
 class Categories (db.Model):
     __tablename__ = 'Categories'
     id = db.Column(db.Integer, primary_key=True)
-    name 
+    name = db.Column(db.String, unique=True, nullable=False)
 
 
 class Offerts (db.Model):
     __tablename__ = 'Offerts'
     id = db.Column(db.Integer, primary_key=True)
     product_id
-    discount
-    start_date
-    end_date
+    discount = db.Column(db.Enum) #Enum??
+    start_date = db.Column(db.DateTime)
+    end_date = db.Column(db.DateTime)
 
 
 class Suscription (db.Model):
@@ -107,8 +107,8 @@ class Suscription (db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_id
     user_id
-    quantity
-    frecuency
+    quantity = db.Column(db.Integer, nullable=False)
+    frecuency = db.Column(db.Integer, nullable=False)
 
 
 class Ticket_costumer_support (db.Model):
@@ -116,11 +116,11 @@ class Ticket_costumer_support (db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id
     bill_id
-    request
-    start_date
-    close_date
-    status
-    resolution
+    request = db.Column(db.String, nullable=False)
+    start_date = db.Column(db.DateTime)
+    close_date = db.Column(db.DateTime)
+    status = db.Column(db.Enum) #Enum??
+    resolution = db.Column(db.String, nullable=False)
 
 
 
