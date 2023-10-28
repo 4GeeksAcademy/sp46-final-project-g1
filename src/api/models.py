@@ -60,6 +60,7 @@ class Products(db.Model):
 
 
 class ShoppingCarts(db.Model):
+    __tablename__ = 'shoppingcarts'
     id = db.Column(db.Integer, primary_key=True)
     total_price = db.Column(db.Float)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique=True)
@@ -79,9 +80,7 @@ class ShoppingCartItems(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     quantity = db.Column(db.Integer)
     item_price = db.Column(db.Float)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique=True)
-    shopping_cart_id = db.Column(db.Integer, db.ForeignKey('shoppingCarts.id'))  # ShoppingCarts o shoppingcarts (las mayusculas)???
-    user = db.relationship('Users')
+    shopping_cart_id = db.Column(db.Integer, db.ForeignKey('shoppingcarts.id'))  # ShoppingCarts o shoppingcarts (las mayusculas)???
     shopping_cart = db.relationship('ShoppingCarts')
 
     def __repr__(self):
@@ -91,7 +90,6 @@ class ShoppingCartItems(db.Model):
         return {"id": self.id,
                 "quantity": self.quantity,
                 "item_price": self.item_price,
-                "user_id": self.user_id,
                 "shopping_cart_id": self.shopping_cart_id}
 
 
