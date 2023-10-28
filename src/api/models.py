@@ -1,5 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, Float
 
 
 db = SQLAlchemy()
@@ -37,6 +36,8 @@ class Users(db.Model):
 class Products(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
+    description = db.Column(db.String(300), nullable=False)
+    products_detail = db.Column(db.String(300), nullable=False)
     pricing = db.Column(db.Float, nullable=False)
     weight = db.Column(db.Float)
     stock = db.Column(db.Integer, nullable=False)
@@ -51,6 +52,8 @@ class Products(db.Model):
     def serialize(self):
         return {"id": self.id,
                 "name": self.name,
+                "description": self.description,
+                "products_detail": self.products_detail,
                 "pricing": self.pricing,
                 "weight": self.weight,
                 "stock": self.stock,
@@ -63,6 +66,7 @@ class ShoppingCarts(db.Model):
     __tablename__ = 'shoppingcarts'
     id = db.Column(db.Integer, primary_key=True)
     total_price = db.Column(db.Float)
+    shipping_total_price = db.Column(db.Float)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique=True)
     user = db.relationship('Users')
 
@@ -73,6 +77,7 @@ class ShoppingCarts(db.Model):
         return {"id": self.id,
                 "quantity": self.quantity,
                 "total_price": self.total_price,
+                "shipping_total_price": self.shipping_total_price,
                 "user_id": self.user_id}
 
 
@@ -80,6 +85,7 @@ class ShoppingCartItems(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     quantity = db.Column(db.Integer)
     item_price = db.Column(db.Float)
+    shipping_item_price = db.Column(db.Float)
     shopping_cart_id = db.Column(db.Integer, db.ForeignKey('shoppingcarts.id'))  # ShoppingCarts o shoppingcarts (las mayusculas)???
     shopping_cart = db.relationship('ShoppingCarts')
 
@@ -90,6 +96,7 @@ class ShoppingCartItems(db.Model):
         return {"id": self.id,
                 "quantity": self.quantity,
                 "item_price": self.item_price,
+                "shipping_item_price": self.shipping_item_price,
                 "shopping_cart_id": self.shopping_cart_id}
 
 
@@ -97,6 +104,7 @@ class Bills(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime)
     total_price = db.Column(db.Float, nullable=False)
+    order_number = db.Column(db.Integer, nullable=False)
     status = db.Column(db.Enum('pending', 'paid', 'cancel', name='status'), nullable=False)
     bill_address = db.Column(db.String(180), nullable=False)
     delivery_address = db.Column(db.String(180), nullable=False)
@@ -110,7 +118,8 @@ class Bills(db.Model):
     def serialize(self):
         return {"id": self.id,
                 "created_at": self.created_at,
-                "total_pricestatus": self.total_pricestatus,
+                "total_price": self.total_price,
+                "order_number": self.status,
                 "status": self.status,
                 "bill_address": self.bill_address,
                 "delivery_address": self.delivery_address,
@@ -140,6 +149,7 @@ class BillItems(db.Model):
 
 class Favorites(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     user = db.relationship('Users', foreign_keys=[user_id])
@@ -150,6 +160,7 @@ class Favorites(db.Model):
 
     def serialize(self):
         return {"id": self.id,
+                "created_at": self.created_at,
                 "user_id": self.user_id,
                 "product_id": self.product_id}
 
@@ -157,6 +168,7 @@ class Favorites(db.Model):
 class Reviews(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     comment = db.Column(db.String(500))
+    created_at = db.Column(db.DateTime)
     stars = db.Column(db.Enum('1', '2', '3', '4', '5', name='stars'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
@@ -169,6 +181,7 @@ class Reviews(db.Model):
     def serialize(self):
         return {"id": self.id,
                 "comment": self.comment,
+                "created_at": self.created_at,
                 "starts": self.starts,
                 "user_id": self.user_id,
                 "product_id": self.product_id}
