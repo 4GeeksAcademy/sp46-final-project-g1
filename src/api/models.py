@@ -223,7 +223,7 @@ class Suscriptions(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     frecuency = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), unique=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), unique=True) #  Aca debe ser unique???
     user = db.relationship('Users', foreign_keys=[user_id])
     product = db.relationship('Products', foreign_keys=[product_id])
 
