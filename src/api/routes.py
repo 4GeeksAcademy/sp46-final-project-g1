@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, Users, Products, Bills, Favorites, Reviews, Categories, Offers, Suscriptions, TicketCostumerSupports
+from api.models import db, Users, Products, Bills, Favorites, Reviews, Categories, Offers, Suscriptions, TicketCostumerSupports, ShoppingCarts
 from api.utils import generate_sitemap, APIException
 
 
@@ -138,6 +138,45 @@ def products(products_id):
         return response_body, 200
 
 
+@api.route('/shopping-carts', methods=['GET'])
+def handle_shopping_carts():
+    shopping_carts = db.session.execute(db.select(ShoppingCarts).order_by(ShoppingCarts.id)).scalars()
+    shopping_cart_list = [shopping_cart.serialize() for shopping_cart in shopping_carts]
+    response_body = {'message': 'Listado de carritos',
+                     'results': shopping_cart_list}
+    return response_body, 200
+
+
+@api.route('/users/<int:users_id>/shopping-carts', methods=['GET', 'POST', 'DELETE'])
+def shopping_carts(users_id):
+    if request.method == 'GET':
+        shopping_cart = db.session.get(ShoppingCarts, users_id)
+        if shopping_cart is None:
+            return {'message': 'shopping_cart not found'}, 404
+        response_body = shopping_cart.serialize()
+        return response_body, 200
+    if request.method == 'POST':
+        request_body = request.get_json()
+        shopping_cart = db.session.get(ShoppingCarts, users_id)
+        if product is None:
+            return {'message': 'Carrito no encontrado'}, 404
+        shopping_cart.total_price = request_body.get('total_price')
+        shopping_cart.shipping_total_price = request_body.get('shipping_total_price')
+        shopping_cart.user_id = request_body.get('user_id')
+        db.session.commit()
+        response_body = {'message': 'Carrito creado',
+                         'results': shopping_cart.serialize()}
+        return response_body, 200
+    if request.method == 'DELETE':
+        shopping_cart = db.session.get(ShoppingCarts, users_id)
+        if shopping_cart is None:
+            return {'message': 'Carrito no encontrado'}, 404
+        db.session.delete(shopping_cart)
+        db.session.commit()
+        response_body = {'message': 'Carrito eliminado'}
+        return response_body, 200
+
+
 @api.route('/bills', methods=['GET'])
 def handle_bills():
     bills = db.session.execute(db.select(Bills).order_by(Bills.id)).scalars()
@@ -179,7 +218,7 @@ def favorites(favorites_id):
     if request.method == 'POST':
         response_body = {'message': 'endpoint todavia no realizado'}
         return response_body, 200 
-    if request.method == 'DELETE': #  Deberia poder eliminar un producto de la lista pero no la lista
+    if request.method == 'DELETE': #  Deberia poder eliminar un producto de la lista pero no la lista?
         response_body = {'message': 'endpoint todavia no realizado'}
         return response_body, 200
 

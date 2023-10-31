@@ -75,7 +75,6 @@ class ShoppingCarts(db.Model):
 
     def serialize(self):
         return {"id": self.id,
-                "quantity": self.quantity,
                 "total_price": self.total_price,
                 "shipping_total_price": self.shipping_total_price,
                 "user_id": self.user_id}
@@ -86,7 +85,7 @@ class ShoppingCartItems(db.Model):
     quantity = db.Column(db.Integer)
     item_price = db.Column(db.Float)
     shipping_item_price = db.Column(db.Float)
-    shopping_cart_id = db.Column(db.Integer, db.ForeignKey('shoppingcarts.id'))  # ShoppingCarts o shoppingcarts (las mayusculas)???
+    shopping_cart_id = db.Column(db.Integer, db.ForeignKey('shoppingcarts.id'))
     shopping_cart = db.relationship('ShoppingCarts')
 
     def __repr__(self):
@@ -102,14 +101,14 @@ class ShoppingCartItems(db.Model):
 
 class Bills(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    created_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
     order_number = db.Column(db.Integer, nullable=False)
     status = db.Column(db.Enum('pending', 'paid', 'cancel', name='status'), nullable=False)
     bill_address = db.Column(db.String(180), nullable=False)
     delivery_address = db.Column(db.String(180), nullable=False)
     payment_method = db.Column(db.Enum('MasterdCard', 'Visa', 'American', 'PayPal', name='payment_method'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user = db.relationship('Users')
 
     def __repr__(self):
@@ -223,7 +222,7 @@ class Suscriptions(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     frecuency = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), unique=True) #  Aca debe ser unique???
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id')) 
     user = db.relationship('Users', foreign_keys=[user_id])
     product = db.relationship('Products', foreign_keys=[product_id])
 
@@ -243,10 +242,10 @@ class TicketCostumerSupports(db.Model):
     request = db.Column(db.String(500), nullable=False)
     start_date = db.Column(db.DateTime)
     close_date = db.Column(db.DateTime)
-    status = db.Column(db.Enum('Open', 'Close', name='status'), nullable=False)
+    status = db.Column(db.Enum('Open', 'Close', name='status'), nullable=False) #  Postaman nos daba error por este enum
     resolution = db.Column(db.String(500), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    bill_id = db.Column(db.Integer, db.ForeignKey('bills.id'), unique=True)
+    bill_id = db.Column(db.Integer, db.ForeignKey('bills.id'))
     user = db.relationship('Users', foreign_keys=[user_id])
     bill = db.relationship('Bills', foreign_keys=[bill_id])
 
