@@ -150,10 +150,10 @@ def handle_shopping_carts():
 @api.route('/users/<int:users_id>/shopping-carts', methods=['GET', 'POST', 'DELETE'])
 def shopping_carts(users_id):
     if request.method == 'GET':
-        shopping_cart = db.session.get(ShoppingCarts, users_id)
-        if shopping_cart is None:
-            return {'message': 'shopping_cart not found'}, 404
-        response_body = shopping_cart.serialize()
+        shopping_cart = db.one_or_404(db.select(ShoppingCarts).filter_by(user_id=users_id),
+                                      description=f"No user named")
+        response_body = {'message': 'Carrito creado',
+                         'results': shopping_cart.serialize()}
         return response_body, 200
     if request.method == 'POST':
         request_body = request.get_json()
