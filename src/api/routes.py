@@ -157,20 +157,21 @@ def shopping_carts(users_id):
         return response_body, 200
     if request.method == 'POST':
         request_body = request.get_json()
-        shopping_cart = db.session.get(ShoppingCarts, users_id)
-        if product is None:
-            return {'message': 'Carrito no encontrado'}, 404
-        shopping_cart.total_price = request_body.get('total_price')
-        shopping_cart.shipping_total_price = request_body.get('shipping_total_price')
-        shopping_cart.user_id = request_body.get('user_id')
-        db.session.commit()
+        if 'total_price' not in request_body or 'shipping_total_price' not in request_body or 'user_id' not in request_body: # no deberia ser necesario escribir manualmente el numero de id de usuario si ya está en la url
+            return {'message': 'Invalid request body'}, 400
+        existing_shopping_cart = db.session.get(ShoppingCarts, users_id)
+        if existing_shopping_cart is None:
+            shopping_cart = ShoppingCarts(total_price=request_body['total_price'],
+                                          shipping_total_price=request_body['shipping_total_price'],
+                                          user_id=request_body['user_id'])
+            db.session.add(shopping_cart)
+            db.session.commit()
         response_body = {'message': 'Carrito creado',
                          'results': shopping_cart.serialize()}
         return response_body, 200
     if request.method == 'DELETE':
-        shopping_cart = db.session.get(ShoppingCarts, users_id)
-        if shopping_cart is None:
-            return {'message': 'Carrito no encontrado'}, 404
+        shopping_cart = db.one_or_404(db.select(ShoppingCarts).filter_by(user_id=users_id),
+                                      description=f"Este usuario no tiene carrito")
         db.session.delete(shopping_cart)
         db.session.commit()
         response_body = {'message': 'Carrito eliminado'}
@@ -187,16 +188,38 @@ def handle_bills():
 
 
 
-@api.route('/bills/<int:bills_id>', methods=['GET', 'POST', 'DELETE'])
-def bills(bills_id):
+@api.route('/users/<int:users_id>/bills', methods=['GET', 'POST', 'DELETE'])
+def bills(users_id):
     if request.method == 'GET':
-        response_body = {'message': 'endpoint todavia no realizado'}
-        return response_body, 200  
+        bill = db.one_or_404(db.select(Bills).filter_by(user_id=users_id),
+                                      description=f"No user named")
+        #  Cuando el usuario tiene una sola factura funciona bien pero si tiene mas de una arroja el error "no user name"                              
+        response_body = {'message': 'Facturas encontradas',
+                         'results': bill.serialize()}
+        return response_body, 200
     if request.method == 'POST':
-        response_body = {'message': 'endpoint todavia no realizado'}
-        return response_body, 200 
-    if request.method == 'DELETE': #  No se deberia poder elimnar las facturas?
-        response_body = {'message': 'endpoint todavia no realizado'}
+        request_body = request.get_json()
+        existing_bill = db.session.get(Bills, users_id)
+        if existing_bill is None:
+            bill = Bills(created_at=request_body['created_at'],
+                         total_price=request_body['total_price'],
+                         order_number=request_body['order_number'], # el numero de orden no lo esta tomando por alguna razon, repite el status
+                         status=request_body['status'],
+                         bill_address=request_body['bill_address'],
+                         delivery_address=request_body['delivery_address'],
+                         payment_method=request_body['payment_method'],
+                         user_id=request_body['user_id'])
+            db.session.add(bill)
+            db.session.commit()
+        response_body = {'message': 'Factura creada',
+                         'results': bill.serialize()}
+        return response_body, 200
+    if request.method == 'DELETE': # este metodo funciona si el usuario tiene una sola factura
+        bill = db.one_or_404(db.select(Bills).filter_by(user_id=users_id),
+                                      description=f"Facturas no encontrada")
+        db.session.delete(bill)
+        db.session.commit()
+        response_body = {'message': 'Factura eliminada'}
         return response_body, 200
 
 
