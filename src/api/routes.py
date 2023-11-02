@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, Users, Products, Bills, Favorites, Reviews, Categories, Offers, Suscriptions, TicketCostumerSupports, ShoppingCarts
+from api.models import db, Users, Products, Bills, BillItems, Favorites, Reviews, Categories, Offers, Suscriptions, TicketCostumerSupports, ShoppingCarts
 from api.utils import generate_sitemap, APIException
 
 
@@ -181,7 +181,19 @@ def shopping_carts(users_id):
 @api.route('/bills', methods=['GET'])
 def handle_bills():
     bills = db.session.execute(db.select(Bills).order_by(Bills.id)).scalars()
-    bill_list = [bill.serialize() for bill in bills]
+    #  bill_list = [bill.serialize() for bill in bills]
+    bill_list = []
+    for bill in bills: 
+        item_list = []
+        current_bill = bill.serialize()
+        items = db.session.execute(db.select(BillItems).filter_by(bill_id = current_bill['id']))
+        print(items)
+        for item in items:
+            current_item = item.serialize()
+            print(current_item)
+            item_list.append(current_item)
+        current_bill[items] = item_list
+        bill_list.append(current_bill)
     response_body = {'message': 'Listado de bills',
                      'results': bill_list}
     return response_body, 200
@@ -191,9 +203,11 @@ def handle_bills():
 @api.route('/users/<int:users_id>/bills', methods=['GET', 'POST', 'DELETE'])
 def bills(users_id):
     if request.method == 'GET':
-        bill = db.one_or_404(db.select(Bills).filter_by(user_id=users_id),
-                                      description=f"No user named")
-        #  Cuando el usuario tiene una sola factura funciona bien pero si tiene mas de una arroja el error "no user name"                              
+        #  bill = db.one_or_404(db.select(Bills).filter_by(user_id=users_id), description=f"No user named")
+        #  Cuando el usuario tiene una sola factura funciona bien pero si tiene mas de una arroja el error "no user name"
+        bills = db.select(Bills).filter_by(user_id=users_id)
+        #  1- Verificar que bills tiene algo, sino tiene nada un mensaje "no hay facturas"
+        #  2- Si tiene algo, recorrer el array para ir guandando en un result los serialize de cada factura, y sus items                           
         response_body = {'message': 'Facturas encontradas',
                          'results': bill.serialize()}
         return response_body, 200
