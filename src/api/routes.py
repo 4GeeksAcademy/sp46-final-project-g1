@@ -178,26 +178,85 @@ def shopping_carts(users_id):
         return response_body, 200
 
 
+# @api.route('/bills', methods=['GET'])
+# def handle_bills():
+#     bills = db.session.execute(db.select(Bills).order_by(Bills.id)).all()
+#     #  bill_list = [bill.serialize() for bill in bills]
+#     bill_list = []
+#     for bill in bills: 
+#         item_list = []
+#         current_bill = bill.serialize()
+#         items = db.session.execute(db.select(BillItems).filter_by(bill_id = bill.id)).scalars()
+#         print(items)
+#         for item in items:
+#             current_item = item.serialize()
+#             print(current_item)
+#             item_list.append(current_item)
+#         current_bill[items] = item_list
+#         bill_list.append(current_bill)
+#     response_body = {'message': 'Listado de bills',
+#                      'results': bill_list}
+#     return response_body, 200
+
+
 @api.route('/bills', methods=['GET'])
 def handle_bills():
-    bills = db.session.execute(db.select(Bills).order_by(Bills.id)).scalars()
-    #  bill_list = [bill.serialize() for bill in bills]
+    bills = db.session.query(Bills).order_by(Bills.id).all()
     bill_list = []
-    for bill in bills: 
-        item_list = []
+    for bill in bills:
         current_bill = bill.serialize()
-        items = db.session.execute(db.select(BillItems).filter_by(bill_id = current_bill['id']))
-        print(items)
+        item_list = []
+        items = db.session.query(BillItems).filter_by(bill_id=bill.id).all()
         for item in items:
             current_item = item.serialize()
-            print(current_item)
             item_list.append(current_item)
-        current_bill[items] = item_list
+        current_bill['bill_items'] = item_list
         bill_list.append(current_bill)
-    response_body = {'message': 'Listado de bills',
-                     'results': bill_list}
+    response_body = {'message': 'Listado de bills', 'results': bill_list}
     return response_body, 200
 
+
+@api.route('/users/<int:user_id>/bills', methods=['GET', 'POST', 'DELETE'])
+def user_bills(user_id):
+    if request.method == 'GET':
+        user = db.session.query(User).get(user_id)
+        if not user:
+            return {'message': 'Usuario no encontrado'}, 404
+        user_bills = db.session.query(Bill).filter_by(user_id=user_id).all()
+        bill_list = []
+        for bill in user_bills:
+            current_bill = bill.serialize()
+            item_list = []
+            items = db.session.query(BillItem).filter_by(bill_id=bill.id).all()
+            for item in items:
+                current_item = item.serialize()
+                item_list.append(current_item)
+            current_bill['bill_items'] = item_list
+            bill_list.append(current_bill)
+        response_body = {'message': f'Facturas de usuario {user_id}', 'results': bill_list}
+        return response_body, 200
+    elif request.method == 'POST':
+        request_body = request.get_json()
+        user = db.session.query(User).get(user_id)
+        if not user:
+            return {'message': 'Usuario no encontrado'}, 404
+        new_bill = Bill(created_at=request_body['created_at'],
+                        total_price=request_body['total_price'],
+                        # ... otros campos necesarios ...
+                        user_id=user_id)
+        db.session.add(new_bill)
+        db.session.commit()
+        response_body = {'message': 'Nueva factura creada para el usuario', 'result': new_bill.serialize()}
+        return response_body, 201  # Código 201: Created
+    elif request.method == 'DELETE':
+        user = db.session.query(User).get(user_id)
+        if not user:
+            return {'message': 'Usuario no encontrado'}, 404
+        user_bills = db.session.query(Bill).filter_by(user_id=user_id).all()
+        for bill in user_bills:
+            db.session.delete(bill)
+        db.session.commit()
+        return {'message': f'Todas las facturas del usuario {user_id} han sido eliminadas'}, 200
 
 
 @api.route('/users/<int:users_id>/bills', methods=['GET', 'POST', 'DELETE'])
@@ -247,16 +306,33 @@ def handle_favorites():
 
 
 
-@api.route('/favorites/<int:favorites_id>', methods=['GET', 'POST', 'DELETE'])
-def favorites(favorites_id):
+@api.route('/users/<int:users_id>/favorites', methods=['GET', 'POST', 'DELETE']) #  Mismo problema q con bills
+def favorites(users_id):
     if request.method == 'GET':
-        response_body = {'message': 'endpoint todavia no realizado'}
-        return response_body, 200  
+        favorite = db.select(Favorites).filter_by(user_id=users_id),
+        response_body = {'message': 'Lista de favoritos creada',
+                         'results': favorite.serialize()}
+        return response_body, 200
     if request.method == 'POST':
-        response_body = {'message': 'endpoint todavia no realizado'}
-        return response_body, 200 
-    if request.method == 'DELETE': #  Deberia poder eliminar un producto de la lista pero no la lista?
-        response_body = {'message': 'endpoint todavia no realizado'}
+        request_body = request.get_json()
+        if 'created_at' not in request_body or 'user_id' not in request_body or 'product_id' not in request_body: # no deberia ser necesario escribir manualmente el numero de id de usuario si ya está en la url
+            return {'message': 'Invalid request body'}, 400
+        existing_favorite = db.session.get(Favorites, users_id)
+        if existing_favorite is None:
+            favorite = Favorites(created_at=request_body['created_at'],
+                                 user_id=request_body['user_id'],
+                                 product_id=request_body['product_id'])
+            db.session.add(favorite)
+            db.session.commit()
+        response_body = {'message': 'lista de favoritos creada',
+                         'results': favorite.serialize()}
+        return response_body, 200
+    if request.method == 'DELETE':
+        favorite = db.one_or_404(db.select(Favorites).filter_by(user_id=users_id),
+                                 description=f"Este usuario no tiene favoritos")
+        db.session.delete(favorite)
+        db.session.commit()
+        response_body = {'message': 'lista de favoritos eliminada'}
         return response_body, 200
 
 
