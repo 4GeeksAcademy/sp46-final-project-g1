@@ -219,15 +219,15 @@ def handle_bills():
 @api.route('/users/<int:user_id>/bills', methods=['GET', 'POST', 'DELETE'])
 def user_bills(user_id):
     if request.method == 'GET':
-        user = db.session.query(User).get(user_id)
+        user = db.session.query(Users).get(user_id)
         if not user:
             return {'message': 'Usuario no encontrado'}, 404
-        user_bills = db.session.query(Bill).filter_by(user_id=user_id).all()
+        user_bills = db.session.query(Bills).filter_by(user_id=user_id).all()
         bill_list = []
         for bill in user_bills:
             current_bill = bill.serialize()
             item_list = []
-            items = db.session.query(BillItem).filter_by(bill_id=bill.id).all()
+            items = db.session.query(BillItems).filter_by(bill_id=bill.id).all()
             for item in items:
                 current_item = item.serialize()
                 item_list.append(current_item)
@@ -237,63 +237,68 @@ def user_bills(user_id):
         return response_body, 200
     elif request.method == 'POST':
         request_body = request.get_json()
-        user = db.session.query(User).get(user_id)
+        user = db.session.query(Users).get(user_id)
         if not user:
             return {'message': 'Usuario no encontrado'}, 404
-        new_bill = Bill(created_at=request_body['created_at'],
+        new_bill = Bills(created_at=request_body['created_at'],
                         total_price=request_body['total_price'],
-                        # ... otros campos necesarios ...
-                        user_id=user_id)
+                        order_number=request_body['order_number'],
+                        status=request_body['status'],
+                        bill_address=request_body['bill_address'],
+                        delivery_address=request_body['delivery_address'],
+                        payment_method=request_body['payment_method'],
+                        user_id=request_body['user_id'])
+                        #user_id=user_id)
         db.session.add(new_bill)
         db.session.commit()
         response_body = {'message': 'Nueva factura creada para el usuario', 'result': new_bill.serialize()}
         return response_body, 201  # Código 201: Created
     elif request.method == 'DELETE':
-        user = db.session.query(User).get(user_id)
+        user = db.session.query(Users).get(user_id)
         if not user:
             return {'message': 'Usuario no encontrado'}, 404
-        user_bills = db.session.query(Bill).filter_by(user_id=user_id).all()
+        user_bills = db.session.query(Bills).filter_by(user_id=user_id).all()
         for bill in user_bills:
             db.session.delete(bill)
         db.session.commit()
         return {'message': f'Todas las facturas del usuario {user_id} han sido eliminadas'}, 200
 
 
-@api.route('/users/<int:users_id>/bills', methods=['GET', 'POST', 'DELETE'])
-def bills(users_id):
-    if request.method == 'GET':
-        #  bill = db.one_or_404(db.select(Bills).filter_by(user_id=users_id), description=f"No user named")
-        #  Cuando el usuario tiene una sola factura funciona bien pero si tiene mas de una arroja el error "no user name"
-        bills = db.select(Bills).filter_by(user_id=users_id)
-        #  1- Verificar que bills tiene algo, sino tiene nada un mensaje "no hay facturas"
-        #  2- Si tiene algo, recorrer el array para ir guandando en un result los serialize de cada factura, y sus items                           
-        response_body = {'message': 'Facturas encontradas',
-                         'results': bill.serialize()}
-        return response_body, 200
-    if request.method == 'POST':
-        request_body = request.get_json()
-        existing_bill = db.session.get(Bills, users_id)
-        if existing_bill is None:
-            bill = Bills(created_at=request_body['created_at'],
-                         total_price=request_body['total_price'],
-                         order_number=request_body['order_number'], # el numero de orden no lo esta tomando por alguna razon, repite el status
-                         status=request_body['status'],
-                         bill_address=request_body['bill_address'],
-                         delivery_address=request_body['delivery_address'],
-                         payment_method=request_body['payment_method'],
-                         user_id=request_body['user_id'])
-            db.session.add(bill)
-            db.session.commit()
-        response_body = {'message': 'Factura creada',
-                         'results': bill.serialize()}
-        return response_body, 200
-    if request.method == 'DELETE': # este metodo funciona si el usuario tiene una sola factura
-        bill = db.one_or_404(db.select(Bills).filter_by(user_id=users_id),
-                                      description=f"Facturas no encontrada")
-        db.session.delete(bill)
-        db.session.commit()
-        response_body = {'message': 'Factura eliminada'}
-        return response_body, 200
+# @api.route('/users/<int:users_id>/bills', methods=['GET', 'POST', 'DELETE'])
+# def bills(users_id):
+#     if request.method == 'GET':
+#         #  bill = db.one_or_404(db.select(Bills).filter_by(user_id=users_id), description=f"No user named")
+#         #  Cuando el usuario tiene una sola factura funciona bien pero si tiene mas de una arroja el error "no user name"
+#         bills = db.select(Bills).filter_by(user_id=users_id)
+#         #  1- Verificar que bills tiene algo, sino tiene nada un mensaje "no hay facturas"
+#         #  2- Si tiene algo, recorrer el array para ir guandando en un result los serialize de cada factura, y sus items                           
+#         response_body = {'message': 'Facturas encontradas',
+#                          'results': bill.serialize()}
+#         return response_body, 200
+#     if request.method == 'POST':
+#         request_body = request.get_json()
+#         existing_bill = db.session.get(Bills, users_id)
+#         if existing_bill is None:
+#             bill = Bills(created_at=request_body['created_at'],
+#                          total_price=request_body['total_price'],
+#                          order_number=request_body['order_number'], # el numero de orden no lo esta tomando por alguna razon, repite el status
+#                          status=request_body['status'],
+#                          bill_address=request_body['bill_address'],
+#                          delivery_address=request_body['delivery_address'],
+#                          payment_method=request_body['payment_method'],
+#                          user_id=request_body['user_id'])
+#             db.session.add(bill)
+#             db.session.commit()
+#         response_body = {'message': 'Factura creada',
+#                          'results': bill.serialize()}
+#         return response_body, 200
+#     if request.method == 'DELETE': # este metodo funciona si el usuario tiene una sola factura
+#         bill = db.one_or_404(db.select(Bills).filter_by(user_id=users_id),
+#                                       description=f"Facturas no encontrada")
+#         db.session.delete(bill)
+#         db.session.commit()
+#         response_body = {'message': 'Factura eliminada'}
+#         return response_body, 200
 
 
 @api.route('/favorites', methods=['GET'])
