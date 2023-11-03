@@ -86,7 +86,9 @@ class ShoppingCartItems(db.Model):
     item_price = db.Column(db.Float)
     shipping_item_price = db.Column(db.Float)
     shopping_cart_id = db.Column(db.Integer, db.ForeignKey('shoppingcarts.id'))
-    shopping_cart = db.relationship('ShoppingCarts')
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
+    shopping_cart = db.relationship('ShoppingCarts', foreign_keys=[shopping_cart_id])
+    product = db.relationship('Products', foreign_keys=[product_id])
 
     def __repr__(self):
         return f'<ShoppingCartItems {self.id}>'
@@ -96,7 +98,8 @@ class ShoppingCartItems(db.Model):
                 "quantity": self.quantity,
                 "item_price": self.item_price,
                 "shipping_item_price": self.shipping_item_price,
-                "shopping_cart_id": self.shopping_cart_id}
+                "shopping_cart_id": self.shopping_cart_id,
+                "product_id": self.product_id}
 
 
 class Bills(db.Model):
@@ -149,7 +152,7 @@ class BillItems(db.Model):
 class Favorites(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  #  La primary_key debe ser una convinacion de product_id y user_id
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     user = db.relationship('Users', foreign_keys=[user_id])
     product = db.relationship('Products', foreign_keys=[product_id])
@@ -203,7 +206,7 @@ class Offers(db.Model):
     discount = db.Column(db.Integer)
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
-    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), unique=True)
     product = db.relationship('Products')
 
     def __repr__(self):
@@ -243,7 +246,7 @@ class TicketCostumerSupports(db.Model):
     start_date = db.Column(db.DateTime)
     close_date = db.Column(db.DateTime)
     status = db.Column(db.Enum('Open', 'Close', name='status'), nullable=False) #  Postaman nos daba error por este enum
-    resolution = db.Column(db.String(500), nullable=False)
+    resolution = db.Column(db.String(500), nullable=False) # si el status es close que sea obligatorio el resolution pero si es open no sea obligatorio
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     bill_id = db.Column(db.Integer, db.ForeignKey('bills.id'))
     user = db.relationship('Users', foreign_keys=[user_id])

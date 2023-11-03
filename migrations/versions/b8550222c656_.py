@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: ac80cdf96a81
+Revision ID: b8550222c656
 Revises: 
-Create Date: 2023-11-02 17:41:16.079520
+Create Date: 2023-11-03 17:45:47.054142
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'ac80cdf96a81'
+revision = 'b8550222c656'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -102,7 +102,8 @@ def upgrade():
     sa.Column('end_date', sa.DateTime(), nullable=True),
     sa.Column('product_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['product_id'], ['products.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('product_id')
     )
     op.create_table('reviews',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -121,6 +122,8 @@ def upgrade():
     sa.Column('item_price', sa.Float(), nullable=True),
     sa.Column('shipping_item_price', sa.Float(), nullable=True),
     sa.Column('shopping_cart_id', sa.Integer(), nullable=True),
+    sa.Column('product_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['product_id'], ['products.id'], ),
     sa.ForeignKeyConstraint(['shopping_cart_id'], ['shoppingcarts.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
