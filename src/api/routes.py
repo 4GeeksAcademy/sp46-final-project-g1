@@ -224,6 +224,30 @@ def handle_bills():
     return response_body, 200
 
 
+@api.route('/bills/<int:bills_id>', methods=['GET', 'DELETE'])
+def bills(bills_id):
+    if request.method == 'GET':
+        bill = db.session.get(Bills, bills_id)
+        if bill is None:
+            return {'message': 'bill not found'}, 404
+        all_bills = db.session.query(Bills).filter_by(id=bills_id).all()
+        bill_list = []
+        for bill in all_bills:
+            current_bill = bill.serialize()
+            item_list = []
+            items = db.session.query(BillItems).filter_by(bill_id=bill.id).all()
+            for item in items:
+                current_item = item.serialize()
+                item_list.append(current_item)
+            current_bill['bill_items'] = item_list
+            bill_list.append(current_bill)
+        response_body = {'message': f'Facturas de usuario {bills_id}', 'results': bill_list}
+        return response_body, 200
+    if request.method == 'DELETE':
+        response_body = {'message': 'no se pueden borrar las facturas'}
+        return response_body, 200 
+
+
 @api.route('/users/<int:user_id>/bills', methods=['GET', 'POST', 'DELETE'])
 def user_bills(user_id):
     if request.method == 'GET':
@@ -259,53 +283,9 @@ def user_bills(user_id):
         db.session.add(new_bill)
         db.session.commit()
         response_body = {'message': 'Nueva factura creada para el usuario', 'result': new_bill.serialize()}
-        return response_body, 201  # Código 201: Created
+        return response_body, 201
     elif request.method == 'DELETE':
-        user = db.session.query(Users).get(user_id)
-        if not user:
-            return {'message': 'Usuario no encontrado'}, 404
-        user_bills = db.session.query(Bills).filter_by(user_id=user_id).all()
-        for bill in user_bills:
-            db.session.delete(bill)
-        db.session.commit()
-        return {'message': f'Todas las facturas del usuario {user_id} han sido eliminadas'}, 200
-
-
-# @api.route('/users/<int:users_id>/bills', methods=['GET', 'POST', 'DELETE'])
-# def bills(users_id):
-#     if request.method == 'GET':
-#         #  bill = db.one_or_404(db.select(Bills).filter_by(user_id=users_id), description=f"No user named")
-#         #  Cuando el usuario tiene una sola factura funciona bien pero si tiene mas de una arroja el error "no user name"
-#         bills = db.select(Bills).filter_by(user_id=users_id)
-#         #  1- Verificar que bills tiene algo, sino tiene nada un mensaje "no hay facturas"
-#         #  2- Si tiene algo, recorrer el array para ir guandando en un result los serialize de cada factura, y sus items                           
-#         response_body = {'message': 'Facturas encontradas',
-#                          'results': bill.serialize()}
-#         return response_body, 200
-#     if request.method == 'POST':
-#         request_body = request.get_json()
-#         existing_bill = db.session.get(Bills, users_id)
-#         if existing_bill is None:
-#             bill = Bills(created_at=request_body['created_at'],
-#                          total_price=request_body['total_price'],
-#                          order_number=request_body['order_number'], # el numero de orden no lo esta tomando por alguna razon, repite el status
-#                          status=request_body['status'],
-#                          bill_address=request_body['bill_address'],
-#                          delivery_address=request_body['delivery_address'],
-#                          payment_method=request_body['payment_method'],
-#                          user_id=request_body['user_id'])
-#             db.session.add(bill)
-#             db.session.commit()
-#         response_body = {'message': 'Factura creada',
-#                          'results': bill.serialize()}
-#         return response_body, 200
-#     if request.method == 'DELETE': # este metodo funciona si el usuario tiene una sola factura
-#         bill = db.one_or_404(db.select(Bills).filter_by(user_id=users_id),
-#                                       description=f"Facturas no encontrada")
-#         db.session.delete(bill)
-#         db.session.commit()
-#         response_body = {'message': 'Factura eliminada'}
-#         return response_body, 200
+        return {'message': f'Las facturas no pueden ser eliminadas'}, 200
 
 
 @api.route('/favorites', methods=['GET'])
@@ -315,6 +295,24 @@ def handle_favorites():
     response_body = {'message': 'Listado de favoritos',
                      'results': favorite_list}
     return response_body, 200
+
+
+@api.route('/favorites/<int:favorites_id>', methods=['GET', 'PUT', 'DELETE'])
+def favorites(favorites_id):
+    if request.method == 'GET':
+        favorite = db.session.get(Favorites, favorites_id)
+        if favorite is None:
+            return {'message': 'favorite not found'}, 404
+        response_body = favorite.serialize()
+        return response_body, 200
+    if request.method == 'DELETE':
+        favorite = db.session.get(Favorites, favorites_id)
+        if favorite is None:
+            return {'message': 'favorite not found'}, 404
+        db.session.delete(favorite)
+        db.session.commit()
+        response_body = {'message': 'favorite deleted'}
+        return response_body, 200 
 
 
 
@@ -344,7 +342,7 @@ def user_favorites(user_id):
         db.session.add(new_favorite)
         db.session.commit()
         response_body = {'message': 'Nuevo favorito creado para el usuario', 'result': new_favorite.serialize()}
-        return response_body, 201  # Código 201: Created
+        return response_body, 201
     elif request.method == 'DELETE':
         user = db.session.query(Users).get(user_id)
         if not user:
@@ -363,6 +361,24 @@ def handle_reviews():
     response_body = {'message': 'Listado de reviews',
                      'results': review_list}
     return response_body, 200
+
+
+@api.route('/reviews/<int:reviews_id>', methods=['GET', 'DELETE'])
+def reviews(reviews_id):
+    if request.method == 'GET':
+        review = db.session.get(Reviews, reviews_id)
+        if review is None:
+            return {'message': 'review not found'}, 404
+        response_body = review.serialize()
+        return response_body, 200
+    if request.method == 'DELETE':
+        review = db.session.get(Reviews, reviews_id)
+        if review is None:
+            return {'message': 'review not found'}, 404
+        db.session.delete(review)
+        db.session.commit()
+        response_body = {'message': 'review deleted'}
+        return response_body, 200 
 
 
 
@@ -514,7 +530,7 @@ def handle_suscriptions():
         new_suscription = Suscriptions(quantity=request_body.get('quantity'), 
                                        frecuency=request_body.get('frecuency'), 
                                        user_id=request_body.get('user_id'),
-                                       product_id=request_body.get('product_id'))
+                                       product_id=request_body.get('product_id'))   #  No deberia estar este POST abajo, donde se envia el user_id en el endpoint??
         db.session.add(new_suscription)
         db.session.commit()
         response_body = {'message': 'Suscripcion agregada',
@@ -522,17 +538,49 @@ def handle_suscriptions():
         return response_body, 200
 
 
-@api.route('/suscriptions/<int:suscriptions_id>', methods=['GET', 'POST', 'DELETE'])
+@api.route('/suscriptions/<int:suscriptions_id>', methods=['GET', 'DELETE'])
 def suscriptions(suscriptions_id):
     if request.method == 'GET':
-        response_body = {'message': 'endpoint todavia no realizado'}
-        return response_body, 200  
-    if request.method == 'POST':
-        response_body = {'message': 'endpoint todavia no realizado'}
-        return response_body, 200 
-    if request.method == 'DELETE':
-        response_body = {'message': 'endpoint todavia no realizado'}
+        suscription = db.session.get(Suscriptions, suscriptions_id)
+        if suscription is None:
+            return {'message': 'suscription not found'}, 404
+        response_body = suscription.serialize()
         return response_body, 200
+    if request.method == 'DELETE':
+        suscription = db.session.get(Suscriptions, suscriptions_id)
+        if suscription is None:
+            return {'message': 'suscription not found'}, 404
+        db.session.delete(suscription)
+        db.session.commit()
+        response_body = {'message': 'suscription deleted'}
+        return response_body, 200 
+
+
+
+@api.route('/users/<int:user_id>/suscriptions', methods=['GET', 'POST', 'DELETE'])
+def user_suscriptions(user_id):
+    if request.method == 'GET':
+        user = db.session.query(Users).get(user_id)
+        if not user:
+            return {'message': 'no se encontraron reviews de este usuario'}, 404
+        user_suscriptions = db.session.query(Suscriptions).filter_by(user_id=user_id).all()
+        suscription_list = []
+        for suscription in user_suscriptions:
+            current_suscription = suscription.serialize()
+            item_list = []
+            current_suscription['suscription_items'] = item_list
+            suscription_list.append(current_suscription)
+        response_body = {'message': f'suscriptions del usuario {user_id}', 'results': suscription_list}
+        return response_body, 200
+    elif request.method == 'DELETE':
+        user = db.session.query(Users).get(user_id)
+        if not user:
+            return {'message': 'Usuario no encontrado'}, 404
+        user_suscriptions = db.session.query(Suscriptions).filter_by(user_id=user_id).all()
+        for suscription in user_suscriptions:
+            db.session.delete(suscription)
+        db.session.commit()
+        return {'message': f'Todas las suscriptions del usuario {user_id} han sido eliminadas'}, 200
 
 
 @api.route('/ticket-costumer-supports', methods=['GET'])
@@ -544,17 +592,61 @@ def handle_ticket_costumer_supports():
     return response_body, 200
 
 
-#  Invalid input value for enum status: "Open"
-
-
-@api.route('/ticket-costumer-supports/<int:ticket_costumer_supports_id>', methods=['GET', 'POST', 'DELETE'])
+@api.route('/ticket-costumer-supports/<int:ticket_costumer_supports_id>', methods=['GET', 'DELETE'])
 def ticket_costumer_supports(ticket_costumer_supports_id):
     if request.method == 'GET':
-        response_body = {'message': 'endpoint todavia no realizado'}
-        return response_body, 200  
-    if request.method == 'POST':
-        response_body = {'message': 'endpoint todavia no realizado'}
-        return response_body, 200 
-    if request.method == 'DELETE':
-        response_body = {'message': 'endpoint todavia no realizado'}
+        ticket_costumer_support = db.session.get(TicketCostumerSupports, ticket_costumer_supports_id)
+        if ticket_costumer_support is None:
+            return {'message': 'ticket_costumer_support not found'}, 404
+        response_body = ticket_costumer_support.serialize()
         return response_body, 200
+    if request.method == 'DELETE':
+        ticket_costumer_support = db.session.get(TicketCostumerSupports, ticket_costumer_supports_id)
+        if ticket_costumer_support is None:
+            return {'message': 'ticket_costumer_support not found'}, 404
+        db.session.delete(ticket_costumer_support)
+        db.session.commit()
+        response_body = {'message': 'ticket_costumer_support deleted'}
+        return response_body, 200 
+
+
+@api.route('/users/<int:user_id>/ticket-costumer-supports', methods=['GET', 'POST', 'DELETE'])
+def user_ticket_costumer_supports(user_id):
+    if request.method == 'GET':
+        user = db.session.query(Users).get(user_id)
+        if not user:
+            return {'message': 'no se encontraron ticket_costumer_supports de este usuario'}, 404
+        user_ticket_costumer_supports = db.session.query(TicketCostumerSupports).filter_by(user_id=user_id).all()
+        ticket_costumer_support_list = []
+        for ticket_costumer_support in user_ticket_costumer_supports:
+            current_ticket_costumer_support = ticket_costumer_support.serialize()
+            item_list = []
+            current_ticket_costumer_support['ticket_costumer_support_items'] = item_list
+            ticket_costumer_support_list.append(current_ticket_costumer_support)
+        response_body = {'message': f'reviews del usuario {user_id}', 'results': ticket_costumer_support_list}
+        return response_body, 200
+    elif request.method == 'POST':
+        request_body = request.get_json()
+        user = db.session.query(Users).get(user_id)
+        if not user:
+            return {'message': 'Usuario no encontrado'}, 404
+        new_ticket_costumer_support = TicketCostumerSupports(request=request_body['request'],
+                                                             start_date=request_body['start_date'],
+                                                             close_date=request_body['close_date'],
+                                                             status=request_body['status'],
+                                                             resolution=request_body['resolution'],
+                                                             user_id=request_body['user_id'],
+                                                             bill_id=request_body['bill_id'])
+        db.session.add(new_ticket_costumer_support)
+        db.session.commit()
+        response_body = {'message': f'Nuevo ticket_costumer_support creado para el usuario {user_id}', 'result': new_ticket_costumer_support.serialize()}
+        return response_body, 201
+    elif request.method == 'DELETE':
+        user = db.session.query(Users).get(user_id)
+        if not user:
+            return {'message': 'Usuario no encontrado'}, 404
+        user_ticket_costumer_supports = db.session.query(TicketCostumerSupports).filter_by(user_id=user_id).all()
+        for ticket_costumer_support in user_ticket_costumer_supports:
+            db.session.delete(ticket_costumer_support)
+        db.session.commit()
+        return {'message': f'Todas las tickets del usuario {user_id} han sido eliminadas'}, 200

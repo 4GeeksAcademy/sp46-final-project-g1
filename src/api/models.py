@@ -103,7 +103,7 @@ class ShoppingCartItems(db.Model):
 
 
 class Bills(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True) #  La primary_key debe ser una convinacion de bill_id y user_id
     created_at = db.Column(db.DateTime, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
     order_number = db.Column(db.Integer, nullable=False)
@@ -224,7 +224,7 @@ class Suscriptions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     quantity = db.Column(db.Integer, nullable=False)
     frecuency = db.Column(db.Integer, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))   #  La primary_key debe ser una convinacion de product_id y user_id
     product_id = db.Column(db.Integer, db.ForeignKey('products.id')) 
     user = db.relationship('Users', foreign_keys=[user_id])
     product = db.relationship('Products', foreign_keys=[product_id])
@@ -245,8 +245,8 @@ class TicketCostumerSupports(db.Model):
     request = db.Column(db.String(500), nullable=False)
     start_date = db.Column(db.DateTime)
     close_date = db.Column(db.DateTime)
-    status = db.Column(db.Enum('Open', 'Close', name='status'), nullable=False) #  Postaman nos daba error por este enum
-    resolution = db.Column(db.String(500), nullable=False) # si el status es close que sea obligatorio el resolution pero si es open no sea obligatorio
+    status = db.Column(db.Enum('pending', 'done', 'cancel', name='status'), nullable=False)  #  el enunciado done esta dando problemas
+    resolution = db.Column(db.String(500), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     bill_id = db.Column(db.Integer, db.ForeignKey('bills.id'))
     user = db.relationship('Users', foreign_keys=[user_id])
