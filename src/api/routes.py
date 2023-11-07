@@ -1,9 +1,42 @@
+import os
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, Users, Products, Bills, BillItems, Favorites, Reviews, Categories, Offers, Suscriptions, TicketCostumerSupports, ShoppingCarts, ShoppingCartItems
 from api.utils import generate_sitemap, APIException
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
 
 
 api = Blueprint('api', __name__)
+
+
+@api.route("/login", methods=["POST"])
+@jwt_required()
+def handle_login():
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+    user = db.one_or_404(db.select(Users).filter_by(email=email, password=password, is_active=True), 
+                         description=f"Bad email or password.")
+    # Busco si user.id es author. True o False y traer el author.id
+    if user.id == author.id :
+        is_author = True
+        author_id = author.id 
+    # Busco si es advisor y traer advisor.id
+    if user.id == advisor.id : 
+        is_author = False
+        advisor_id = advisor.id 
+    # crea un nuevo token con el id de usuario dentro:
+    access_token = create_access_token(identity=[user.id, 
+                                                 user.is_admin, 
+                                                 author_id, 
+                                                 advisor_id])
+    response_body = {'message': 'Token created',
+                     'results': {'token': access_token, 
+                                 'user_id': user.id, 
+                                 'is_admin': user.is_admin,
+                                 'is_author': is_author,
+                                 'author_id': author_id,
+                                 'advisor_id': advisor_id
+                                 }}
+    return response_body, 200
 
 
 @api.route('/hello', methods=['POST', 'GET'])
@@ -184,27 +217,6 @@ def shopping_carts(users_id):
         db.session.commit()
         response_body = {'message': 'Carrito eliminado'}
         return response_body, 200
-
-
-# @api.route('/bills', methods=['GET'])
-# def handle_bills():
-#     bills = db.session.execute(db.select(Bills).order_by(Bills.id)).all()
-#     #  bill_list = [bill.serialize() for bill in bills]
-#     bill_list = []
-#     for bill in bills: 
-#         item_list = []
-#         current_bill = bill.serialize()
-#         items = db.session.execute(db.select(BillItems).filter_by(bill_id = bill.id)).scalars()
-#         print(items)
-#         for item in items:
-#             current_item = item.serialize()
-#             print(current_item)
-#             item_list.append(current_item)
-#         current_bill[items] = item_list
-#         bill_list.append(current_bill)
-#     response_body = {'message': 'Listado de bills',
-#                      'results': bill_list}
-#     return response_body, 200
 
 
 @api.route('/bills', methods=['GET'])
@@ -554,7 +566,6 @@ def suscriptions(suscriptions_id):
         db.session.commit()
         response_body = {'message': 'suscription deleted'}
         return response_body, 200 
-
 
 
 @api.route('/users/<int:user_id>/suscriptions', methods=['GET', 'POST', 'DELETE'])
