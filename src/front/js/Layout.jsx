@@ -7,7 +7,7 @@ import { Demo } from "./pages/demo";
 import { Single } from "./pages/single";
 import { BackendURL } from "./component/BackendURL.jsx";
 import { Home } from "./pages/Home.jsx";
-import { Navbar } from "./component/Navbar";
+import { Navbar } from "./component/Navbar.jsx";
 import { Footer } from "./component/Footer.jsx";
 
 
