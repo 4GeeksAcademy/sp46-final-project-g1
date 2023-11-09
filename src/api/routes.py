@@ -65,9 +65,7 @@ def handle_forgot_password():
 def handle_hello():
     response_body = {"message": "Hello! I'm a message that came from the backend"}
     return jsonify(response_body), 200
-
-#  Users, Products, ShoppingCarts, Bills, Favorites, Reviews, Categories, Offers, Suscriptions, TicketCustomerSupport
-
+    
 
 @api.route('/users', methods=['GET', 'POST'])  #  Con este POST un admin puede crear otro admin.
 @jwt_required()
@@ -97,7 +95,7 @@ def handle_users():
             response_body = {'message': 'Usuario creado',
                              'results': new_user.serialize()}
             return response_body, 200
-    response_body = {'message': "Restricted access"}
+    response_body = {'message': "Acceso restringido"}
     return response_body, 401
 
 
@@ -141,33 +139,16 @@ def users(users_id):
             response_body = {'message': 'Usuario eliminado'}
             return response_body, 200
     # TODO Si current_identity[0] es = users_id, entonces soy el mismo usuario que quiero ver mis datos y entonces puedo verlos. 
-    response_body = {'message': "Restricted access"}
+    response_body = {'message': "Acceso restringido"}
     return response_body, 401
 
 
-@api.route('/products', methods=['GET', 'POST'])
+@api.route('/products', methods=['GET'])
 def handle_products():
-    if request.method == 'GET':
         products = db.session.execute(db.select(Products).order_by(Products.id)).scalars()
         product_list = [product.serialize() for product in products]
         response_body = {'message': 'Listado de productos',
                          'results': product_list}
-        return response_body, 200
-    if request.method == 'POST':
-        request_body = request.get_json()
-        new_product = Products(name=request_body.get('name'), 
-                               description=request_body.get('description'), 
-                               products_detail=request_body.get('products_detail'),
-                               pricing=request_body.get('pricing'),
-                               weight=request_body.get('weight'),
-                               stock=request_body.get('stock'),
-                               subscribeable=request_body.get('subscribeable'),
-                               image_url=request_body.get('image_url'),
-                               categorie_id=request_body.get('categorie_id')) #  Esta está ok? la intencion es mostrar el nombre de la categoria unicamente y al crear un producto se deberia poder crear una categoria nueva
-        db.session.add(new_product)
-        db.session.commit()
-        response_body = {'message': 'Producto agregado',
-                         'results': new_product.serialize()}
         return response_body, 200
 
 
@@ -191,6 +172,8 @@ def handle_post_products():
         response_body = {'message': 'Producto agregado',
                          'results': new_product.serialize()}
         return response_body, 200
+    response_body = {'message': "Acceso restringido"}
+    return response_body, 401
 
 
 @api.route('/products/<int:products_id>', methods=['GET', 'PUT', 'DELETE'])
@@ -384,7 +367,6 @@ def favorites(favorites_id):
         return response_body, 200 
 
 
-
 @api.route('/users/<int:user_id>/favorites', methods=['GET', 'POST', 'DELETE'])
 def user_favorites(user_id):
     if request.method == 'GET':
@@ -448,7 +430,6 @@ def reviews(reviews_id):
         db.session.commit()
         response_body = {'message': 'review deleted'}
         return response_body, 200 
-
 
 
 @api.route('/users/<int:user_id>/reviews', methods=['GET', 'POST', 'DELETE'])
