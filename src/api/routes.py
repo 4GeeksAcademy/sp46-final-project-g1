@@ -9,33 +9,26 @@ api = Blueprint('api', __name__)
 
 
 @api.route("/login", methods=["POST"])
-@jwt_required()
 def handle_login():
     email = request.json.get("email", None)
     password = request.json.get("password", None)
     user = db.one_or_404(db.select(Users).filter_by(email=email, password=password, is_active=True), 
-                         description=f"Bad email or password.")
-    # Busco si user.id es author. True o False y traer el author.id
-    if user.id == author.id :
-        is_author = True
-        author_id = author.id 
-    # Busco si es advisor y traer advisor.id
-    if user.id == advisor.id : 
-        is_author = False
-        advisor_id = advisor.id 
-    # crea un nuevo token con el id de usuario dentro:
+                         description=f"Email o password incorrectos.")
     access_token = create_access_token(identity=[user.id, 
-                                                 user.is_admin, 
-                                                 author_id, 
-                                                 advisor_id])
+                                                 user.is_admin,])
+    datos_user = user.serialize()
     response_body = {'message': 'Token created',
-                     'results': {'token': access_token, 
-                                 'user_id': user.id, 
-                                 'is_admin': user.is_admin,
-                                 'is_author': is_author,
-                                 'author_id': author_id,
-                                 'advisor_id': advisor_id
-                                 }}
+                     'token': access_token,
+                     'results': datos_user}
+    return response_body, 200
+
+
+@api.route('/logout', methods=["POST"])
+@jwt_required()
+def handle_logout():
+    user_id = get_jwt_identity()[0]  # Obtén el ID del usuario a partir del token
+    unset_jwt_cookies()  # Revoca el token actual para deshabilitarlo
+    response_body = {'message': 'Logout successful'}
     return response_body, 200
 
 
@@ -59,7 +52,7 @@ def handle_users():
         new_user = Users(email=request_body.get('email'), 
                          password=request_body.get('password'), 
                          is_admin=request_body.get('is_admin'),
-                         is_active=request_body.get('is_active'),
+                         is_active=True,
                          first_name=request_body.get('first_name'),
                          last_name=request_body.get('last_name'),
                          address=request_body.get('address'),
@@ -68,9 +61,29 @@ def handle_users():
                          payment_method=request_body.get('payment_method'))
         db.session.add(new_user)
         db.session.commit()
-        response_body = {'message': 'Usuario agregado',
+        response_body = {'message': 'Usuario creado',
                          'results': new_user.serialize()}
         return response_body, 200
+
+
+@api.route('/signup', methods=["POST"])
+def handle_signup():
+    request_body = request.get_json()
+    email = request_body.get('email')
+    password = request_body.get('password')
+    new_user = Users(email=request_body['email'], 
+                     password=request_body['password'],
+                     first_name=request_body.get('first_name'),
+                     last_name=request_body.get('last_name'),
+                     is_active=True, 
+                     is_admin=False)
+    db.session.add(new_user)
+    db.session.commit()
+    access_token = create_access_token(identity=[new_user.id, new_user.is_admin])
+    response_body = {'message': 'Usuario creado',
+                     'token': access_token,
+                     'results': new_user.serialize()}
+    return response_body, 201
 
 
 @api.route('/users/<int:users_id>', methods=['GET', 'PUT', 'DELETE'])
