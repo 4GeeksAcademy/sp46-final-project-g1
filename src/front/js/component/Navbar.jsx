@@ -7,9 +7,9 @@ export const Navbar = () => {
     <div className="row">
       <nav className="navbar navbar-expand-lg bg-primary" data-bs-theme="white">
         <div className="col ms-5">
-          <button type="button" className="btn btn-primary">
+          <Link to="/">
             <img src={logoWoofPetShop} style={{width: "50px", height: "50px"}} alt="" />
-          </button>
+          </Link>
         </div>
         <div className="col-4">
           <form className="d-flex">
