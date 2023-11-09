@@ -27,43 +27,10 @@ def handle_login():
 @jwt_required()
 def handle_logout():
     user_id = get_jwt_identity()[0]  # Obtén el ID del usuario a partir del token
-    unset_jwt_cookies()  # Revoca el token actual para deshabilitarlo
+    #  unset_jwt_cookies()  
+    # TODO Revoca el token actual para deshabilitarlo
     response_body = {'message': 'Logout successful'}
     return response_body, 200
-
-
-@api.route('/hello', methods=['POST', 'GET'])
-def handle_hello():
-    response_body = {"message": "Hello! I'm a message that came from the backend"}
-    return jsonify(response_body), 200
-
-#  Users, Products, ShoppingCarts, Bills, Favorites, Reviews, Categories, Offers, Suscriptions, TicketCustomerSupport
-
-@api.route('/users', methods=['GET', 'POST'])
-def handle_users():
-    if request.method == 'GET':
-        users = db.session.execute(db.select(Users).order_by(Users.email)).scalars()
-        user_list = [user.serialize() for user in users]
-        response_body = {'message': 'Listado de usuarios',
-                         'results': user_list}
-        return response_body, 200
-    if request.method == 'POST':
-        request_body = request.get_json()
-        new_user = Users(email=request_body.get('email'), 
-                         password=request_body.get('password'), 
-                         is_admin=request_body.get('is_admin'),
-                         is_active=True,
-                         first_name=request_body.get('first_name'),
-                         last_name=request_body.get('last_name'),
-                         address=request_body.get('address'),
-                         identification_number=request_body.get('identification_number'),
-                         identification_type=request_body.get('identification_type'),
-                         payment_method=request_body.get('payment_method'))
-        db.session.add(new_user)
-        db.session.commit()
-        response_body = {'message': 'Usuario creado',
-                         'results': new_user.serialize()}
-        return response_body, 200
 
 
 @api.route('/signup', methods=["POST"])
@@ -86,41 +53,96 @@ def handle_signup():
     return response_body, 201
 
 
+@api.route('/forgot-password', methods=["POST"])
+def handle_forgot_password():
+    email = request.json.get('email')  
+    # WORK IN PROGRESS: validar email, generar un token, enviar un correo electrónico (biblioteca Flask-Mail)
+    response_body = {'message': 'Password reset instructions sent to your email'}
+    return jsonify(response_body), 200
+
+
+@api.route('/hello', methods=['POST', 'GET'])
+def handle_hello():
+    response_body = {"message": "Hello! I'm a message that came from the backend"}
+    return jsonify(response_body), 200
+
+#  Users, Products, ShoppingCarts, Bills, Favorites, Reviews, Categories, Offers, Suscriptions, TicketCustomerSupport
+
+
+@api.route('/users', methods=['GET', 'POST'])  #  Con este POST un admin puede crear otro admin.
+@jwt_required()
+def handle_users():
+    current_identity = get_jwt_identity()
+    if current_identity[1]:
+        if request.method == 'GET':
+            users = db.session.execute(db.select(Users).order_by(Users.email)).scalars()
+            user_list = [user.serialize() for user in users]
+            response_body = {'message': 'Listado de usuarios',
+                             'results': user_list}
+            return response_body, 200
+        if request.method == 'POST':
+            request_body = request.get_json()
+            new_user = Users(email=request_body.get('email'), 
+                             password=request_body.get('password'), 
+                             is_admin=True,
+                             is_active=True,
+                             first_name=request_body.get('first_name'),
+                             last_name=request_body.get('last_name'),
+                             address=request_body.get('address'),
+                             identification_number=request_body.get('identification_number'),
+                             identification_type=request_body.get('identification_type'),
+                             payment_method=request_body.get('payment_method'))
+            db.session.add(new_user)
+            db.session.commit()
+            response_body = {'message': 'Usuario creado',
+                             'results': new_user.serialize()}
+            return response_body, 200
+    response_body = {'message': "Restricted access"}
+    return response_body, 401
+
+
 @api.route('/users/<int:users_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def users(users_id):
-    if request.method == 'GET':
-        user = db.session.get(Users, users_id)
-        if user is None:
-            return {'message': 'User not found'}, 404
-        response_body = user.serialize()
-        return response_body, 200
-    if request.method == 'PUT':
-        request_body = request.get_json()
-        user = db.session.get(Users, users_id)
-        if user is None:
-            return {'message': 'Usuario no encontrado'}, 404
-        user.email = request_body.get('email')
-        user.password = request_body.get('password')
-        user.is_admin = request_body.get('is_admin')
-        user.is_active = request_body.get('is_active')
-        user.first_name = request_body.get('first_name')
-        user.last_name = request_body.get('last_name')
-        user.address = request_body.get('address')
-        user.identification_number = request_body.get('identification_number')
-        user.identification_type = request_body.get('identification_type')
-        user.payment_method = request_body.get('payment_method')
-        db.session.commit()
-        response_body = {'message': 'Usuario actualizado',
-                         'results': user.serialize()}
-        return response_body, 200
-    if request.method == 'DELETE':
-        user = db.session.get(Users, users_id)
-        if user is None:
-            return {'message': 'Usuario no encontrado'}, 404
-        db.session.delete(user)
-        db.session.commit()
-        response_body = {'message': 'Usuario eliminado'}
-        return response_body, 200     
+    current_identity = get_jwt_identity()
+    if current_identity[1]:
+        if request.method == 'GET':
+            user = db.session.get(Users, users_id)
+            if user is None:
+                return {'message': 'User not found'}, 404
+            response_body = user.serialize()
+            return response_body, 200
+        if request.method == 'PUT':
+            request_body = request.get_json()
+            user = db.session.get(Users, users_id)
+            if user is None:
+                return {'message': 'Usuario no encontrado'}, 404
+            user.email = request_body.get('email')
+            user.password = request_body.get('password')
+            user.is_admin = request_body.get('is_admin')
+            user.is_active = request_body.get('is_active')
+            user.first_name = request_body.get('first_name')
+            user.last_name = request_body.get('last_name')
+            user.address = request_body.get('address')
+            user.identification_number = request_body.get('identification_number')
+            user.identification_type = request_body.get('identification_type')
+            user.payment_method = request_body.get('payment_method')
+            db.session.commit()
+            response_body = {'message': 'Usuario actualizado',
+                             'results': user.serialize()}
+            return response_body, 200
+        if request.method == 'DELETE':
+            user = db.session.get(Users, users_id)
+            if user is None:
+                return {'message': 'Usuario no encontrado'}, 404
+            # TODO Si user.is_admin es verdadero, entonces puedo verificar si hay otro usuario admin activo,si solo hay 1, return que no se puede borrar porque solo queda uno
+            db.session.delete(user)
+            db.session.commit()
+            response_body = {'message': 'Usuario eliminado'}
+            return response_body, 200
+    # TODO Si current_identity[0] es = users_id, entonces soy el mismo usuario que quiero ver mis datos y entonces puedo verlos. 
+    response_body = {'message': "Restricted access"}
+    return response_body, 401
 
 
 @api.route('/products', methods=['GET', 'POST'])
@@ -132,6 +154,28 @@ def handle_products():
                          'results': product_list}
         return response_body, 200
     if request.method == 'POST':
+        request_body = request.get_json()
+        new_product = Products(name=request_body.get('name'), 
+                               description=request_body.get('description'), 
+                               products_detail=request_body.get('products_detail'),
+                               pricing=request_body.get('pricing'),
+                               weight=request_body.get('weight'),
+                               stock=request_body.get('stock'),
+                               subscribeable=request_body.get('subscribeable'),
+                               image_url=request_body.get('image_url'),
+                               categorie_id=request_body.get('categorie_id')) #  Esta está ok? la intencion es mostrar el nombre de la categoria unicamente y al crear un producto se deberia poder crear una categoria nueva
+        db.session.add(new_product)
+        db.session.commit()
+        response_body = {'message': 'Producto agregado',
+                         'results': new_product.serialize()}
+        return response_body, 200
+
+
+@api.route('/post-products', methods=['POST'])
+@jwt_required()
+def handle_post_products():
+    current_identity = get_jwt_identity()
+    if current_identity[1]:
         request_body = request.get_json()
         new_product = Products(name=request_body.get('name'), 
                                description=request_body.get('description'), 

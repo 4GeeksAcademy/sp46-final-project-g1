@@ -21,6 +21,16 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log("Error loading message from backend", error)
         }
       },
+      tryLogin: async () => {
+        try {
+          const resp = await fetch(process.env.BACKEND_URL + "/api/login")
+          const data = await resp.json()
+          setStore({ message: data.message })
+          return data;  
+        } catch (error) {
+          console.log("Error loading", error)
+        }
+      },
       changeColor: (index, color) => {
         const store = getStore();  // Get the store
         // We have to loop the entire demo array to look for the respective index and change its color
