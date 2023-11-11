@@ -3,8 +3,10 @@ import React from "react";
 
 export const Form = () => {
     return (
+        <div className="container">
+            <h1 className="d-flex justify-content-center mt-4 text-dark">Personal Information</h1>
         <div className="container bg-primary-subtle rounded" style={{ width: '50%', height: '50%' }}>
-            <form className="text-dark mt-5 p-2">
+            <form className="text-dark mt-3 p-2">
                 <div className="row mt-3">
                     <div className="col-6">
                         <label htmlFor="firstname" className="form-label">First name</label>
@@ -92,6 +94,7 @@ export const Form = () => {
                     <button type="submit" className="btn btn-primary">Send</button>
                 </div>
             </form>
+        </div>
         </div>
     )
 }
