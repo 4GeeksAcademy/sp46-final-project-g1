@@ -1,4 +1,6 @@
 import React from "react";
+import { StarReating } from "./StarReating.jsx";
+
 
 export const Card = () => {
 
@@ -25,13 +27,9 @@ export const Card = () => {
                         </div>
 
                         <div class="d-flex justify-content-between mb-2">
-                            <p class="text-muted mb-0">Available: <span class="fw-bold">6</span></p>
+                            <p class="text-muted mt-1">Available: <span class="fw-bold">6</span></p>
                             <div class="ms-auto text-warning">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
+                                <StarReating />
                             </div>
                         </div>
                     </div>
