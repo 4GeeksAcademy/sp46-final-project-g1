@@ -56,7 +56,7 @@ def handle_signup():
 @api.route('/forgot-password', methods=["POST"])
 def handle_forgot_password():
     email = request.json.get('email')  
-    # WORK IN PROGRESS: validar email, generar un token, enviar un correo electrónico (biblioteca Flask-Mail)
+    # TODO: validar email, generar un token, enviar un correo electrónico (biblioteca Flask-Mail)
     response_body = {'message': 'Password reset instructions sent to your email'}
     return jsonify(response_body), 200
 
@@ -88,8 +88,7 @@ def handle_users():
                              last_name=request_body.get('last_name'),
                              address=request_body.get('address'),
                              identification_number=request_body.get('identification_number'),
-                             identification_type=request_body.get('identification_type'),
-                             payment_method=request_body.get('payment_method'))
+                             identification_type=request_body.get('identification_type'))
             db.session.add(new_user)
             db.session.commit()
             response_body = {'message': 'Usuario creado',
@@ -103,6 +102,7 @@ def handle_users():
 @jwt_required()
 def users(users_id):
     current_identity = get_jwt_identity()
+    current_user = db.session.query(Users).filter_by(id=current_identity[0]).first()  # De esta manera identifico si el usuario intentando ver los datos es el mismo de los datos a consultar
     if current_identity[1]:
         if request.method == 'GET':
             user = db.session.get(Users, users_id)
@@ -130,15 +130,27 @@ def users(users_id):
                              'results': user.serialize()}
             return response_body, 200
         if request.method == 'DELETE':
-            user = db.session.get(Users, users_id)
+            if current_user.id == user_id:
+                return {'message': 'No puedes eliminar tu propio usuario como administrador'}, 401
+            user_to_delete = db.session.query(Users).get(user_id)
+            if user_to_delete is None:
+                return {'message': 'User not found'}, 404
+            if user_to_delete.is_admin:
+                # Verificar si hay otro usuario administrador activo
+                admin_count = db.session.query(Users).filter(Users.is_admin == True, Users.id != user_to_delete.id).count()
+                if admin_count == 1:
+                    return {'message': 'No puedes eliminar el último administrador activo'}, 401
+                db.session.delete(user_to_delete)
+                db.session.commit()
+                response_body = {'message': 'Usuario eliminado'}
+                return response_body, 200
+    if current_user.id == user_id:
+        if request.method == 'GET':  # falta el metodo PUT y el metodo DELETE (pero aqui seria pasar ese usuario a no activo)
+            user = db.session.query(Users).get(user_id)
             if user is None:
-                return {'message': 'Usuario no encontrado'}, 404
-            # TODO Si user.is_admin es verdadero, entonces puedo verificar si hay otro usuario admin activo,si solo hay 1, return que no se puede borrar porque solo queda uno
-            db.session.delete(user)
-            db.session.commit()
-            response_body = {'message': 'Usuario eliminado'}
+                return {'message': 'User not found'}, 404
+            response_body = user.serialize()
             return response_body, 200
-    # TODO Si current_identity[0] es = users_id, entonces soy el mismo usuario que quiero ver mis datos y entonces puedo verlos. 
     response_body = {'message': "Acceso restringido"}
     return response_body, 401
 
@@ -152,7 +164,7 @@ def handle_products():
         return response_body, 200
 
 
-@api.route('/post-products', methods=['POST'])
+@api.route('/products', methods=['POST'])
 @jwt_required()
 def handle_post_products():
     current_identity = get_jwt_identity()
@@ -174,58 +186,130 @@ def handle_post_products():
         return response_body, 200
     response_body = {'message': "Acceso restringido"}
     return response_body, 401
+      uhrggyuhtgggg
+
+@api.route('/products/<int:products_id>', methods=['PUT', 'DELETE'])
+@jwt_required()
+def admin_products(products_id):
+    current_identity = get_jwt_identity()
+    if current_identity[1]:
+        if request.method == 'PUT':
+            request_body = request.get_json()
+            product = db.session.get(Products, products_id)
+            if product is None:
+                return {'message': 'Producto no encontrado'}, 404
+            product.name = request_body.get('name')
+            product.description = request_body.get('description')
+            product.products_detail = request_body.get('products_detail')
+            product.pricing = request_body.get('pricing')
+            product.weight = request_body.get('weight')
+            product.stock = request_body.get('stock')
+            product.subscribeable = request_body.get('subscribeable')
+            product.image_url = request_body.get('image_url')
+            db.session.commit()
+            response_body = {'message': 'Producto actualizado',
+                             'results': product.serialize()}
+            return response_body, 200
+        if request.method == 'DELETE':
+            product = db.session.get(Products, products_id)
+            if product is None:
+                return {'message': 'Producto no encontrado'}, 404
+            db.session.delete(product)
+            db.session.commit()
+            response_body = {'message': 'Producto eliminado'}
+            return response_body, 200
+    response_body = {'message': "Acceso restringido"}
+    return response_body, 401
 
 
-@api.route('/products/<int:products_id>', methods=['GET', 'PUT', 'DELETE'])
-def products(products_id):
+@api.route('/products/<int:products_id>', methods=['GET'])
+def single_product(products_id):
+    product = db.session.get(Products, products_id)
+    if product is None:
+        return {'message': 'Product not found'}, 404
+    response_body = product.serialize()
+    return response_body, 200
+
+
+@api.route('/categories', methods=['GET', 'POST'])
+def handle_categories():
     if request.method == 'GET':
-        product = db.session.get(Products, products_id)
-        if product is None:
-            return {'message': 'Product not found'}, 404
-        response_body = product.serialize()
+        categories = db.session.execute(db.select(Categories).order_by(Categories.id)).scalars()
+        categorie_list = [categorie.serialize() for categorie in categories]
+        response_body = {'message': 'Listado de categorias',
+                         'results': categorie_list}
+        return response_body, 200
+    if request.method == 'POST':
+        request_body = request.get_json()
+        new_categorie = Categories(name=request_body.get('name'))
+        db.session.add(new_categorie)
+        db.session.commit()
+        response_body = {'message': 'Categoria agregada',
+                         'results': new_categorie.serialize()}
+        return response_body, 200
+
+
+@api.route('/categories/<int:categories_id>', methods=['GET', 'PUT', 'DELETE'])
+def categories(categories_id):
+    if request.method == 'GET':
+        categorie = db.session.get(Categories, categories_id)
+        if categorie is None:
+            return {'message': 'Categorie not found'}, 404
+        response_body = categorie.serialize()
         return response_body, 200
     if request.method == 'PUT':
         request_body = request.get_json()
-        product = db.session.get(Products, products_id)
-        if product is None:
-            return {'message': 'Producto no encontrado'}, 404
-        product.name = request_body.get('name')
-        product.description = request_body.get('description')
-        product.products_detail = request_body.get('products_detail')
-        product.pricing = request_body.get('pricing')
-        product.weight = request_body.get('weight')
-        product.stock = request_body.get('stock')
-        product.subscribeable = request_body.get('subscribeable')
-        product.image_url = request_body.get('image_url')
+        categorie = db.session.get(Categories, categories_id)
+        if categorie is None:
+            return {'message': 'Categoria no encontrada'}, 404
+        categorie.name = request_body.get('name')
         db.session.commit()
-        response_body = {'message': 'Producto actualizado',
-                         'results': product.serialize()}
+        response_body = {'message': 'Categoria actualizada',
+                         'results': categorie.serialize()}
         return response_body, 200
     if request.method == 'DELETE':
-        product = db.session.get(Products, products_id)
-        if product is None:
-            return {'message': 'Producto no encontrado'}, 404
-        db.session.delete(product)
+        categorie = db.session.get(Categories, categories_id)
+        if categorie is None:
+            return {'message': 'Categoria no encontrada'}, 404
+        db.session.delete(categorie)
         db.session.commit()
-        response_body = {'message': 'Producto eliminado'}
+        response_body = {'message': 'Categoria eliminada'}
         return response_body, 200
+
 
 
 @api.route('/shopping-carts', methods=['GET'])
+@jwt_required()
 def handle_shopping_carts():
-    shopping_carts = db.session.query(ShoppingCarts).order_by(ShoppingCarts.id).all()
-    shopping_cart_list = []
-    for shopping_cart in shopping_carts:
-        current_shopping_cart = shopping_cart.serialize()
-        item_list = []
-        items = db.session.query(ShoppingCartItems).filter_by(shopping_cart_id=shopping_cart.id).all()
-        for item in items:
-            current_item = item.serialize()
-            item_list.append(current_item)
-        current_shopping_cart['shopping_cart_items'] = item_list
-        shopping_cart_list.append(current_shopping_cart)
-    response_body = {'message': 'Listado de carritos', 'results': shopping_cart_list}
-    return response_body, 200
+    current_identity = get_jwt_identity()
+    if current_identity[1]:
+        shopping_carts = db.session.query(ShoppingCarts).order_by(ShoppingCarts.id).all()
+        shopping_cart_list = []
+        for shopping_cart in shopping_carts:
+            current_shopping_cart = shopping_cart.serialize()
+            item_list = []
+            items = db.session.query(ShoppingCartItems).filter_by(shopping_cart_id=shopping_cart.id).all()
+            for item in items:
+                current_item = item.serialize()
+                item_list.append(current_item)
+            current_shopping_cart['shopping_cart_items'] = item_list
+            shopping_cart_list.append(current_shopping_cart)
+        response_body = {'message': 'Listado de carritos', 'results': shopping_cart_list}
+        return response_body, 200
+    response_body = {'message': "Acceso restringido"}
+    return response_body, 401
+
+
+@api.route('/shopping-cart-items', methods=['GET', 'POST'])
+@jwt_required()
+def shopping_cart_items():
+    current_identity = get_jwt_identity()
+    if current_identity[1]:
+        response_body = {'message': 'administradores no pueden realizar compras'}
+        return response_body, 401
+    # filtrar por el id del usuario
+    # verificar si el usuario tiene carrito, sino lo tiene crearlo y agrega el item al carrito recien creado o al encontrado (POST)
+    pass
 
 
 @api.route('/users/<int:users_id>/shopping-carts', methods=['GET', 'POST', 'DELETE'])
@@ -338,6 +422,196 @@ def user_bills(user_id):
         return response_body, 201
     elif request.method == 'DELETE':
         return {'message': f'Las facturas no pueden ser eliminadas'}, 200
+
+
+@api.route('/offers', methods=['GET'])  # la idea es que los usuarios que tengan un producto en favoritos, si ese producto recibe una oferta, notificar al usuario.
+def handle_offers():
+    offers = db.session.execute(db.select(Offers).order_by(Offers.id)).scalars()
+    offer_list = [offer.serialize() for offer in offers]
+    response_body = {'message': 'Listado de ofertas',
+                     'results': offer_list}
+    return response_body, 200
+
+
+@api.route('/products/<int:product_id>/offers', methods=['GET', 'POST', 'DELETE'])
+def product_reviews(product_id):
+    if request.method == 'GET':
+        product = db.session.query(Products).get(product_id)
+        if not product:
+            return {'message': 'no se encontraron ofertas de este producto'}, 404
+        product_offers = db.session.query(Offers).filter_by(product_id=product_id).all()
+        offer_list = []
+        for offer in product_offers:
+            current_offer = offer.serialize()
+            item_list = []
+            current_offer['offer_items'] = item_list
+            offer_list.append(current_offer)
+        response_body = {'message': f'ofertas del producto {product_id}', 'results': offer_list}
+        return response_body, 200
+    elif request.method == 'POST':
+        request_body = request.get_json()
+        product = db.session.query(Products).get(product_id)
+        if not product:
+            return {'message': 'Producto no encontrado'}, 404
+        new_offer = Offers(discount=request_body['discount'],
+                           start_date=request_body['start_date'],
+                           end_date=request_body['end_date'],
+                           product_id=request_body['product_id'])
+        db.session.add(new_offer)
+        db.session.commit()
+        response_body = {'message': f'Nueva oferta creada para el producto {product_id}', 
+                         'result': new_offer.serialize()}
+        return response_body, 201  # Código 201: Created
+    elif request.method == 'DELETE':
+        product = db.session.query(Products).get(product_id)
+        if not product:
+            return {'message': 'Producto no encontrado'}, 404
+        product_offers = db.session.query(Offers).filter_by(product_id=product_id).all()
+        for offer in product_offers:
+            db.session.delete(offer)
+        db.session.commit()
+        return {'message': f'La oferta del producto {product_id} ha sido eliminada'}, 200
+
+
+@api.route('/suscriptions', methods=['GET', 'POST'])
+@jwt_required()
+def handle_suscriptions():
+    current_identity = get_jwt_identity()
+    if current_identity[1]:
+        if request.method == 'GET':
+            suscriptions = db.session.execute(db.select(Suscriptions).order_by(Suscriptions.id)).scalars()
+            suscription_list = [suscription.serialize() for suscription in suscriptions]
+            response_body = {'message': 'Listado de suscripciones',
+                             'results': suscription_list}
+            return response_body, 200
+        if request.method == 'POST':
+            request_body = request.get_json()
+            new_suscription = Suscriptions(quantity=request_body.get('quantity'), 
+                                           frecuency=request_body.get('frecuency'), 
+                                           user_id=request_body.get('user_id'),
+                                           product_id=request_body.get('product_id'))   #  No deberia estar este POST abajo, donde se envia el user_id en el endpoint??
+            db.session.add(new_suscription)
+            db.session.commit()
+            response_body = {'message': 'Suscripcion agregada',
+                             'results': new_suscription.serialize()}
+            return response_body, 200
+    response_body = {'message': "Acceso restringido"}
+    return response_body, 401
+
+
+@api.route('/suscriptions/<int:suscriptions_id>', methods=['GET', 'DELETE'])
+def suscriptions(suscriptions_id):
+    if request.method == 'GET':
+        suscription = db.session.get(Suscriptions, suscriptions_id)
+        if suscription is None:
+            return {'message': 'suscription not found'}, 404
+        response_body = suscription.serialize()
+        return response_body, 200
+    if request.method == 'DELETE':
+        suscription = db.session.get(Suscriptions, suscriptions_id)
+        if suscription is None:
+            return {'message': 'suscription not found'}, 404
+        db.session.delete(suscription)
+        db.session.commit()
+        response_body = {'message': 'suscription deleted'}
+        return response_body, 200 
+
+
+@api.route('/users/<int:user_id>/suscriptions', methods=['GET', 'POST', 'DELETE'])
+def user_suscriptions(user_id):
+    if request.method == 'GET':
+        user = db.session.query(Users).get(user_id)
+        if not user:
+            return {'message': 'no se encontraron reviews de este usuario'}, 404
+        user_suscriptions = db.session.query(Suscriptions).filter_by(user_id=user_id).all()
+        suscription_list = []
+        for suscription in user_suscriptions:
+            current_suscription = suscription.serialize()
+            item_list = []
+            current_suscription['suscription_items'] = item_list
+            suscription_list.append(current_suscription)
+        response_body = {'message': f'suscriptions del usuario {user_id}', 'results': suscription_list}
+        return response_body, 200
+    elif request.method == 'DELETE':
+        user = db.session.query(Users).get(user_id)
+        if not user:
+            return {'message': 'Usuario no encontrado'}, 404
+        user_suscriptions = db.session.query(Suscriptions).filter_by(user_id=user_id).all()
+        for suscription in user_suscriptions:
+            db.session.delete(suscription)
+        db.session.commit()
+        return {'message': f'Todas las suscriptions del usuario {user_id} han sido eliminadas'}, 200
+
+
+"""
+@api.route('/ticket-costumer-supports', methods=['GET'])
+def handle_ticket_costumer_supports():
+    ticket_costumer_supports = db.session.execute(db.select(TicketCostumerSupports).order_by(TicketCostumerSupports.id)).scalars()
+    ticket_costumer_support_list = [ticket_costumer_support.serialize() for ticket_costumer_support in ticket_costumer_supports]
+    response_body = {'message': 'Listado de tickets',
+                     'results': ticket_costumer_support_list}
+    return response_body, 200
+
+
+@api.route('/ticket-costumer-supports/<int:ticket_costumer_supports_id>', methods=['GET', 'DELETE'])
+def ticket_costumer_supports(ticket_costumer_supports_id):
+    if request.method == 'GET':
+        ticket_costumer_support = db.session.get(TicketCostumerSupports, ticket_costumer_supports_id)
+        if ticket_costumer_support is None:
+            return {'message': 'ticket_costumer_support not found'}, 404
+        response_body = ticket_costumer_support.serialize()
+        return response_body, 200
+    if request.method == 'DELETE':
+        ticket_costumer_support = db.session.get(TicketCostumerSupports, ticket_costumer_supports_id)
+        if ticket_costumer_support is None:
+            return {'message': 'ticket_costumer_support not found'}, 404
+        db.session.delete(ticket_costumer_support)
+        db.session.commit()
+        response_body = {'message': 'ticket_costumer_support deleted'}
+        return response_body, 200 
+
+
+@api.route('/users/<int:user_id>/ticket-costumer-supports', methods=['GET', 'POST', 'DELETE'])
+def user_ticket_costumer_supports(user_id):
+    if request.method == 'GET':
+        user = db.session.query(Users).get(user_id)
+        if not user:
+            return {'message': 'no se encontraron ticket_costumer_supports de este usuario'}, 404
+        user_ticket_costumer_supports = db.session.query(TicketCostumerSupports).filter_by(user_id=user_id).all()
+        ticket_costumer_support_list = []
+        for ticket_costumer_support in user_ticket_costumer_supports:
+            current_ticket_costumer_support = ticket_costumer_support.serialize()
+            item_list = []
+            current_ticket_costumer_support['ticket_costumer_support_items'] = item_list
+            ticket_costumer_support_list.append(current_ticket_costumer_support)
+        response_body = {'message': f'reviews del usuario {user_id}', 'results': ticket_costumer_support_list}
+        return response_body, 200
+    elif request.method == 'POST':
+        request_body = request.get_json()
+        user = db.session.query(Users).get(user_id)
+        if not user:
+            return {'message': 'Usuario no encontrado'}, 404
+        new_ticket_costumer_support = TicketCostumerSupports(request=request_body['request'],
+                                                             start_date=request_body['start_date'],
+                                                             close_date=request_body['close_date'],
+                                                             status=request_body['status'],
+                                                             resolution=request_body['resolution'],
+                                                             user_id=request_body['user_id'],
+                                                             bill_id=request_body['bill_id'])
+        db.session.add(new_ticket_costumer_support)
+        db.session.commit()
+        response_body = {'message': f'Nuevo ticket_costumer_support creado para el usuario {user_id}', 'result': new_ticket_costumer_support.serialize()}
+        return response_body, 201
+    elif request.method == 'DELETE':
+        user = db.session.query(Users).get(user_id)
+        if not user:
+            return {'message': 'Usuario no encontrado'}, 404
+        user_ticket_costumer_supports = db.session.query(TicketCostumerSupports).filter_by(user_id=user_id).all()
+        for ticket_costumer_support in user_ticket_costumer_supports:
+            db.session.delete(ticket_costumer_support)
+        db.session.commit()
+        return {'message': f'Todas las tickets del usuario {user_id} han sido eliminadas'}, 200
+
 
 
 @api.route('/favorites', methods=['GET'])
@@ -470,232 +744,4 @@ def user_reviews(user_id):
             db.session.delete(review)
         db.session.commit()
         return {'message': f'Todas las reviews del usuario {user_id} han sido eliminadas'}, 200
-
-
-@api.route('/categories', methods=['GET', 'POST'])
-def handle_categories():
-    if request.method == 'GET':
-        categories = db.session.execute(db.select(Categories).order_by(Categories.id)).scalars()
-        categorie_list = [categorie.serialize() for categorie in categories]
-        response_body = {'message': 'Listado de categorias',
-                         'results': categorie_list}
-        return response_body, 200
-    if request.method == 'POST':
-        request_body = request.get_json()
-        new_categorie = Categories(name=request_body.get('name'))
-        db.session.add(new_categorie)
-        db.session.commit()
-        response_body = {'message': 'Categoria agregada',
-                         'results': new_categorie.serialize()}
-        return response_body, 200
-
-
-@api.route('/categories/<int:categories_id>', methods=['GET', 'PUT', 'DELETE'])
-def categories(categories_id):
-    if request.method == 'GET':
-        categorie = db.session.get(Categories, categories_id)
-        if categorie is None:
-            return {'message': 'Categorie not found'}, 404
-        response_body = categorie.serialize()
-        return response_body, 200
-    if request.method == 'PUT':
-        request_body = request.get_json()
-        categorie = db.session.get(Categories, categories_id)
-        if categorie is None:
-            return {'message': 'Categoria no encontrada'}, 404
-        categorie.name = request_body.get('name')
-        db.session.commit()
-        response_body = {'message': 'Categoria actualizada',
-                         'results': categorie.serialize()}
-        return response_body, 200
-    if request.method == 'DELETE':
-        categorie = db.session.get(Categories, categories_id)
-        if categorie is None:
-            return {'message': 'Categoria no encontrada'}, 404
-        db.session.delete(categorie)
-        db.session.commit()
-        response_body = {'message': 'Categoria eliminada'}
-        return response_body, 200
-
-
-@api.route('/offers', methods=['GET'])  # la idea es que los usuarios que tengan un producto en favoritos, si ese producto recibe una oferta, notificar al usuario.
-def handle_offers():
-    offers = db.session.execute(db.select(Offers).order_by(Offers.id)).scalars()
-    offer_list = [offer.serialize() for offer in offers]
-    response_body = {'message': 'Listado de ofertas',
-                     'results': offer_list}
-    return response_body, 200
-
-
-@api.route('/products/<int:product_id>/offers', methods=['GET', 'POST', 'DELETE'])
-def product_reviews(product_id):
-    if request.method == 'GET':
-        product = db.session.query(Products).get(product_id)
-        if not product:
-            return {'message': 'no se encontraron ofertas de este producto'}, 404
-        product_offers = db.session.query(Offers).filter_by(product_id=product_id).all()
-        offer_list = []
-        for offer in product_offers:
-            current_offer = offer.serialize()
-            item_list = []
-            current_offer['offer_items'] = item_list
-            offer_list.append(current_offer)
-        response_body = {'message': f'ofertas del producto {product_id}', 'results': offer_list}
-        return response_body, 200
-    elif request.method == 'POST':
-        request_body = request.get_json()
-        product = db.session.query(Products).get(product_id)
-        if not product:
-            return {'message': 'Producto no encontrado'}, 404
-        new_offer = Offers(discount=request_body['discount'],
-                           start_date=request_body['start_date'],
-                           end_date=request_body['end_date'],
-                           product_id=request_body['product_id'])
-        db.session.add(new_offer)
-        db.session.commit()
-        response_body = {'message': f'Nueva oferta creada para el producto {product_id}', 
-                         'result': new_offer.serialize()}
-        return response_body, 201  # Código 201: Created
-    elif request.method == 'DELETE':
-        product = db.session.query(Products).get(product_id)
-        if not product:
-            return {'message': 'Producto no encontrado'}, 404
-        product_offers = db.session.query(Offers).filter_by(product_id=product_id).all()
-        for offer in product_offers:
-            db.session.delete(offer)
-        db.session.commit()
-        return {'message': f'La oferta del producto {product_id} ha sido eliminada'}, 200
-
-
-@api.route('/suscriptions', methods=['GET', 'POST'])
-def handle_suscriptions():
-    if request.method == 'GET':
-        suscriptions = db.session.execute(db.select(Suscriptions).order_by(Suscriptions.id)).scalars()
-        suscription_list = [suscription.serialize() for suscription in suscriptions]
-        response_body = {'message': 'Listado de suscripciones',
-                         'results': suscription_list}
-        return response_body, 200
-    if request.method == 'POST':
-        request_body = request.get_json()
-        new_suscription = Suscriptions(quantity=request_body.get('quantity'), 
-                                       frecuency=request_body.get('frecuency'), 
-                                       user_id=request_body.get('user_id'),
-                                       product_id=request_body.get('product_id'))   #  No deberia estar este POST abajo, donde se envia el user_id en el endpoint??
-        db.session.add(new_suscription)
-        db.session.commit()
-        response_body = {'message': 'Suscripcion agregada',
-                         'results': new_suscription.serialize()}
-        return response_body, 200
-
-
-@api.route('/suscriptions/<int:suscriptions_id>', methods=['GET', 'DELETE'])
-def suscriptions(suscriptions_id):
-    if request.method == 'GET':
-        suscription = db.session.get(Suscriptions, suscriptions_id)
-        if suscription is None:
-            return {'message': 'suscription not found'}, 404
-        response_body = suscription.serialize()
-        return response_body, 200
-    if request.method == 'DELETE':
-        suscription = db.session.get(Suscriptions, suscriptions_id)
-        if suscription is None:
-            return {'message': 'suscription not found'}, 404
-        db.session.delete(suscription)
-        db.session.commit()
-        response_body = {'message': 'suscription deleted'}
-        return response_body, 200 
-
-
-@api.route('/users/<int:user_id>/suscriptions', methods=['GET', 'POST', 'DELETE'])
-def user_suscriptions(user_id):
-    if request.method == 'GET':
-        user = db.session.query(Users).get(user_id)
-        if not user:
-            return {'message': 'no se encontraron reviews de este usuario'}, 404
-        user_suscriptions = db.session.query(Suscriptions).filter_by(user_id=user_id).all()
-        suscription_list = []
-        for suscription in user_suscriptions:
-            current_suscription = suscription.serialize()
-            item_list = []
-            current_suscription['suscription_items'] = item_list
-            suscription_list.append(current_suscription)
-        response_body = {'message': f'suscriptions del usuario {user_id}', 'results': suscription_list}
-        return response_body, 200
-    elif request.method == 'DELETE':
-        user = db.session.query(Users).get(user_id)
-        if not user:
-            return {'message': 'Usuario no encontrado'}, 404
-        user_suscriptions = db.session.query(Suscriptions).filter_by(user_id=user_id).all()
-        for suscription in user_suscriptions:
-            db.session.delete(suscription)
-        db.session.commit()
-        return {'message': f'Todas las suscriptions del usuario {user_id} han sido eliminadas'}, 200
-
-
-@api.route('/ticket-costumer-supports', methods=['GET'])
-def handle_ticket_costumer_supports():
-    ticket_costumer_supports = db.session.execute(db.select(TicketCostumerSupports).order_by(TicketCostumerSupports.id)).scalars()
-    ticket_costumer_support_list = [ticket_costumer_support.serialize() for ticket_costumer_support in ticket_costumer_supports]
-    response_body = {'message': 'Listado de tickets',
-                     'results': ticket_costumer_support_list}
-    return response_body, 200
-
-
-@api.route('/ticket-costumer-supports/<int:ticket_costumer_supports_id>', methods=['GET', 'DELETE'])
-def ticket_costumer_supports(ticket_costumer_supports_id):
-    if request.method == 'GET':
-        ticket_costumer_support = db.session.get(TicketCostumerSupports, ticket_costumer_supports_id)
-        if ticket_costumer_support is None:
-            return {'message': 'ticket_costumer_support not found'}, 404
-        response_body = ticket_costumer_support.serialize()
-        return response_body, 200
-    if request.method == 'DELETE':
-        ticket_costumer_support = db.session.get(TicketCostumerSupports, ticket_costumer_supports_id)
-        if ticket_costumer_support is None:
-            return {'message': 'ticket_costumer_support not found'}, 404
-        db.session.delete(ticket_costumer_support)
-        db.session.commit()
-        response_body = {'message': 'ticket_costumer_support deleted'}
-        return response_body, 200 
-
-
-@api.route('/users/<int:user_id>/ticket-costumer-supports', methods=['GET', 'POST', 'DELETE'])
-def user_ticket_costumer_supports(user_id):
-    if request.method == 'GET':
-        user = db.session.query(Users).get(user_id)
-        if not user:
-            return {'message': 'no se encontraron ticket_costumer_supports de este usuario'}, 404
-        user_ticket_costumer_supports = db.session.query(TicketCostumerSupports).filter_by(user_id=user_id).all()
-        ticket_costumer_support_list = []
-        for ticket_costumer_support in user_ticket_costumer_supports:
-            current_ticket_costumer_support = ticket_costumer_support.serialize()
-            item_list = []
-            current_ticket_costumer_support['ticket_costumer_support_items'] = item_list
-            ticket_costumer_support_list.append(current_ticket_costumer_support)
-        response_body = {'message': f'reviews del usuario {user_id}', 'results': ticket_costumer_support_list}
-        return response_body, 200
-    elif request.method == 'POST':
-        request_body = request.get_json()
-        user = db.session.query(Users).get(user_id)
-        if not user:
-            return {'message': 'Usuario no encontrado'}, 404
-        new_ticket_costumer_support = TicketCostumerSupports(request=request_body['request'],
-                                                             start_date=request_body['start_date'],
-                                                             close_date=request_body['close_date'],
-                                                             status=request_body['status'],
-                                                             resolution=request_body['resolution'],
-                                                             user_id=request_body['user_id'],
-                                                             bill_id=request_body['bill_id'])
-        db.session.add(new_ticket_costumer_support)
-        db.session.commit()
-        response_body = {'message': f'Nuevo ticket_costumer_support creado para el usuario {user_id}', 'result': new_ticket_costumer_support.serialize()}
-        return response_body, 201
-    elif request.method == 'DELETE':
-        user = db.session.query(Users).get(user_id)
-        if not user:
-            return {'message': 'Usuario no encontrado'}, 404
-        user_ticket_costumer_supports = db.session.query(TicketCostumerSupports).filter_by(user_id=user_id).all()
-        for ticket_costumer_support in user_ticket_costumer_supports:
-            db.session.delete(ticket_costumer_support)
-        db.session.commit()
-        return {'message': f'Todas las tickets del usuario {user_id} han sido eliminadas'}, 200
+"""
