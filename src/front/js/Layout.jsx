@@ -9,6 +9,7 @@ import { BackendURL } from "./component/BackendURL.jsx";
 import { Home } from "./pages/Home.jsx";
 import { Navbar } from "./component/Navbar.jsx";
 import { Footer } from "./component/Footer.jsx";
+import { Form } from "./component/Form.jsx";
 
 
 // Create your first component
@@ -28,8 +29,9 @@ const Layout = () => {
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<h1>Not found!</h1>} />
+                        <Route element={<Form />} path="/form" />
                     </Routes>
-                    <Footer />
+                    {/* <Footer /> */}
                 </ScrollToTop>
             </BrowserRouter>
         </div>

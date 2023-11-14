@@ -17,9 +17,9 @@ export const Navbar = () => {
               Categories
             </button>
             <ul className="dropdown-menu">
-              <li><a className="dropdown-item" href="#">Food</a></li>
-              <li><a className="dropdown-item" href="#">Toys</a></li>
-              <li><a className="dropdown-item" href="#">Accessories</a></li>
+              <li>Food</li>
+              <li>Toys</li>
+              <li>Accessories</li>
             </ul>
           </div>
           <div className="input-group w-75">
@@ -38,10 +38,10 @@ export const Navbar = () => {
               Login
             </button>
             <ul className="dropdown-menu">
-              <li><a className="dropdown-item" href="#">Accout</a></li>
-              <li><a className="dropdown-item" href="#">Orders</a></li>
+              <li>Accout</li>
+              <li>Orders</li>
               <li><hr className="dropdown-divider" /></li>
-              <li><a className="dropdown-item" href="#">New customer? <Link to="/demo">Start here</Link></a></li>
+              <li>New customer? <Link to="/demo">Start here</Link></li>
             </ul>
           </div>
           <span className="border-start border-dark"></span>
@@ -51,9 +51,9 @@ export const Navbar = () => {
               Favorites
             </button>
             <ul className="dropdown-menu">
-              <li><a className="dropdown-item" href="#">Action</a></li>
-              <li><a className="dropdown-item" href="#">Another action</a></li>
-              <li><a className="dropdown-item" href="#">Something else here</a></li>
+              <li>Action</li>
+              <li>Another action</li>
+              <li>Something else here</li>
             </ul>
           </div>
           <button type="button" className="btn btn-primary text-primary-emphasis">
