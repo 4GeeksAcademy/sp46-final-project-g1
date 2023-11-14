@@ -144,8 +144,8 @@ def users(users_id):
                 db.session.commit()
                 response_body = {'message': 'Usuario eliminado'}
                 return response_body, 200
-    if current_user.id == user_id:
-        if request.method == 'GET':  # falta el metodo PUT y el metodo DELETE (pero aqui seria pasar ese usuario a no activo)
+    if current_user.id == user_id:  # TODO Este user_id me esta dando problemas "line 147, in users if current_user.id == user_id:"
+        if request.method == 'GET':  
             user = db.session.query(Users).get(user_id)
             if user is None:
                 return {'message': 'User not found'}, 404
