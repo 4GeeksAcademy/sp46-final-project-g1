@@ -117,7 +117,7 @@ def users(users_id):
                 return {'message': 'Usuario no encontrado'}, 404
             user.email = request_body.get('email')
             user.password = request_body.get('password')
-            user.is_admin = request_body.get('is_admin')
+            user.is_admin = request_body.get('is_admin')  # Como cambio is_admin para que al editarse un admin no puedan cambiar este parametro 
             user.is_active = request_body.get('is_active')
             user.first_name = request_body.get('first_name')
             user.last_name = request_body.get('last_name')
@@ -150,6 +150,31 @@ def users(users_id):
             if user is None:
                 return {'message': 'User not found'}, 404
             response_body = user.serialize()
+            return response_body, 200
+        if request.method == 'PUT':
+            request_body = request.get_json()
+            user = db.session.get(Users, users_id)
+            if user is None:
+                return {'message': 'Usuario no encontrado'}, 404
+            user.email = request_body.get('email')
+            user.password = request_body.get('password')
+            user.is_admin = False # Como cambio is_admin para que al editarse un user no puedan cambiar este parametro
+            user.is_active = request_body.get('is_active')
+            user.first_name = request_body.get('first_name')
+            user.last_name = request_body.get('last_name')
+            user.address = request_body.get('address')
+            user.identification_number = request_body.get('identification_number')
+            user.identification_type = request_body.get('identification_type')
+            user.payment_method = request_body.get('payment_method')
+            db.session.commit()
+            response_body = {'message': 'Usuario actualizado',
+                             'results': user.serialize()}
+            return response_body, 200
+        if request.method == 'DELETE':
+            user = db.session.get(Users, users_id)
+            user.is_active = False
+            db.session.commit()
+            response_body = {'message': 'User inactived'}
             return response_body, 200
     response_body = {'message': "Acceso restringido"}
     return response_body, 401
@@ -761,3 +786,10 @@ def user_reviews(user_id):
         db.session.commit()
         return {'message': f'Todas las reviews del usuario {user_id} han sido eliminadas'}, 200
 """
+
+
+
+
+# "email": "gabidodostres@gmail.com"  "password": "123456789"  usuario comun,
+
+# "email": "lg.medina23@gmail.com",  "password": "123456"  usduario admin
