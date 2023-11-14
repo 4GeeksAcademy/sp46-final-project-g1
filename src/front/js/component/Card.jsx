@@ -5,7 +5,7 @@ import { StarReating } from "./StarReating.jsx";
 export const Card = () => {
 
     return (
-        <section style={{ background: '#eee' }}>
+        <section style={{ background: 'white' }}>
             <div className="container py-5">
                 <div className="card" style={{ width: '250px', height: '375px' }}>
                     <div className="d-flex justify-content-end p-3">
