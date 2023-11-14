@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, Users, Products, Bills, BillItems, Favorites, Reviews, Categories, Offers, Suscriptions, TicketCostumerSupports, ShoppingCarts, ShoppingCartItems
 from api.utils import generate_sitemap, APIException
+from sqlalchemy import func
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
 
 
@@ -23,12 +24,12 @@ def handle_login():
     return response_body, 200
 
 
-@api.route('/logout', methods=["POST"])
+@api.route('/logout', methods=["POST"])  # TODO 
 @jwt_required()
 def handle_logout():
     user_id = get_jwt_identity()[0]  # Obtén el ID del usuario a partir del token
     #  unset_jwt_cookies()  
-    # TODO Revoca el token actual para deshabilitarlo
+    #  Revoca el token actual para deshabilitarlo
     response_body = {'message': 'Logout successful'}
     return response_body, 200
 
@@ -36,6 +37,17 @@ def handle_logout():
 @api.route('/signup', methods=["POST"])
 def handle_signup():
     request_body = request.get_json()
+    response_body = {}
+    try: 
+        email = request_body['email'].lower()
+    except:
+        response_body['message'] = 'user or email is empty or wrong'
+        return response_body, 400
+    # Verificamos si el usuario ya existe
+    is_user = db.session.execute(db.select(Users).where(Users.email == email)).scalar()
+    if is_user:
+        response_body['message'] = 'The email is registered'
+        return response_body, 403
     email = request_body.get('email')
     password = request_body.get('password')
     new_user = Users(email=request_body['email'], 
@@ -53,10 +65,10 @@ def handle_signup():
     return response_body, 201
 
 
-@api.route('/forgot-password', methods=["POST"])
+@api.route('/forgot-password', methods=["POST"]) # TODO
 def handle_forgot_password():
     email = request.json.get('email')  
-    # TODO: validar email, generar un token, enviar un correo electrónico (biblioteca Flask-Mail)
+    # Validar email, generar un token, enviar un correo electrónico (biblioteca Flask-Mail)
     response_body = {'message': 'Password reset instructions sent to your email'}
     return jsonify(response_body), 200
 
@@ -67,7 +79,7 @@ def handle_hello():
     return jsonify(response_body), 200
     
 
-@api.route('/users', methods=['GET', 'POST'])  #  Con este POST un admin puede crear otro admin.
+@api.route('/users', methods=['GET', 'POST'])
 @jwt_required()
 def handle_users():
     current_identity = get_jwt_identity()
@@ -116,8 +128,7 @@ def users(users_id):
             if user is None:
                 return {'message': 'Usuario no encontrado'}, 404
             user.email = request_body.get('email')
-            user.password = request_body.get('password')
-            user.is_admin = request_body.get('is_admin')  # Como cambio is_admin para que al editarse un admin no puedan cambiar este parametro 
+            user.password = request_body.get('password') 
             user.is_active = request_body.get('is_active')
             user.first_name = request_body.get('first_name')
             user.last_name = request_body.get('last_name')
@@ -130,9 +141,9 @@ def users(users_id):
                              'results': user.serialize()}
             return response_body, 200
         if request.method == 'DELETE':
-            if current_user.id == user_id:
+            if current_user.id == users_id:
                 return {'message': 'No puedes eliminar tu propio usuario como administrador'}, 401
-            user_to_delete = db.session.query(Users).get(user_id)
+            user_to_delete = db.session.query(Users).get(users_id)
             if user_to_delete is None:
                 return {'message': 'User not found'}, 404
             if user_to_delete.is_admin:
@@ -144,9 +155,9 @@ def users(users_id):
                 db.session.commit()
                 response_body = {'message': 'Usuario eliminado'}
                 return response_body, 200
-    if current_user.id == user_id:  # TODO Este user_id me esta dando problemas "line 147, in users if current_user.id == user_id:"
+    if current_user.id == users_id:
         if request.method == 'GET':  
-            user = db.session.query(Users).get(user_id)
+            user = db.session.query(Users).get(users_id)
             if user is None:
                 return {'message': 'User not found'}, 404
             response_body = user.serialize()
@@ -158,7 +169,7 @@ def users(users_id):
                 return {'message': 'Usuario no encontrado'}, 404
             user.email = request_body.get('email')
             user.password = request_body.get('password')
-            user.is_admin = False # Como cambio is_admin para que al editarse un user no puedan cambiar este parametro
+            user.is_admin = False
             user.is_active = request_body.get('is_active')
             user.first_name = request_body.get('first_name')
             user.last_name = request_body.get('last_name')
@@ -271,7 +282,7 @@ def create_categories():
     response_body = {'message': "Acceso restringido"}
     return response_body, 401
 
-
+  
 @api.route('/categories', methods=['GET'])
 def handle_categories():
     if request.method == 'GET':
@@ -316,7 +327,6 @@ def admin_categories(categories_id):
             return response_body, 200
     response_body = {'message': "Acceso restringido"}
     return response_body, 401
-
 
 
 @api.route('/shopping-carts', methods=['GET'])
@@ -790,6 +800,6 @@ def user_reviews(user_id):
 
 
 
-# "email": "gabidodostres@gmail.com"  "password": "123456789"  usuario comun,
+# "email": "gabidodostres4@gmail.com"  "password": "123456789"  usuario comun,
 
 # "email": "lg.medina23@gmail.com",  "password": "123456"  usduario admin
