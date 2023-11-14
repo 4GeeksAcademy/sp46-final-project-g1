@@ -14,7 +14,7 @@ export const Navbar = () => {
         <div className="col-4 ms-5 d-flex">
           <div className="dropdown">
             <button className="btn btn-primary dropdown-toggle me-3 text-primary-emphasis" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Categories
+              Categories
             </button>
             <ul className="dropdown-menu">
               <li><a className="dropdown-item" href="#">Food</a></li>
@@ -32,10 +32,35 @@ export const Navbar = () => {
           </div>
         </div>
         <div className="col text-end me-5">
-          <button type="button" className="btn btn-primary text-primary-emphasis"><i className="fas fa-lock me-2"></i>Login</button>
+          <div className="btn-group">
+            <button type="button" className="btn btn-primary rounded text-primary-emphasis" data-bs-toggle="dropdown" aria-expanded="false">
+              <i className="fas fa-user me-2"></i>
+              Login
+            </button>
+            <ul className="dropdown-menu">
+              <li><a className="dropdown-item" href="#">Accout</a></li>
+              <li><a className="dropdown-item" href="#">Orders</a></li>
+              <li><hr className="dropdown-divider" /></li>
+              <li><a className="dropdown-item" href="#">New customer? <Link to="/demo">Start here</Link></a></li>
+            </ul>
+          </div>
           <span className="border-start border-dark"></span>
-          <button type="button" className="btn btn-primary me-1 text-primary-emphasis"><i className="fas fa-heart me-2"></i>Favorites</button>
-          <button type="button" className="btn btn-primary text-primary-emphasis"><i className="fas fa-shopping-cart"></i></button>
+          <div className="btn-group">
+            <button type="button" className="btn btn-primary rounded text-primary-emphasis me-1" data-bs-toggle="dropdown" aria-expanded="false">
+              <i className="fas fa-heart me-2"></i>
+              Favorites
+            </button>
+            <ul className="dropdown-menu">
+              <li><a className="dropdown-item" href="#">Action</a></li>
+              <li><a className="dropdown-item" href="#">Another action</a></li>
+              <li><a className="dropdown-item" href="#">Something else here</a></li>
+            </ul>
+          </div>
+          <button type="button" className="btn btn-primary text-primary-emphasis">
+            <i className="fas fa-shopping-cart">
+              <span className="badge text-bg-secondary ms-1">0</span>
+            </i>
+          </button>
         </div>
       </nav>
     </div>
