@@ -186,7 +186,7 @@ def handle_post_products():
         return response_body, 200
     response_body = {'message': "Acceso restringido"}
     return response_body, 401
-      uhrggyuhtgggg
+
 
 @api.route('/products/<int:products_id>', methods=['PUT', 'DELETE'])
 @jwt_required()
@@ -231,15 +231,11 @@ def single_product(products_id):
     return response_body, 200
 
 
-@api.route('/categories', methods=['GET', 'POST'])
-def handle_categories():
-    if request.method == 'GET':
-        categories = db.session.execute(db.select(Categories).order_by(Categories.id)).scalars()
-        categorie_list = [categorie.serialize() for categorie in categories]
-        response_body = {'message': 'Listado de categorias',
-                         'results': categorie_list}
-        return response_body, 200
-    if request.method == 'POST':
+@api.route('/categories', methods=['POST'])
+@jwt_required()
+def create_categories():
+    current_identity = get_jwt_identity()
+    if current_identity[1]:
         request_body = request.get_json()
         new_categorie = Categories(name=request_body.get('name'))
         db.session.add(new_categorie)
@@ -247,34 +243,54 @@ def handle_categories():
         response_body = {'message': 'Categoria agregada',
                          'results': new_categorie.serialize()}
         return response_body, 200
+    response_body = {'message': "Acceso restringido"}
+    return response_body, 401
 
 
-@api.route('/categories/<int:categories_id>', methods=['GET', 'PUT', 'DELETE'])
-def categories(categories_id):
+@api.route('/categories', methods=['GET'])
+def handle_categories():
     if request.method == 'GET':
-        categorie = db.session.get(Categories, categories_id)
-        if categorie is None:
-            return {'message': 'Categorie not found'}, 404
-        response_body = categorie.serialize()
+        categories = db.session.execute(db.select(Categories).order_by(Categories.id)).scalars()
+        categorie_list = [categorie.serialize() for categorie in categories]
+        response_body = {'message': 'Listado de categorias',
+                         'results': categorie_list}
         return response_body, 200
-    if request.method == 'PUT':
-        request_body = request.get_json()
-        categorie = db.session.get(Categories, categories_id)
-        if categorie is None:
-            return {'message': 'Categoria no encontrada'}, 404
-        categorie.name = request_body.get('name')
-        db.session.commit()
-        response_body = {'message': 'Categoria actualizada',
-                         'results': categorie.serialize()}
-        return response_body, 200
-    if request.method == 'DELETE':
-        categorie = db.session.get(Categories, categories_id)
-        if categorie is None:
-            return {'message': 'Categoria no encontrada'}, 404
-        db.session.delete(categorie)
-        db.session.commit()
-        response_body = {'message': 'Categoria eliminada'}
-        return response_body, 200
+
+
+@api.route('/categories/<int:categories_id>', methods=['GET'])
+def categories(categories_id):
+    categorie = db.session.get(Categories, categories_id)
+    if categorie is None:
+        return {'message': 'Categorie not found'}, 404
+    response_body = categorie.serialize()
+    return response_body, 200
+
+
+@api.route('/categories/<int:categories_id>', methods=['PUT', 'DELETE'])
+@jwt_required()
+def admin_categories(categories_id):
+    current_identity = get_jwt_identity()
+    if current_identity[1]:
+        if request.method == 'PUT':
+            request_body = request.get_json()
+            categorie = db.session.get(Categories, categories_id)
+            if categorie is None:
+                return {'message': 'Categoria no encontrada'}, 404
+            categorie.name = request_body.get('name')
+            db.session.commit()
+            response_body = {'message': 'Categoria actualizada',
+                            'results': categorie.serialize()}
+            return response_body, 200
+        if request.method == 'DELETE':
+            categorie = db.session.get(Categories, categories_id)
+            if categorie is None:
+                return {'message': 'Categoria no encontrada'}, 404
+            db.session.delete(categorie)
+            db.session.commit()
+            response_body = {'message': 'Categoria eliminada'}
+            return response_body, 200
+    response_body = {'message': "Acceso restringido"}
+    return response_body, 401
 
 
 
