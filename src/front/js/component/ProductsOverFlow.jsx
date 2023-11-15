@@ -6,12 +6,8 @@ export const ProductsOverFlow = () => {
 
     return (
         <div className="container">
-            <h1 className="mb-3 mt-5 text-center ">Top products</h1>
-            <div className="d-flex flex-nowrap position-relative overflow-auto m-3">
-                <Card />
-                <Card />
-                <Card />
-                <Card />
+            <h1 className="mb-2 text-center mt-5">Top productos</h1>
+            <div className="container d-flex justify-content-center">
                 <Card />
                 <Card />
                 <Card />
