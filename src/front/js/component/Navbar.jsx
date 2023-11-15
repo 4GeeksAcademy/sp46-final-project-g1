@@ -17,9 +17,10 @@ export const Navbar = () => {
               Categorías
             </button>
             <ul className="dropdown-menu">
-              <li>Comida</li>
-              <li>Juguetes</li>
-              <li>Accesorios</li>
+              <li><Link to="/form" className="dropdown-item text-dark">Pienso</Link></li>
+              <li><Link to="/form" className="dropdown-item text-dark">Snacks</Link></li>
+              <li><Link to="/form" className="dropdown-item text-dark">Juguetes</Link></li>
+              <li><Link to="/form" className="dropdown-item text-dark">Accesorios</Link></li>
             </ul>
           </div>
           <div className="input-group w-75">
@@ -38,10 +39,10 @@ export const Navbar = () => {
               Iniciar sesión
             </button>
             <ul className="dropdown-menu">
-              <li>Cuenta</li>
-              <li>Ordenes</li>
+              <li><Link to="/form" className="dropdown-item text-dark">Mi cuenta</Link></li>
+              <li><Link to="/form" className="dropdown-item text-dark">Salir</Link></li>
               <li><hr className="dropdown-divider" /></li>
-              <li>Nuevo cliente? <Link to="/demo">Crear cuenta</Link></li>
+              <li><Link to="/demo" className="dropdown-item text-danger">Nuevo cliente? Crear cuenta</Link></li>
             </ul>
           </div>
           <span className="border-start border-dark"></span>

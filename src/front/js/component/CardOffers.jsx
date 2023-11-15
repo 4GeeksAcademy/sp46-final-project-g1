@@ -6,7 +6,7 @@ export const CardOffers = () => {
 
     return (
         <div className="container">
-            <h1 className="text-center">Ofertas 🔥</h1>
+            <h1 className="text-center fw-semibold text-dark">Ofertas 🔥</h1>
             <div className="container text-center mt-4">
                 <div className="row gx-5">
                     <div className="col px-0 me-5">

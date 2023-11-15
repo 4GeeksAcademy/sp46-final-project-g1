@@ -6,7 +6,7 @@ export const ProductsOverFlow = () => {
 
     return (
         <div className="container">
-            <h1 className="mb-2 text-center mt-5">Top productos</h1>
+            <h1 className="mb-2 text-center mt-5 fw-semibold text-dark">Top productos</h1>
             <div className="container d-flex justify-content-center">
                 <Card />
                 <Card />
