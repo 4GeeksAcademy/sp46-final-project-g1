@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, Users, Products, Bills, BillItems, Favorites, Reviews, Categories, Offers, Suscriptions, TicketCostumerSupports, ShoppingCarts, ShoppingCartItems
 from api.utils import generate_sitemap, APIException
 from sqlalchemy import func
+import cloudinary
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
 
 
@@ -333,6 +334,7 @@ def admin_categories(categories_id):
 @jwt_required()
 def handle_shopping_carts():
     current_identity = get_jwt_identity()
+    results = {}
     if current_identity[1]:
         shopping_carts = db.session.query(ShoppingCarts).order_by(ShoppingCarts.id).all()
         shopping_cart_list = []
@@ -347,6 +349,18 @@ def handle_shopping_carts():
             shopping_cart_list.append(current_shopping_cart)
         response_body = {'message': 'Listado de carritos', 'results': shopping_cart_list}
         return response_body, 200
+    if current_identity[0]:
+        cart = db.session.select(ShoppingCarts).where(ShoppingCarts.user_id == current_identity[0]).scalar()
+        if cart:
+            results['shopping_cart'] = cart.serialize()
+            cart_items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
+            list_items = [item.serialize() for item in cart_items]
+            results['shopping_cart_item'] = list_items
+            response_body = {'message': 'Shopping Cart with all items', 
+                             'results': results}
+            return response_body, 201
+        response_body = {'message': "Usuario no tiene carrito"}
+        return response_body, 403
     response_body = {'message': "Acceso restringido"}
     return response_body, 401
 
@@ -363,57 +377,61 @@ def shopping_cart_items():
     if not cart:
         cart = ShoppingCarts(total_price=0, 
                              shipping_total_price=0,
-                             user_id=identity[0])
+                             user_id=current_identity[0])
         db.session.add(cart)
         db.session.commit()
     data = request.get_json()
     cart_item = ShoppingCartItems(quantity=data['quantity'], 
                                   item_price=data['item_price'],
                                   shipping_item_price=data['shipping_item_price'],
-                                  product_id=data['product_id'], # TODO esto no lo tengo claro en el modelo de elisa solo tiene una relacion que es con el cart, nosotros tenemos dos
+                                  product_id=data['product_id'],
                                   shopping_cart_id=cart.id)
     db.session.add(cart_item)
     db.session.commit()
-    results['shopping_cart'] = cart.serialize()
+    results['cart'] = cart.serialize()
     cart_items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
     list_items = []
     for item in cart_items:
             list_items.append(item.serialize())
-    results['shopping_cart_item'] = list_items
+    results['items'] = list_items
     response_body = {'message': 'Shopping Cart with all items', 
-                        'results': results}
+                     'results': results}
     return response_body, 201
 
 
-@api.route('/users/<int:users_id>/shopping-carts', methods=['GET', 'POST', 'DELETE'])
-def shopping_carts(users_id):
+@api.route('/shopping-carts/<int:shopping_cart_id>', methods=['GET', 'DELETE'])
+@jwt_required()
+def shopping_carts(shopping_cart_id):
+    identity = get_jwt_identity()
+    if identity[1]:
+        response_body = {'message': 'administradores no pueden realizar compras'}
+        return response_body, 401
     if request.method == 'GET':
-        shopping_cart = db.one_or_404(db.select(ShoppingCarts).filter_by(user_id=users_id),
-                                      description=f"No user named")
-        response_body = {'message': 'Carrito creado',
-                         'results': shopping_cart.serialize()}
-        return response_body, 200
-    if request.method == 'POST':
-        request_body = request.get_json()
-        if 'total_price' not in request_body or 'shipping_total_price' not in request_body or 'user_id' not in request_body: # no deberia ser necesario escribir manualmente el numero de id de usuario si ya está en la url
-            return {'message': 'Invalid request body'}, 400
-        existing_shopping_cart = db.session.get(ShoppingCarts, users_id)
-        if existing_shopping_cart is None:
-            shopping_cart = ShoppingCarts(total_price=request_body['total_price'],
-                                          shipping_total_price=request_body['shipping_total_price'],
-                                          user_id=request_body['user_id'])
-            db.session.add(shopping_cart)
-            db.session.commit()
-        response_body = {'message': 'Carrito creado',
-                         'results': shopping_cart.serialize()}
-        return response_body, 200
+        cart = db.session.select(ShoppingCarts).where(ShoppingCarts.id == shopping_cart_id,
+                                                      ShoppingCarts.user_id == identity[0])
+        if cart:
+            cart_items = db.session.execute(db.select(ShoppingCartItems).filter_by(shopping_cart_id=cart.id)).scalars()
+            cart_items_list = [item.serialize() for item in cart_items]
+            response_body = {'message': 'Shopping Cart',
+                             'results': {'cart': cart.serialize(),
+                                         'items': cart_items_list}}
+            return response_body, 200
+        response_body = {'message': "Usuario no tiene carrito"}
+        return response_body, 403
     if request.method == 'DELETE':
-        shopping_cart = db.one_or_404(db.select(ShoppingCarts).filter_by(user_id=users_id),
-                                      description=f"Este usuario no tiene carrito")
-        db.session.delete(shopping_cart)
-        db.session.commit()
-        response_body = {'message': 'Carrito eliminado'}
-        return response_body, 200
+        cart = db.session.select(ShoppingCarts).where(ShoppingCarts.id == shopping_cart_id,
+                                                      ShoppingCarts.user_id == identity[0])
+        if cart:
+            cart_items = db.session.execute(db.select(ShoppingCartItems).filter_by(shopping_cart_id=cart.id)).scalars()
+            for item in cart_items:
+                db.session.delete(item)
+                db.session.commit()
+            db.session.delete(cart)
+            db.session.commit()
+            response_body = {'message': 'Carrito eliminado'}
+            return response_body, 200
+        response_body = {'message': "Usuario no tiene carrito"}
+        return response_body, 403
 
 
 @api.route('/bills', methods=['GET'])
@@ -614,6 +632,26 @@ def user_suscriptions(user_id):
             db.session.delete(suscription)
         db.session.commit()
         return {'message': f'Todas las suscriptions del usuario {user_id} han sido eliminadas'}, 200
+
+
+@api.route('/upload', methods=['POST', 'GET'])
+def handle_upload():
+    if 'image' not in request.files:
+        raise APIException("No image to upload")
+    my_image = UserImage()
+    result = cloudinary.uploader.upload(
+        request.files['image'],
+        public_id=f'sample_folder/profile/my-image-name',
+        crop='limit',
+        width=450,
+        height=450,
+        eager=[{'width': 200, 'height': 200,
+                'crop': 'thumb', 'gravity': 'face',
+                'radius': 100}],
+        tags=['profile_picture'])
+    my_image.url = result['secure_url']
+    my_image.save()
+    return jsonify(my_image.serialize()), 200
 
 
 """
