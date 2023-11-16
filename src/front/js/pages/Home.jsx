@@ -51,6 +51,7 @@ export const Home = () => {
 				</button>
 			</div>
 			<div className="container">
+				<h1 className="mb-2 text-center mt-5 fw-semibold text-dark">Top productos</h1>
 				<ProductsOverFlow />
 			</div>
 			<div className="container">

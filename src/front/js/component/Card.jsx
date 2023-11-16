@@ -1,5 +1,6 @@
 import React from "react";
 import { StarReating } from "./StarReating.jsx";
+import { Link } from "react-router-dom";
 
 
 export const Card = () => {
@@ -14,8 +15,10 @@ export const Card = () => {
                             <i className="far fa-heart"></i>
                         </button>
                     </div>
-                    <img src="https://www.dia.es/product_images/130332/130332_ISO_0_ES.jpg"
-                        className="card-img-top object-fit-fill" alt="Laptop" />
+                    <Link to="/product">
+                        <img src="https://www.dia.es/product_images/130332/130332_ISO_0_ES.jpg"
+                            className="card-img-top object-fit-fill" alt="Pienso" />
+                    </Link>
                     <div className="card-body text-dark">
                         <div className="d-flex justify-content-between">
                             <p className="small"><a href="#!">Pienso</a></p>
@@ -30,8 +33,8 @@ export const Card = () => {
                                 <StarReating />
                             </div>
                         </div>
-                        <div class="d-grid">
-                            <button class="btn btn-primary" type="button">Añadir al carrito <i class="fas fa-shopping-cart"></i></button>
+                        <div className="d-grid">
+                            <button className="btn btn-primary" type="button">Añadir al carrito <i className="fas fa-shopping-cart"></i></button>
                         </div>
                     </div>
                 </div>

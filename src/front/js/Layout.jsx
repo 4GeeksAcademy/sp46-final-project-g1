@@ -11,6 +11,7 @@ import { Navbar } from "./component/Navbar.jsx";
 import { Footer } from "./component/Footer.jsx";
 import { Form } from "./component/Form.jsx";
 import { Product } from "./pages/Product.jsx";
+import { Account } from "./pages/Account.jsx";
 
 
 // Create your first component
@@ -32,6 +33,7 @@ const Layout = () => {
                         <Route element={<h1>Not found!</h1>} />
                         <Route element={<Form />} path="/form" />
                         <Route element={<Product/>} path="/product" />
+                        <Route element={<Account/>} path="/account" />
                     </Routes>
                     <Footer />
                 </ScrollToTop>
