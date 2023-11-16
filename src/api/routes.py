@@ -64,14 +64,14 @@ def handle_signup():
                      'results': new_user.serialize()}
     return response_body, 201
 
-
+"""
 @api.route('/forgot-password', methods=["POST"]) # TODO
 def handle_forgot_password():
     email = request.json.get('email')  
     # Validar email, generar un token, enviar un correo electrónico (biblioteca Flask-Mail)
     response_body = {'message': 'Password reset instructions sent to your email'}
     return jsonify(response_body), 200
-
+"""
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
@@ -214,7 +214,7 @@ def handle_post_products():
                                stock=request_body.get('stock'),
                                subscribeable=request_body.get('subscribeable'),
                                image_url=request_body.get('image_url'),
-                               categorie_id=request_body.get('categorie_id')) #  Esta está ok? la intencion es mostrar el nombre de la categoria unicamente y al crear un producto se deberia poder crear una categoria nueva
+                               categorie_id=request_body.get('categorie_id'))
         db.session.add(new_product)
         db.session.commit()
         response_body = {'message': 'Producto agregado',
@@ -282,7 +282,7 @@ def create_categories():
     response_body = {'message': "Acceso restringido"}
     return response_body, 401
 
-  
+ 
 @api.route('/categories', methods=['GET'])
 def handle_categories():
     if request.method == 'GET':
@@ -351,16 +351,38 @@ def handle_shopping_carts():
     return response_body, 401
 
 
-@api.route('/shopping-cart-items', methods=['GET', 'POST'])
+@api.route('/shopping-cart-items', methods=['POST'])
 @jwt_required()
 def shopping_cart_items():
     current_identity = get_jwt_identity()
     if current_identity[1]:
         response_body = {'message': 'administradores no pueden realizar compras'}
         return response_body, 401
-    # filtrar por el id del usuario
-    # verificar si el usuario tiene carrito, sino lo tiene crearlo y agrega el item al carrito recien creado o al encontrado (POST)
-    pass
+    cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.user_id == current_identity[0])).scalar()
+    results = {}
+    if not cart:
+        cart = ShoppingCarts(total_price=0, 
+                             shipping_total_price=0,
+                             user_id=identity[0])
+        db.session.add(cart)
+        db.session.commit()
+    data = request.get_json()
+    cart_item = ShoppingCartItems(quantity=data['quantity'], 
+                                  item_price=data['item_price'],
+                                  shipping_item_price=data['shipping_item_price'],
+                                  product_id=data['product_id'], # TODO esto no lo tengo claro en el modelo de elisa solo tiene una relacion que es con el cart, nosotros tenemos dos
+                                  shopping_cart_id=cart.id)
+    db.session.add(cart_item)
+    db.session.commit()
+    results['shopping_cart'] = cart.serialize()
+    cart_items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
+    list_items = []
+    for item in cart_items:
+            list_items.append(item.serialize())
+    results['shopping_cart_item'] = list_items
+    response_body = {'message': 'Shopping Cart with all items', 
+                        'results': results}
+    return response_body, 201
 
 
 @api.route('/users/<int:users_id>/shopping-carts', methods=['GET', 'POST', 'DELETE'])
