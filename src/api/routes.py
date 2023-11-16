@@ -14,14 +14,21 @@ api = Blueprint('api', __name__)
 def handle_login():
     email = request.json.get("email", None)
     password = request.json.get("password", None)
+    results = {'user': {},
+               'cart': {},
+               'item': {}}
     user = db.one_or_404(db.select(Users).filter_by(email=email, password=password, is_active=True), 
                          description=f"Email o password incorrectos.")
     access_token = create_access_token(identity=[user.id, 
                                                  user.is_admin,])
-    datos_user = user.serialize()
+    results['user'] = user.serialize()
+    cart = cart_item = None
+
+    results['cart'] = cart.serialize() if cart else {}
+    results['item'] = cart_item.serialize() if cart_item else {}
     response_body = {'message': 'Token created',
                      'token': access_token,
-                     'results': datos_user}
+                     'results': results}
     return response_body, 200
 
 
@@ -350,7 +357,7 @@ def handle_shopping_carts():
         response_body = {'message': 'Listado de carritos', 'results': shopping_cart_list}
         return response_body, 200
     if current_identity[0]:
-        cart = db.session.select(ShoppingCarts).where(ShoppingCarts.user_id == current_identity[0]).scalar()
+        cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.user_id == current_identity[0])).scalar()
         if cart:
             results['shopping_cart'] = cart.serialize()
             cart_items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
@@ -407,8 +414,9 @@ def shopping_carts(shopping_cart_id):
         response_body = {'message': 'administradores no pueden realizar compras'}
         return response_body, 401
     if request.method == 'GET':
-        cart = db.session.select(ShoppingCarts).where(ShoppingCarts.id == shopping_cart_id,
-                                                      ShoppingCarts.user_id == identity[0])
+        cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.id == shopping_cart_id,
+                                                                 ShoppingCarts.user_id == identity[0])).scalar()
+        print(cart, shopping_cart_id, identity[0])
         if cart:
             cart_items = db.session.execute(db.select(ShoppingCartItems).filter_by(shopping_cart_id=cart.id)).scalars()
             cart_items_list = [item.serialize() for item in cart_items]
@@ -416,11 +424,12 @@ def shopping_carts(shopping_cart_id):
                              'results': {'cart': cart.serialize(),
                                          'items': cart_items_list}}
             return response_body, 200
-        response_body = {'message': "Usuario no tiene carrito"}
+        response_body = {'message': "Bad request"}
         return response_body, 403
     if request.method == 'DELETE':
-        cart = db.session.select(ShoppingCarts).where(ShoppingCarts.id == shopping_cart_id,
-                                                      ShoppingCarts.user_id == identity[0])
+        cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.id == shopping_cart_id,
+                                                                 ShoppingCarts.user_id == identity[0])).scalar()
+        print(cart)
         if cart:
             cart_items = db.session.execute(db.select(ShoppingCartItems).filter_by(shopping_cart_id=cart.id)).scalars()
             for item in cart_items:
