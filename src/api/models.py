@@ -264,3 +264,15 @@ class TicketCostumerSupports(db.Model):
                 "resolution": self.resolution,
                 "user_id": self.user_id,
                 "bill_id": self.bill_id}
+
+
+class UserImage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    url = db.Column(db.String(255), unique=True, nullable=False)
+
+    def _repr_(self):
+        return '<Image %r>' % self.id
+    
+    def serialize(self):
+        return {"url": self.url,
+                "id": self.id}
