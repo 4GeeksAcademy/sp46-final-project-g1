@@ -12,6 +12,7 @@ import { Footer } from "./component/Footer.jsx";
 import { Form } from "./component/Form.jsx";
 import { Product } from "./pages/Product.jsx";
 import { Account } from "./pages/Account.jsx";
+import { ShoppingCart } from "./pages/ShoppingCart.jsx";
 
 
 // Create your first component
@@ -34,6 +35,7 @@ const Layout = () => {
                         <Route element={<Form />} path="/form" />
                         <Route element={<Product/>} path="/product" />
                         <Route element={<Account/>} path="/account" />
+                        <Route element={<ShoppingCart/>} path="/shopping-cart" />
                     </Routes>
                     <Footer />
                 </ScrollToTop>
