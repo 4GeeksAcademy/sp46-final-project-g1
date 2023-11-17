@@ -57,11 +57,11 @@ export const Navbar = () => {
               <li>Something else here</li>
             </ul>
           </div>
-          <button type="button" className="btn btn-primary text-primary-emphasis">
+          <Link to="/shopping-cart" className="btn btn-primary text-primary-emphasis">
             <i className="fas fa-shopping-cart">
               <span className="badge text-bg-secondary ms-1">0</span>
             </i>
-          </button>
+          </Link>
         </div>
       </nav>
     </div>
