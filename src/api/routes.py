@@ -356,20 +356,8 @@ def handle_shopping_carts():
             shopping_cart_list.append(current_shopping_cart)
         response_body = {'message': 'Listado de carritos', 'results': shopping_cart_list}
         return response_body, 200
-    if current_identity[0]:
-        cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.user_id == current_identity[0])).scalar()
-        if cart:
-            results['shopping_cart'] = cart.serialize()
-            cart_items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
-            list_items = [item.serialize() for item in cart_items]
-            results['shopping_cart_item'] = list_items
-            response_body = {'message': 'Shopping Cart with all items', 
-                             'results': results}
-            return response_body, 201
-        response_body = {'message': "Usuario no tiene carrito"}
-        return response_body, 403
     response_body = {'message': "Acceso restringido"}
-    return response_body, 401
+    return response_body, 401 
 
 
 @api.route('/shopping-cart-items', methods=['POST'])
@@ -387,13 +375,15 @@ def shopping_cart_items():
                              user_id=current_identity[0])
         db.session.add(cart)
         db.session.commit()
-    data = request.get_json()
-    cart_item = ShoppingCartItems(quantity=data['quantity'], 
-                                  item_price=data['item_price'],
-                                  shipping_item_price=data['shipping_item_price'],
-                                  product_id=data['product_id'],
+    request_body = request.get_json()
+    cart_item = ShoppingCartItems(quantity=request_body['quantity'], 
+                                  item_price=request_body['item_price'],
+                                  shipping_item_price=request_body['shipping_item_price'],
+                                  product_id=request_body['product_id'],
                                   shopping_cart_id=cart.id)
     db.session.add(cart_item)
+    db.session.commit()
+    # cart['total_price'] += cart_item['item_price'] * cart_item['quantity']
     db.session.commit()
     results['cart'] = cart.serialize()
     cart_items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
@@ -404,6 +394,34 @@ def shopping_cart_items():
     response_body = {'message': 'Shopping Cart with all items', 
                      'results': results}
     return response_body, 201
+
+
+@api.route('/users/<int:user_id>/shopping-cart-items/<int:cart_item_id>', methods=['PUT', 'DELETE'])
+@jwt_required()
+def handle_cart_items_id(user_id, cart_item_id):
+    current_identity = get_jwt_identity()
+    response_body = {}
+    if current_identity[1]:
+        response_body['message'] = "Area no para administradores"
+        return response_body, 401
+    try:
+        cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.user_id == current_identity[0])).scalar()
+        cart_item = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id, 
+                                                                          ShoppingCartItems.id == cart_item_id)).scalar()
+        if request.method == 'PUT':
+            request_body = request.get_json()
+            cart_item.quantity = request_body.get('quantity')
+            db.session.commit()
+            response_body['message'] = "Shopping Cart Item updated"
+        if request.method == 'DELETE':
+            db.session.delete(cart_item)
+            db.session.commit()
+            response_body['message'] = "Shopping Cart Item deleted"
+        return response_body, 200 
+    except:
+        response_body['message'] = "Bad request"
+        return response_body, 403
+
 
 
 @api.route('/shopping-carts/<int:shopping_cart_id>', methods=['GET', 'DELETE'])
@@ -429,7 +447,6 @@ def shopping_carts(shopping_cart_id):
     if request.method == 'DELETE':
         cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.id == shopping_cart_id,
                                                                  ShoppingCarts.user_id == identity[0])).scalar()
-        print(cart)
         if cart:
             cart_items = db.session.execute(db.select(ShoppingCartItems).filter_by(shopping_cart_id=cart.id)).scalars()
             for item in cart_items:
