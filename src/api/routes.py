@@ -3,8 +3,10 @@ from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, Users, Products, Bills, BillItems, Favorites, Reviews, Categories, Offers, Suscriptions, TicketCostumerSupports, ShoppingCarts, ShoppingCartItems
 from api.utils import generate_sitemap, APIException
 from sqlalchemy import func
+from datetime import datetime
 import cloudinary
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
+import stripe
 
 
 api = Blueprint('api', __name__)
@@ -290,7 +292,7 @@ def create_categories():
     response_body = {'message': "Acceso restringido"}
     return response_body, 401
 
- 
+
 @api.route('/categories', methods=['GET'])
 def handle_categories():
     if request.method == 'GET':
@@ -427,14 +429,13 @@ def handle_cart_items_id(user_id, cart_item_id):
 @api.route('/shopping-carts/<int:shopping_cart_id>', methods=['GET', 'DELETE'])
 @jwt_required()
 def shopping_carts(shopping_cart_id):
-    identity = get_jwt_identity()
-    if identity[1]:
+    current_identity = get_jwt_identity()
+    if current_identity[1]:
         response_body = {'message': 'administradores no pueden realizar compras'}
         return response_body, 401
     if request.method == 'GET':
         cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.id == shopping_cart_id,
-                                                                 ShoppingCarts.user_id == identity[0])).scalar()
-        print(cart, shopping_cart_id, identity[0])
+                                                                 ShoppingCarts.user_id == current_identity[0])).scalar()
         if cart:
             cart_items = db.session.execute(db.select(ShoppingCartItems).filter_by(shopping_cart_id=cart.id)).scalars()
             cart_items_list = [item.serialize() for item in cart_items]
@@ -446,7 +447,7 @@ def shopping_carts(shopping_cart_id):
         return response_body, 403
     if request.method == 'DELETE':
         cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.id == shopping_cart_id,
-                                                                 ShoppingCarts.user_id == identity[0])).scalar()
+                                                                 ShoppingCarts.user_id == current_identity[0])).scalar()
         if cart:
             cart_items = db.session.execute(db.select(ShoppingCartItems).filter_by(shopping_cart_id=cart.id)).scalars()
             for item in cart_items:
@@ -460,21 +461,85 @@ def shopping_carts(shopping_cart_id):
         return response_body, 403
 
 
-@api.route('/bills', methods=['GET'])
+@api.route('/bills', methods=['GET', 'POST'])  # TODO como deberia probar este endpoint??
+@jwt_required()
 def handle_bills():
-    bills = db.session.query(Bills).order_by(Bills.id).all()
-    bill_list = []
-    for bill in bills:
-        current_bill = bill.serialize()
-        item_list = []
-        items = db.session.query(BillItems).filter_by(bill_id=bill.id).all()
-        for item in items:
-            current_item = item.serialize()
-            item_list.append(current_item)
-        current_bill['bill_items'] = item_list
-        bill_list.append(current_bill)
-    response_body = {'message': 'Listado de bills', 'results': bill_list}
-    return response_body, 200
+    current_identity = get_jwt_identity()
+    response_body = {}
+    if request.method == 'GET' and current_identity[1]:
+        bills = db.session.query(Bills).order_by(Bills.id).all()
+        bill_list = []
+        for bill in bills:
+            current_bill = bill.serialize()
+            item_list = []
+            items = db.session.query(BillItems).filter_by(bill_id=bill.id).all()
+            for item in items:
+                current_item = item.serialize()
+                item_list.append(current_item)
+            current_bill['bill_items'] = item_list
+            bill_list.append(current_bill)
+        response_body = {'message': 'Listado de bills', 'results': bill_list}
+        return response_body, 200
+    if request.method == 'POST' and not current_identity[1]:
+            results = {}
+            cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.user_id == current_identity[0])).scalar()
+            cart_items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
+            cart_items_list = [item.serialize() for item in cart_items]
+            request_body = request.get_json()
+            bill = Bills(created_at=datetime.utcnow(),
+                         total_price=request_body['total_price'],
+                         order_number=request_body['order_number'],
+                         status='Pending',
+                         bill_address=request_body['bill_address'],
+                         payment_method=request_body['payment_method'],
+                         user_id=current_identity[0])
+            db.session.add(bill)
+            db.session.commit()
+            results['bill'] = bill.serialize()
+            list_items = []
+            for item in cart_items_list:
+                bill_item = BillItems(price_per_unit=item['price_per_unit'],
+                                      quantity=item['quantity'],
+                                      bill_id=bill.id,
+                                      product_id=cart_items.product_id) # TODO como le paso el product_id??
+                db.session.add(bill_item)
+                db.session.commit()
+                list_items.append(bill_item.serialize())
+            results['bill_items'] = list_items
+            for item in cart_items:
+                db.session.delete(item)
+            db.session.delete(cart)
+            response_body = {'message': 'Bill created', 
+                             'results': results}
+            return response_body, 201 
+    response_body['message'] = "Acceso Restringido"
+    return response_body, 401 
+
+
+@api.route('/users/<int:user_id>/bills', methods=['GET'])
+@jwt_required()
+def user_bills(user_id):
+    current_identity = get_jwt_identity()
+    if request.method == 'GET':
+        user = db.session.query(Users).get(user_id)
+        if not user:
+            return {'message': 'Usuario no encontrado'}, 404
+        user_bills = db.session.query(Bills).filter_by(user_id=current_identity[0]).all()
+        bill_list = []
+        for bill in user_bills:
+            current_bill = bill.serialize()
+            item_list = []
+            items = db.session.query(BillItems).filter_by(bill_id=bill.id).all()
+            for item in items:
+                current_item = item.serialize()
+                item_list.append(current_item)
+            current_bill['bill_items'] = item_list
+            bill_list.append(current_bill)
+        response_body = {'message': f'Facturas de usuario {user_id}', 'results': bill_list}
+        return response_body, 200
+    response_body = {'message': "Acceso restringido"}
+    return response_body, 401
+    
 
 
 @api.route('/bills/<int:bills_id>', methods=['GET', 'DELETE'])
@@ -501,46 +566,26 @@ def bills(bills_id):
         return response_body, 200 
 
 
-@api.route('/users/<int:user_id>/bills', methods=['GET', 'POST', 'DELETE'])
-def user_bills(user_id):
-    if request.method == 'GET':
-        user = db.session.query(Users).get(user_id)
-        if not user:
-            return {'message': 'Usuario no encontrado'}, 404
-        user_bills = db.session.query(Bills).filter_by(user_id=user_id).all()
-        bill_list = []
-        for bill in user_bills:
-            current_bill = bill.serialize()
-            item_list = []
-            items = db.session.query(BillItems).filter_by(bill_id=bill.id).all()
-            for item in items:
-                current_item = item.serialize()
-                item_list.append(current_item)
-            current_bill['bill_items'] = item_list
-            bill_list.append(current_bill)
-        response_body = {'message': f'Facturas de usuario {user_id}', 'results': bill_list}
-        return response_body, 200
-    elif request.method == 'POST':
-        request_body = request.get_json()
-        user = db.session.query(Users).get(user_id)
-        if not user:
-            return {'message': 'Usuario no encontrado'}, 404
-        new_bill = Bills(created_at=request_body['created_at'],
-                        total_price=request_body['total_price'],
-                        order_number=request_body['order_number'],
-                        status=request_body['status'],
-                        bill_address=request_body['bill_address'],
-                        delivery_address=request_body['delivery_address'],
-                        payment_method=request_body['payment_method'],
-                        user_id=request_body['user_id'])
-        db.session.add(new_bill)
-        db.session.commit()
-        response_body = {'message': 'Nueva factura creada para el usuario', 'result': new_bill.serialize()}
-        return response_body, 201
-    elif request.method == 'DELETE':
-        return {'message': f'Las facturas no pueden ser eliminadas'}, 200
+@api.route('/upload', methods=['POST', 'GET'])
+def handle_upload():
+    if 'image' not in request.files:
+        raise APIException("No image to upload")
+    my_image = UserImage()
+    result = cloudinary.uploader.upload(
+        request.files['image'],
+        public_id=f'sample_folder/profile/my-image-name',
+        crop='limit',
+        width=450,
+        height=450,
+        eager=[{'width': 200, 'height': 200,
+                'crop': 'thumb', 'gravity': 'face',
+                'radius': 100}],
+        tags=['profile_picture'])
+    my_image.url = result['secure_url']
+    my_image.save()
+    return jsonify(my_image.serialize()), 200
 
-
+"""
 @api.route('/offers', methods=['GET'])  # la idea es que los usuarios que tengan un producto en favoritos, si ese producto recibe una oferta, notificar al usuario.
 def handle_offers():
     offers = db.session.execute(db.select(Offers).order_by(Offers.id)).scalars()
@@ -660,27 +705,6 @@ def user_suscriptions(user_id):
         return {'message': f'Todas las suscriptions del usuario {user_id} han sido eliminadas'}, 200
 
 
-@api.route('/upload', methods=['POST', 'GET'])
-def handle_upload():
-    if 'image' not in request.files:
-        raise APIException("No image to upload")
-    my_image = UserImage()
-    result = cloudinary.uploader.upload(
-        request.files['image'],
-        public_id=f'sample_folder/profile/my-image-name',
-        crop='limit',
-        width=450,
-        height=450,
-        eager=[{'width': 200, 'height': 200,
-                'crop': 'thumb', 'gravity': 'face',
-                'radius': 100}],
-        tags=['profile_picture'])
-    my_image.url = result['secure_url']
-    my_image.save()
-    return jsonify(my_image.serialize()), 200
-
-
-"""
 @api.route('/ticket-costumer-supports', methods=['GET'])
 def handle_ticket_costumer_supports():
     ticket_costumer_supports = db.session.execute(db.select(TicketCostumerSupports).order_by(TicketCostumerSupports.id)).scalars()
@@ -748,7 +772,6 @@ def user_ticket_costumer_supports(user_id):
             db.session.delete(ticket_costumer_support)
         db.session.commit()
         return {'message': f'Todas las tickets del usuario {user_id} han sido eliminadas'}, 200
-
 
 
 @api.route('/favorites', methods=['GET'])
@@ -882,10 +905,3 @@ def user_reviews(user_id):
         db.session.commit()
         return {'message': f'Todas las reviews del usuario {user_id} han sido eliminadas'}, 200
 """
-
-
-
-
-# "email": "gabidodostres4@gmail.com"  "password": "123456789"  usuario comun,
-
-# "email": "lg.medina23@gmail.com",  "password": "123456"  usduario admin
