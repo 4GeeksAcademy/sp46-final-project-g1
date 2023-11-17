@@ -13,7 +13,7 @@ import { Form } from "./component/Form.jsx";
 import { Product } from "./pages/Product.jsx";
 import { Account } from "./pages/Account.jsx";
 import { ShoppingCart } from "./pages/ShoppingCart.jsx";
-
+import { Category } from "./pages/Category.jsx";
 
 // Create your first component
 const Layout = () => {
@@ -33,11 +33,12 @@ const Layout = () => {
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<h1>Not found!</h1>} />
                         <Route element={<Form />} path="/form" />
-                        <Route element={<Product/>} path="/product" />
-                        <Route element={<Account/>} path="/account" />
-                        <Route element={<ShoppingCart/>} path="/shopping-cart" />
+                        <Route element={<Product />} path="/product" />
+                        <Route element={<Account />} path="/account" />
+                        <Route element={<ShoppingCart />} path="/shopping-cart" />
+                        <Route element={<Category />} path="/category" />
                     </Routes>
-                    <Footer />
+                    {/* <Footer /> */}
                 </ScrollToTop>
             </BrowserRouter>
         </div>
