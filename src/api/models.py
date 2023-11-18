@@ -121,7 +121,7 @@ class Bills(db.Model):
         return {"id": self.id,
                 "created_at": self.created_at,
                 "total_price": self.total_price,
-                "order_number": self.status,
+                "order_number": self.order_number,
                 "status": self.status,
                 "bill_address": self.bill_address,
                 "delivery_address": self.delivery_address,
