@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 export const Card = () => {
 
     return (
-        <section style={{ background: 'white' }}>
+        <section>
             <div className="container py-4">
                 <div className="card" style={{ width: '15rem' }}>
                     <div className="d-flex justify-content-end p-3">

@@ -12,17 +12,9 @@ export const Navbar = () => {
           </Link>
         </div>
         <div className="col-4 ms-5 d-flex">
-          <div className="dropdown">
-            <button className="btn btn-primary dropdown-toggle me-3 text-primary-emphasis" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Categorías
-            </button>
-            <ul className="dropdown-menu">
-              <li><Link to="/form" className="dropdown-item text-dark">Pienso</Link></li>
-              <li><Link to="/form" className="dropdown-item text-dark">Snacks</Link></li>
-              <li><Link to="/form" className="dropdown-item text-dark">Juguetes</Link></li>
-              <li><Link to="/form" className="dropdown-item text-dark">Accesorios</Link></li>
-            </ul>
-          </div>
+          <Link to="/category" className="btn btn-primary me-3 text-primary-emphasis">
+            Categorías
+          </Link>
           <div className="input-group w-75">
             <input className="form-control me-sm-2 bg-primary-subtle" type="search" placeholder="Buscar" />
             <span className="input-group-btn">

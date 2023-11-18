@@ -38,7 +38,7 @@ const Layout = () => {
                         <Route element={<ShoppingCart />} path="/shopping-cart" />
                         <Route element={<Category />} path="/category" />
                     </Routes>
-                    {/* <Footer /> */}
+                    <Footer />
                 </ScrollToTop>
             </BrowserRouter>
         </div>
