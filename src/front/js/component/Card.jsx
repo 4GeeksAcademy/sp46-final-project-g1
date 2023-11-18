@@ -6,8 +6,7 @@ import { Link } from "react-router-dom";
 export const Card = () => {
 
     return (
-        <section>
-            <div className="container py-4">
+            <div className="container">
                 <div className="card" style={{ width: '15rem' }}>
                     <div className="d-flex justify-content-end p-3">
                         <button type="button" className="btn btn-outline-primary btn-sm rounded-circle d-flex align-items-center justify-content-center shadow-1-strong"
@@ -39,6 +38,5 @@ export const Card = () => {
                     </div>
                 </div>
             </div>
-        </section>
     )
 }

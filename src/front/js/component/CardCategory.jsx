@@ -6,7 +6,6 @@ export const CardCategory = () => {
 
     return (
         <div className="container mt-4">
-            <h1 className="text-center mb-4 fw-semibold text-dark">Categorías</h1>
             <div className="container d-flex justify-content-between">
                 <Link to="/demo" className="text-decoration-none">
                     <div className="card" style={{ width: "18rem" }}>
