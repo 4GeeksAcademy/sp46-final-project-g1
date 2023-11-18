@@ -12,18 +12,11 @@ export const Navbar = () => {
           </Link>
         </div>
         <div className="col-4 ms-5 d-flex">
-          <div className="dropdown">
-            <button className="btn btn-primary dropdown-toggle me-3 text-primary-emphasis" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Categories
-            </button>
-            <ul className="dropdown-menu">
-              <li><a className="dropdown-item" href="#">Food</a></li>
-              <li><a className="dropdown-item" href="#">Toys</a></li>
-              <li><a className="dropdown-item" href="#">Accessories</a></li>
-            </ul>
-          </div>
+          <Link to="/category" className="btn btn-primary me-3 text-primary-emphasis">
+            Categorías
+          </Link>
           <div className="input-group w-75">
-            <input className="form-control me-sm-2 bg-primary-subtle" type="search" placeholder="Search" />
+            <input className="form-control me-sm-2 bg-primary-subtle" type="search" placeholder="Buscar" />
             <span className="input-group-btn">
               <button className="btn btn-default text-primary-emphasis" type="submit">
                 <i className="fa fa-search"></i>
@@ -35,32 +28,32 @@ export const Navbar = () => {
           <div className="btn-group">
             <button type="button" className="btn btn-primary rounded text-primary-emphasis" data-bs-toggle="dropdown" aria-expanded="false">
               <i className="fas fa-user me-2"></i>
-              Login
+              Iniciar sesión
             </button>
             <ul className="dropdown-menu">
-              <li><a className="dropdown-item" href="#">Accout</a></li>
-              <li><a className="dropdown-item" href="#">Orders</a></li>
+              <li><Link to="/account" className="dropdown-item text-dark">Mi cuenta</Link></li>
+              <li><Link to="/form" className="dropdown-item text-dark">Salir</Link></li>
               <li><hr className="dropdown-divider" /></li>
-              <li><a className="dropdown-item" href="#">New customer? <Link to="/demo">Start here</Link></a></li>
+              <li><Link to="/demo" className="dropdown-item text-danger">Nuevo cliente? Crear cuenta</Link></li>
             </ul>
           </div>
           <span className="border-start border-dark"></span>
           <div className="btn-group">
             <button type="button" className="btn btn-primary rounded text-primary-emphasis me-1" data-bs-toggle="dropdown" aria-expanded="false">
               <i className="fas fa-heart me-2"></i>
-              Favorites
+              Favoritos
             </button>
             <ul className="dropdown-menu">
-              <li><a className="dropdown-item" href="#">Action</a></li>
-              <li><a className="dropdown-item" href="#">Another action</a></li>
-              <li><a className="dropdown-item" href="#">Something else here</a></li>
+              <li>Action</li>
+              <li>Another action</li>
+              <li>Something else here</li>
             </ul>
           </div>
-          <button type="button" className="btn btn-primary text-primary-emphasis">
+          <Link to="/shopping-cart" className="btn btn-primary text-primary-emphasis">
             <i className="fas fa-shopping-cart">
               <span className="badge text-bg-secondary ms-1">0</span>
             </i>
-          </button>
+          </Link>
         </div>
       </nav>
     </div>
