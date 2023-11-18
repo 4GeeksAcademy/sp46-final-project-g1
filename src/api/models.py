@@ -8,11 +8,11 @@ class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
-    first_name = db.Column(db.String(80), nullable=False)
-    last_name = db.Column(db.String(80), nullable=False)
+    first_name = db.Column(db.String(80))
+    last_name = db.Column(db.String(80))
     address = db.Column(db.String(120))
-    identification_type = db.Column(db.Enum('Dni', 'Nie', 'Passport', name='identification_type'), nullable=False)
-    identification_number = db.Column(db.Integer, nullable=False)
+    identification_type = db.Column(db.Enum('Dni', 'Nie', 'Passport', name='identification_type'))
+    identification_number = db.Column(db.Integer)
     payment_method = db.Column(db.Enum('MasterdCard', 'Visa', 'American', 'PayPal', name='payment_method'))
     is_admin = db.Column(db.Boolean, nullable=False)
     is_active = db.Column(db.Boolean, nullable=False)
@@ -43,7 +43,7 @@ class Products(db.Model):
     stock = db.Column(db.Integer, nullable=False)
     subscribeable = db.Column(db.Boolean, nullable=False)
     image_url = db.Column(db.String, nullable=False)
-    categorie_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
+    categorie_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     categorie = db.relationship('Categories')
 
     def __repr__(self):
@@ -75,7 +75,6 @@ class ShoppingCarts(db.Model):
 
     def serialize(self):
         return {"id": self.id,
-                "quantity": self.quantity,
                 "total_price": self.total_price,
                 "shipping_total_price": self.shipping_total_price,
                 "user_id": self.user_id}
@@ -86,8 +85,10 @@ class ShoppingCartItems(db.Model):
     quantity = db.Column(db.Integer)
     item_price = db.Column(db.Float)
     shipping_item_price = db.Column(db.Float)
-    shopping_cart_id = db.Column(db.Integer, db.ForeignKey('shoppingcarts.id'))  # ShoppingCarts o shoppingcarts (las mayusculas)???
-    shopping_cart = db.relationship('ShoppingCarts')
+    shopping_cart_id = db.Column(db.Integer, db.ForeignKey('shoppingcarts.id'))
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
+    shopping_cart = db.relationship('ShoppingCarts', foreign_keys=[shopping_cart_id])
+    product = db.relationship('Products', foreign_keys=[product_id])
 
     def __repr__(self):
         return f'<ShoppingCartItems {self.id}>'
@@ -97,19 +98,20 @@ class ShoppingCartItems(db.Model):
                 "quantity": self.quantity,
                 "item_price": self.item_price,
                 "shipping_item_price": self.shipping_item_price,
-                "shopping_cart_id": self.shopping_cart_id}
+                "shopping_cart_id": self.shopping_cart_id,
+                "product_id": self.product_id}
 
 
 class Bills(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    created_at = db.Column(db.DateTime)
+    id = db.Column(db.Integer, primary_key=True) #  La primary_key debe ser una convinacion de bill_id y user_id
+    created_at = db.Column(db.DateTime, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
     order_number = db.Column(db.Integer, nullable=False)
     status = db.Column(db.Enum('pending', 'paid', 'cancel', name='status'), nullable=False)
     bill_address = db.Column(db.String(180), nullable=False)
     delivery_address = db.Column(db.String(180), nullable=False)
     payment_method = db.Column(db.Enum('MasterdCard', 'Visa', 'American', 'PayPal', name='payment_method'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user = db.relationship('Users')
 
     def __repr__(self):
@@ -150,7 +152,7 @@ class BillItems(db.Model):
 class Favorites(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  #  La primary_key debe ser una convinacion de product_id y user_id
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     user = db.relationship('Users', foreign_keys=[user_id])
     product = db.relationship('Products', foreign_keys=[product_id])
@@ -182,14 +184,14 @@ class Reviews(db.Model):
         return {"id": self.id,
                 "comment": self.comment,
                 "created_at": self.created_at,
-                "starts": self.starts,
+                "stars": self.stars,
                 "user_id": self.user_id,
                 "product_id": self.product_id}
 
 
 class Categories(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
+    name = db.Column(db.String(80), unique=True)
 
     def __repr__(self):
         return f'<Categories {self.name}>'
@@ -204,7 +206,7 @@ class Offers(db.Model):
     discount = db.Column(db.Integer)
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
-    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), unique=True)
     product = db.relationship('Products')
 
     def __repr__(self):
@@ -222,8 +224,8 @@ class Suscriptions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     quantity = db.Column(db.Integer, nullable=False)
     frecuency = db.Column(db.Integer, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))   #  La primary_key debe ser una convinacion de product_id y user_id
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id')) 
     user = db.relationship('Users', foreign_keys=[user_id])
     product = db.relationship('Products', foreign_keys=[product_id])
 
@@ -243,10 +245,10 @@ class TicketCostumerSupports(db.Model):
     request = db.Column(db.String(500), nullable=False)
     start_date = db.Column(db.DateTime)
     close_date = db.Column(db.DateTime)
-    status = db.Column(db.Enum('Open', 'Close', name='status'), nullable=False)
+    status = db.Column(db.Enum('pending', 'done', 'cancel', name='status'), nullable=False)  #  el enunciado done esta dando problemas
     resolution = db.Column(db.String(500), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    bill_id = db.Column(db.Integer, db.ForeignKey('bills.id'), unique=True)
+    bill_id = db.Column(db.Integer, db.ForeignKey('bills.id'))
     user = db.relationship('Users', foreign_keys=[user_id])
     bill = db.relationship('Bills', foreign_keys=[bill_id])
 
@@ -262,3 +264,15 @@ class TicketCostumerSupports(db.Model):
                 "resolution": self.resolution,
                 "user_id": self.user_id,
                 "bill_id": self.bill_id}
+
+
+class UserImage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    url = db.Column(db.String(255), unique=True, nullable=False)
+
+    def _repr_(self):
+        return '<Image %r>' % self.id
+    
+    def serialize(self):
+        return {"url": self.url,
+                "id": self.id}
