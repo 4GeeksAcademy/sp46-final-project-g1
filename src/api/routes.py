@@ -27,7 +27,7 @@ def handle_login():
                                                  user.is_admin,])
     results['user'] = user.serialize()
     results['cart'] = cart.serialize() if cart else {}
-    results['item'] = [cart_item.serialize() for cart_item in items] if cart_item else {}
+    results['item'] = [cart_item.serialize() for cart_item in items] if items else {}
     response_body = {'message': 'Token created',
                      'token': access_token,
                      'results': results}
