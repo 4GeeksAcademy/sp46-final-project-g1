@@ -21,13 +21,13 @@ def handle_login():
                'item': {}}
     user = db.one_or_404(db.select(Users).filter_by(email=email, password=password, is_active=True), 
                          description=f"Email o password incorrectos.")
+    cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.user_id == user.id)).scalar()
+    items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
     access_token = create_access_token(identity=[user.id, 
                                                  user.is_admin,])
     results['user'] = user.serialize()
-    cart = cart_item = None
-
     results['cart'] = cart.serialize() if cart else {}
-    results['item'] = cart_item.serialize() if cart_item else {}
+    results['item'] = [cart_item.serialize() for cart_item in items] if cart_item else {}
     response_body = {'message': 'Token created',
                      'token': access_token,
                      'results': results}
