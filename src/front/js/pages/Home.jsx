@@ -5,8 +5,11 @@ import { CardOffers } from "../component/CardOffers.jsx";
 import { CardCategory } from "../component/CardCategory.jsx";
 
 
-export const Home = () => {
 
+	
+
+export const Home = () => {
+	
 	return (
 		<div className="body">
 			<div id="carouselExampleIndicators" className="carousel slide">

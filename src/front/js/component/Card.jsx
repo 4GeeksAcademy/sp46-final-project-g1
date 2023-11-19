@@ -1,9 +1,15 @@
 import React from "react";
 import { StarReating } from "./StarReating.jsx";
 import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { useParams } from "react-router-dom";
+import { Context } from "../store/appContext.js";
 
-
-export const Card = () => {
+export const Card = (props) => {
+    const { store, actions } = useContext(Context);
+	/* const params = useParams();
+	console.log(params);
+	actions.getProducts(params.idProducts) */;
 
     return (
         <section>
@@ -16,7 +22,7 @@ export const Card = () => {
                         </button>
                     </div>
                     <Link to="/product">
-                        <img src="https://www.dia.es/product_images/130332/130332_ISO_0_ES.jpg"
+                        <img src={store.products.image_url}
                             className="card-img-top object-fit-fill" alt="Pienso" />
                     </Link>
                     <div className="card-body text-dark">
@@ -24,7 +30,7 @@ export const Card = () => {
                             <p className="small"><a href="#!">Pienso</a></p>
                         </div>
                         <div className="d-flex justify-content-between mb-3">
-                            <h5 className="mb-0">Purina Adulto</h5>
+                            <h5 className="mb-0"> {props.name} </h5>
                             <h5 className="text-dark mb-0">30€</h5>
                         </div>
                         <div className="d-flex justify-content-between mb-2">

@@ -3,7 +3,7 @@ const getState = ({ getStore, getActions, setStore }) => {
     store: {
       users: {},
       user: {},
-      products: [],
+      products: {} ,
       categories: [],
       shoppingCarts: {},
       shoppingCartItems: {},
@@ -36,13 +36,13 @@ const getState = ({ getStore, getActions, setStore }) => {
       }, getProducts: async () => {
         const url = process.env.BACKEND_URL + "/api/products";
         const options = {
-          method: "GET",
-          headers: { "Content-Type": "application/json" }
+          method: "GET"
         };
         const response = await fetch(url, options);
         if (response.ok) {
           const data = await response.json();
           const detail = data.results;
+          console.log(detail); 
           setStore({ products: detail });
         } else {
           console.log("ERROR:", response.status, response.statusText);
