@@ -21,11 +21,16 @@ def handle_login():
                'item': {}}
     user = db.one_or_404(db.select(Users).filter_by(email=email, password=password, is_active=True), 
                          description=f"Email o password incorrectos.")
-    cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.user_id == user.id)).scalar()
-    items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
     access_token = create_access_token(identity=[user.id, 
                                                  user.is_admin,])
     results['user'] = user.serialize()
+    if user.is_admin:
+        response_body = {'message': 'Token created',
+                         'token': access_token,
+                         'results': results}
+        return response_body, 200
+    cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.user_id == user.id)).scalar()
+    items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
     results['cart'] = cart.serialize() if cart else {}
     results['item'] = [cart_item.serialize() for cart_item in items] if items else {}
     response_body = {'message': 'Token created',
@@ -461,7 +466,7 @@ def shopping_carts(shopping_cart_id):
         return response_body, 403
 
 
-@api.route('/bills', methods=['GET', 'POST'])  # TODO como deberia probar este endpoint??
+@api.route('/bills', methods=['GET', 'POST'])
 @jwt_required()
 def handle_bills():
     current_identity = get_jwt_identity()
@@ -482,36 +487,42 @@ def handle_bills():
         return response_body, 200
     if request.method == 'POST' and not current_identity[1]:
             results = {}
-            cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.user_id == current_identity[0])).scalar()
-            cart_items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
-            cart_items_list = [item.serialize() for item in cart_items]
-            request_body = request.get_json()
-            bill = Bills(created_at=datetime.utcnow(),
-                         total_price=request_body['total_price'],
-                         order_number=request_body['order_number'],
-                         status='Pending',
-                         bill_address=request_body['bill_address'],
-                         payment_method=request_body['payment_method'],
-                         user_id=current_identity[0])
-            db.session.add(bill)
-            db.session.commit()
-            results['bill'] = bill.serialize()
-            list_items = []
-            for item in cart_items_list:
-                bill_item = BillItems(price_per_unit=item['price_per_unit'],
-                                      quantity=item['quantity'],
-                                      bill_id=bill.id,
-                                      product_id=cart_items.product_id) # TODO como le paso el product_id??
-                db.session.add(bill_item)
+            try: 
+                cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.user_id == current_identity[0])).scalar()
+                cart_items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
+                cart_items_list = [item.serialize() for item in cart_items]
+                address = db.session.execute(db.select(Users.address).where(Users.id  == current_identity[0])).scalar()
+                request_body = request.get_json()
+                bill = Bills(created_at=datetime.utcnow(),
+                             total_price=cart.total_price,
+                             order_number="1",
+                             status='pending',
+                             bill_address=address,
+                             delivery_address=address,
+                             payment_method='Visa',
+                             user_id=current_identity[0])
+                db.session.add(bill)
                 db.session.commit()
-                list_items.append(bill_item.serialize())
-            results['bill_items'] = list_items
-            for item in cart_items:
-                db.session.delete(item)
-            db.session.delete(cart)
-            response_body = {'message': 'Bill created', 
-                             'results': results}
-            return response_body, 201 
+                results['bill'] = bill.serialize()
+                list_items = []
+                for item in cart_items_list:
+                    bill_item = BillItems(price_per_unit=item['item_price'],
+                                          quantity=item['quantity'],
+                                          bill_id=bill.id,
+                                          product_id=item['product_id'])
+                    db.session.add(bill_item)
+                    db.session.commit()
+                    list_items.append(bill_item.serialize())
+                results['bill_items'] = list_items
+                for item in cart_items:
+                    db.session.delete(item)
+                db.session.delete(cart)
+                response_body = {'message': 'Bill created', 
+                                'results': results}
+                return response_body, 201
+            except:
+                response_body['message'] = "bad request"
+                return response_body, 403
     response_body['message'] = "Acceso Restringido"
     return response_body, 401 
 
@@ -542,12 +553,18 @@ def user_bills(user_id):
     
 
 
-@api.route('/bills/<int:bills_id>', methods=['GET', 'DELETE'])
+@api.route('/bills/<int:bills_id>', methods=['GET', 'DELETE'])  #TODO working
+@jwt_required()
 def bills(bills_id):
+    current_identity = get_jwt_identity()
+    response_body = {}
+    if current_identity[1]:
+        response_body = {'message': 'Administradores no tienen facturas'}
+        return response_body, 401
     if request.method == 'GET':
-        bill = db.session.get(Bills, bills_id)
+        bill = db.session.execute(db.select(Bills).where(Bills.id == bills_id, Bills.user_id == current_identity[0])).scalar()
         if bill is None:
-            return {'message': 'bill not found'}, 404
+            return {'message': 'Acceso Restringido'}, 404
         all_bills = db.session.query(Bills).filter_by(id=bills_id).all()
         bill_list = []
         for bill in all_bills:
@@ -559,7 +576,7 @@ def bills(bills_id):
                 item_list.append(current_item)
             current_bill['bill_items'] = item_list
             bill_list.append(current_bill)
-        response_body = {'message': f'Facturas de usuario {bills_id}', 'results': bill_list}
+        response_body = {'message': f'Facturas de usuario', 'results': bill_list}
         return response_body, 200
     if request.method == 'DELETE':
         response_body = {'message': 'no se pueden borrar las facturas'}
