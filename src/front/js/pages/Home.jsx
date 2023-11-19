@@ -21,7 +21,7 @@ export const Home = () => {
 							className="d-block w-100 object-fit-cover" style={{ height: "450px" }} alt="road trip dog" />
 						<div className="carousel-caption d-flex align-items-start flex-column">
 							<h4 className="text-dark"><strong>Bienvenido! Aquí encontrarás<br />los mejores productos para tu mejor amigo</strong></h4>
-							<Link to="/" className="btn btn-danger"><i className="fas fa-paw me-2"></i>Productos</Link>
+							<Link to="/category" className="btn btn-danger"><i className="fas fa-paw me-2"></i>Categorías</Link>
 						</div>
 					</div>
 					<div className="carousel-item">
