@@ -562,9 +562,9 @@ def bills(bills_id):
         response_body = {'message': 'Administradores no tienen facturas'}
         return response_body, 401
     if request.method == 'GET':
-        bill = db.session.get(Bills, bills_id)
+        bill = db.session.execute(db.select(Bills).where(Bills.id == bills_id, Bills.user_id == current_identity[0])).scalar()
         if bill is None:
-            return {'message': 'bill not found'}, 404
+            return {'message': 'Acceso Restringido'}, 404
         all_bills = db.session.query(Bills).filter_by(id=bills_id).all()
         bill_list = []
         for bill in all_bills:
@@ -576,35 +576,11 @@ def bills(bills_id):
                 item_list.append(current_item)
             current_bill['bill_items'] = item_list
             bill_list.append(current_bill)
-        response_body = {'message': f'Facturas de usuario {bills_id}', 'results': bill_list}
+        response_body = {'message': f'Facturas de usuario', 'results': bill_list}
         return response_body, 200
     if request.method == 'DELETE':
         response_body = {'message': 'no se pueden borrar las facturas'}
         return response_body, 200 
-
-"""
-current_identity = get_jwt_identity()
-    if current_identity[1]:
-        response_body = {'message': 'administradores no pueden realizar compras'}
-        return response_body, 401
-    if request.method == 'GET':
-        cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.id == shopping_cart_id,
-                                                                 ShoppingCarts.user_id == current_identity[0])).scalar()
-        if cart:
-            cart_items = db.session.execute(db.select(ShoppingCartItems).filter_by(shopping_cart_id=cart.id)).scalars()
-            cart_items_list = [item.serialize() for item in cart_items]
-            response_body = {'message': 'Shopping Cart',
-                             'results': {'cart': cart.serialize(),
-                                         'items': cart_items_list}}
-            return response_body, 200
-        response_body = {'message': "Bad request"}
-        return response_body, 403
-
-"""
-
-
-
-
 
 
 @api.route('/upload', methods=['POST', 'GET'])
