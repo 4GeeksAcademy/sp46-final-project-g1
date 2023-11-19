@@ -1,12 +1,153 @@
 const getState = ({ getStore, getActions, setStore }) => {
   return {
     store: {
+      users: {},
       user: {},
+      products: [],
+      categories: [],
+      shoppingCarts: {},
+      shoppingCartItems: {},
+      bills: [],
+      billsItems: [],
+      offers: [],
+      suscriptions: [],
+      upload: [],
+      reviews: [],
+      favorites: [],
       message: null,
-      demo: [{title: "FIRST", background: "white", initial: "white"},
-             {title: "SECOND", background: "white", initial: "white"}]
+      demo: [{ title: "FIRST", background: "white", initial: "white" },
+      { title: "SECOND", background: "white", initial: "white" }]
     },
     actions: {
+      getUsers: async () => {
+        const url = process.env.BACKEND_URL + "/api/users";
+        const options = {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          const detail = data.results;
+          setStore({ users: detail });
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
+        }
+      }, getProducts: async () => {
+        const url = process.env.BACKEND_URL + "/api/products";
+        const options = {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          const detail = data.results;
+          setStore({ products: detail });
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
+        }
+      }, getCategories: async () => {
+        const url = process.env.BACKEND_URL + "/api/categories";
+        const options = {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          const detail = data.results;
+          setStore({ categories: detail });
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
+        }
+      }, getShoppingcarts: async () => {
+        const url = process.env.BACKEND_URL + "/api/shoppingcarts";
+        const options = {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          const detail = data.results;
+          setStore({ shoppingcarts: detail.cart});
+          setStore({ shoppingCartItems: detail.items});
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
+        }
+      }, getbills: async () => {
+        const url = process.env.BACKEND_URL + "/api/bills";
+        const options = {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          const detail = data.results;
+          setStore({ bills: detail });
+          setStore({ billsItems:detail.items});
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
+        }
+      }, getOffers: async () => {
+        const url = process.env.BACKEND_URL + "/api/offers";
+        const options = {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          const detail = data.results;
+          setStore({ offers: detail });
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
+        }
+      }, getSuscriptions: async () => {
+        const url = process.env.BACKEND_URL + "/api/suscriptions";
+        const options = {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          const detail = data.results;
+          setStore({ suscriptions: detail });
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
+        }
+      }, getUpload: async () => {
+        const url = process.env.BACKEND_URL + "/api/upload";
+        const options = {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          const detail = data.results;
+          setStore({ upload: detail });
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
+        }
+      }, getReviews: async () => {
+        const url = process.env.BACKEND_URL + "/api/Reviews";
+        const options = {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          const detail = data.results;
+          setStore({ Reviews: detail });
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
+        }
+      },
       // Use getActions to call a function within a fuction
       exampleFunction: () => {
         getActions().changeColor(0, "green");
