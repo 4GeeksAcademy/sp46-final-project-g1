@@ -19,6 +19,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       { title: "SECOND", background: "white", initial: "white" }]
     },
     actions: {
+      
       getUsers: async () => {
         const url = process.env.BACKEND_URL + "/api/users";
         const options = {
@@ -36,13 +37,14 @@ const getState = ({ getStore, getActions, setStore }) => {
       }, getProducts: async () => {
         const url = process.env.BACKEND_URL + "/api/products";
         const options = {
-          method: "GET"
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
         };
         const response = await fetch(url, options);
         if (response.ok) {
           const data = await response.json();
           const detail = data.results;
-          console.log(detail); 
+          console.log(detail);
           setStore({ products: detail });
         } else {
           console.log("ERROR:", response.status, response.statusText);
@@ -73,6 +75,49 @@ const getState = ({ getStore, getActions, setStore }) => {
           const detail = data.results;
           setStore({ shoppingcarts: detail.cart});
           setStore({ shoppingCartItems: detail.items});
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
+        }
+      }, postShoppingCartItem: async (item) => {
+        const url = process.env.BACKEND_URL + "/api/shopping-cart-items";
+        const options = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(item)
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
+        }
+      }, deleteShoppingCartItem: async () => {
+        const url = process.env.BACKEND_URL + "/api/users/<int:user_id>/shopping-cart-items/<int:cart_item_id>";
+        const options = {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          const detail = data.results;
+          setStore({ shoppingcarts: detail.cart});
+          setStore({ shoppingCartItems: detail.items});
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
+        }
+      }, putShoppingcarts: async (item) => {
+        const url = process.env.BACKEND_URL + "/api/shoppingcarts";
+        const options = {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(item)
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }

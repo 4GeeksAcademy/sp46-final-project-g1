@@ -5,11 +5,15 @@ import { useContext } from "react";
 import { useParams } from "react-router-dom";
 import { Context } from "../store/appContext.js";
 
-export const Card = (props) => {
+export const Card = () => {
     const { store, actions } = useContext(Context);
+    const params = useParams();
+    console.log(params);
+    actions.getProducts(params)
+
 	/* const params = useParams();
 	console.log(params);
-	actions.getProducts(params.idProducts) */;
+	actions.getProducts(params.idProducts) */
 
     return (
         <section>
@@ -22,7 +26,7 @@ export const Card = (props) => {
                         </button>
                     </div>
                     <Link to="/product">
-                        <img src={store.products.image_url}
+                        <img src={""}
                             className="card-img-top object-fit-fill" alt="Pienso" />
                     </Link>
                     <div className="card-body text-dark">
@@ -30,7 +34,7 @@ export const Card = (props) => {
                             <p className="small"><a href="#!">Pienso</a></p>
                         </div>
                         <div className="d-flex justify-content-between mb-3">
-                            <h5 className="mb-0"> {props.name} </h5>
+                            <h5 className="mb-0">{store.results.name}</h5>
                             <h5 className="text-dark mb-0">30€</h5>
                         </div>
                         <div className="d-flex justify-content-between mb-2">

@@ -9,7 +9,7 @@ export const Login = () => {
   const [ password, setPassword ] = useState('');
   const [ viewPassword, setViewPassword ] = useState(false);
 
-  const navigate = useNavigate
+  const navigate = useNavigate()
 
   const handleEmail = (event) => setEmail(event.target.value)
   const handlePassword = event => setPassword(event.target.value)
@@ -30,8 +30,13 @@ export const Login = () => {
       console.log(data)
       localStorage.setItem('token', data.token);
       store.user = data.results;
+      // store.shoppingCarts = data.cart;
+      // store.shoppincartItem = 
+      // store.bills = 
+      // store.billsItem =
       setEmail('');
       setPassword('');
+      navigate("/")
     } else {
       // tratar el error
       console.log('Error: ', response.status, response.statusText)
