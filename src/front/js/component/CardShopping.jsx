@@ -1,8 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
 import { QuantityButton } from "./QuantityButton.jsx";
+import { Context } from "../store/appContext.js";
 
 
 export const CardShopping = () => {
+    const { store, actions } = useContext(Context)
+
+
+    const handleDelete = async () => {
+        // determinar el shoppingItemId y pasarlo como segundo parametro en el await
+        const shoppingItemId = 0;
+        await actions.deleteShoppingCartItem(store.user.id, shoppingItemId)
+        // borrar del array via metodo filter el elemento que acabo de enviar y actualizar el store
+    }
 
     return (
         <div className="container border border-primary rounded mb-2">
@@ -28,7 +38,7 @@ export const CardShopping = () => {
                 </div>
                 <div className="col">
                     <div className="mt-5 text-end">
-                    <button type="button" className="btn btn-light"><i className="fas fa-trash-alt"></i></button>
+                    <button onClick={handleDelete} type="button" className="btn btn-light"><i className="fas fa-trash-alt"></i></button>
                     </div>
                 </div>
             </div>

@@ -5,12 +5,14 @@ import { Context } from "../store/appContext.js";
 
 
 export const ProductsOverFlow = () => {
-    const {store, actions} = useContext(Context);
+    const { store, actions } = useContext(Context);
 
     return (
         <div className="container">
             <div className="container d-flex justify-content-center">
-                <Card />
+                {store.products.map((product) =>
+                    <Card key={product.id} product={product} />
+                )}
             </div>
         </div>
     )

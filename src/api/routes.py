@@ -607,6 +607,8 @@ def handle_upload():
     my_image.save()
     return jsonify(my_image.serialize()), 200
 
+
+
 """
 @api.route('/offers', methods=['GET'])  # la idea es que los usuarios que tengan un producto en favoritos, si ese producto recibe una oferta, notificar al usuario.
 def handle_offers():

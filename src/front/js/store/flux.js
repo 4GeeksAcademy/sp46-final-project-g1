@@ -3,10 +3,11 @@ const getState = ({ getStore, getActions, setStore }) => {
     store: {
       users: {},
       user: {},
-      products: {} ,
+      products: [] ,
       categories: [],
       shoppingCarts: {},
       shoppingCartItems: {},
+      currentItemCart: {quantity: 0},
       bills: [],
       billsItems: [],
       offers: [],
@@ -78,32 +79,32 @@ const getState = ({ getStore, getActions, setStore }) => {
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
-      }, postShoppingCartItem: async (item) => {
+      }, postShoppingCartItem: async () => {
+        const store = getStore();
         const url = process.env.BACKEND_URL + "/api/shopping-cart-items";
         const options = {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(item)
+          body: JSON.stringify(store.currentItemCart)
         };
         const response = await fetch(url, options);
         if (response.ok) {
           const data = await response.json();
+          setStore({currentItemCart: {}})
+          setStore({currentItemCart: {quantity: 0}})
           console.log(data);
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
-      }, deleteShoppingCartItem: async () => {
-        const url = process.env.BACKEND_URL + "/api/users/<int:user_id>/shopping-cart-items/<int:cart_item_id>";
+      }, deleteShoppingCartItem: async (userId, cartItemId) => {
+        const url = process.env.BACKEND_URL + "/api/users/" + userId + "/shopping-cart-items/" + cartItemId;
         const options = {
-          method: "GET",
+          method: "DELETE",
           headers: { "Content-Type": "application/json" }
         };
         const response = await fetch(url, options);
         if (response.ok) {
           const data = await response.json();
-          const detail = data.results;
-          setStore({ shoppingcarts: detail.cart});
-          setStore({ shoppingCartItems: detail.items});
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }

@@ -2,18 +2,21 @@ import React from "react";
 import { StarReating } from "./StarReating.jsx";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
-import { useParams } from "react-router-dom";
 import { Context } from "../store/appContext.js";
+import { QuantityButton } from "./QuantityButton.jsx";
 
-export const Card = () => {
+export const Card = (props) => {
     const { store, actions } = useContext(Context);
-    const params = useParams();
-    console.log(params);
-    actions.getProducts(params)
-
-	/* const params = useParams();
-	console.log(params);
-	actions.getProducts(params.idProducts) */
+    
+    
+    const handleAddItem = async () => {
+        store.currentItemCart = {
+            item_price: props.product.pricing,
+            shipping_item_price: 0,
+            product_id: props.product.id
+        }
+        await actions.postShoppingCartItem()
+    }
 
     return (
         <section>
@@ -34,8 +37,8 @@ export const Card = () => {
                             <p className="small"><a href="#!">Pienso</a></p>
                         </div>
                         <div className="d-flex justify-content-between mb-3">
-                            <h5 className="mb-0">{store.results.name}</h5>
-                            <h5 className="text-dark mb-0">30€</h5>
+                            <h5 className="mb-0">{props.product.name}</h5>
+                            <h5 className="text-dark mb-0">{props.product.pricing} $</h5>
                         </div>
                         <div className="d-flex justify-content-between mb-2">
                             <p className="mt-1">Disponible: <span className="fw-bold">6</span></p>
@@ -44,7 +47,8 @@ export const Card = () => {
                             </div>
                         </div>
                         <div className="d-grid">
-                            <button className="btn btn-primary" type="button">Añadir al carrito <i className="fas fa-shopping-cart"></i></button>
+                            <QuantityButton />
+                            <button onClick={handleAddItem} className="btn btn-primary" type="button">Añadir al carrito <i className="fas fa-shopping-cart"></i></button>
                         </div>
                     </div>
                 </div>
