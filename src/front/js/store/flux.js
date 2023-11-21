@@ -207,9 +207,13 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
       getMybills: async (userId) => {
         const url = process.env.BACKEND_URL + "/api/users/" + userId + "/bills";
+        const token = localStorage.getItem("token")
         const options = {
           method: "GET",
-          headers: { "Content-Type": "application/json" }
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+          }
         };
         const response = await fetch(url, options);
         if (response.ok) {

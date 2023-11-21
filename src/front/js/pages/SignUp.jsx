@@ -8,12 +8,12 @@ export const SignUp = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [firtsName, setFirtsName] = useState('');
-    const [lastName, setlastName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [viewPassword, setViewPassword] = useState(false);
 
     const navigate = useNavigate()
     const handleFirtsName = (event) => setFirtsName(event.target.value) 
-    const handleLastName = (event) => setlastName(event.target.value) 
+    const handleLastName = (event) => setLastName(event.target.value) 
     const handleEmail = (event) => setEmail(event.target.value)
     const handlePassword = event => setPassword(event.target.value)
     const handleViewPasswort = () => setViewPassword(!viewPassword)
@@ -47,7 +47,7 @@ export const SignUp = () => {
 
     return (
         <div className="container mt-4">
-            <h1 className="text-center my-3">Login</h1>
+            <h1 className="text-center my-3">SignUp</h1>
             <form>
                 <div className="form-floating mb-3">
                     <input type="email" value={firtsName} onChange={handleFirtsName}
