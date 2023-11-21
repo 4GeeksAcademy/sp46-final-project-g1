@@ -1,13 +1,15 @@
+import { loadStripe } from '@stripe/stripe-js';
+
 const getState = ({ getStore, getActions, setStore }) => {
   return {
     store: {
       users: {},
       user: {},
-      products: [] ,
+      products: [],
       categories: [],
       shoppingCarts: {},
       shoppingCartItems: {},
-      currentItemCart: {quantity: 0},
+      currentItemCart: { quantity: 0 },
       bills: [],
       billsItems: [],
       offers: [],
@@ -21,7 +23,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       { title: "SECOND", background: "white", initial: "white" }]
     },
     actions: {
-      
+
       getUsers: async () => {
         const url = process.env.BACKEND_URL + "/api/users";
         const options = {
@@ -36,7 +38,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
-      }, getProducts: async () => {
+      },
+      getProducts: async () => {
         const url = process.env.BACKEND_URL + "/api/products";
         const options = {
           method: "GET",
@@ -51,7 +54,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
-      }, postProducts: async () => {
+      },
+      postProducts: async () => {
         const url = process.env.BACKEND_URL + "/api/products";
         const options = {
           method: "POST",
@@ -66,7 +70,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
-      }, getCategories: async () => {
+      },
+      getCategories: async () => {
         const url = process.env.BACKEND_URL + "/api/categories";
         const options = {
           method: "GET",
@@ -80,43 +85,78 @@ const getState = ({ getStore, getActions, setStore }) => {
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
-      }, getShoppingcarts: async () => {
+      },
+      getShoppingcarts: async () => {
         const url = process.env.BACKEND_URL + "/api/shoppingcarts";
+        const token = localStorage.getItem("token")
         const options = {
           method: "GET",
-          headers: { "Content-Type": "application/json" }
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
         };
         const response = await fetch(url, options);
         if (response.ok) {
           const data = await response.json();
           const detail = data.results;
-          setStore({ shoppingcarts: detail.cart});
-          setStore({ shoppingCartItems: detail.items});
+          setStore({ shoppingcarts: detail.cart });
+          setStore({ shoppingCartItems: detail.items });
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
-      }, postShoppingCartItem: async () => {
+      },
+      getMyShoppingcarts: async (shoppingCardId) => {
+        const url = process.env.BACKEND_URL + "/api/shopping-carts/" + shoppingCardId;
+        const token = localStorage.getItem("token")
+        const options = {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          const detail = data.results;
+          setStore({ shoppingcarts: detail.cart });
+          setStore({ shoppingCartItems: detail.items });
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
+        }
+      },
+      postShoppingCartItem: async (productID) => {
         const store = getStore();
-        const url = process.env.BACKEND_URL + "/api/shopping-cart-items";
+        const url = process.env.BACKEND_URL + "/api/shopping-cart-items" + productID;
+        const token = localStorage.getItem("token")
         const options = {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
           body: JSON.stringify(store.currentItemCart)
         };
         const response = await fetch(url, options);
         if (response.ok) {
           const data = await response.json();
-          setStore({currentItemCart: {}})
-          setStore({currentItemCart: {quantity: 0}})
+          setStore({ currentItemCart: {} })
+          setStore({ currentItemCart: { quantity: 0 } })
           console.log(data);
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
-      }, deleteShoppingCartItem: async (userId, cartItemId) => {
+      },
+      deleteShoppingCartItem: async (userId, cartItemId) => {
         const url = process.env.BACKEND_URL + "/api/users/" + userId + "/shopping-cart-items/" + cartItemId;
+        const token = localStorage.getItem("token")
         const options = {
           method: "DELETE",
-          headers: { "Content-Type": "application/json" }
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
         };
         const response = await fetch(url, options);
         if (response.ok) {
@@ -124,12 +164,21 @@ const getState = ({ getStore, getActions, setStore }) => {
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
-      }, putShoppingcarts: async (item) => {
-        const url = process.env.BACKEND_URL + "/api/shoppingcarts";
+      },
+      putShoppingcarts: async () => {
+        const store = getStore();
+        const dataToSend = {quantity: store.currenItemCart.quantity}
+        const userId = store.user.id
+        const cartItemId = store.currenItemCart.id
+        const url = process.env.BACKEND_URL + "/api/users/" + userId + "/shopping-cart-items/" + cartItemId;
+        const token = localStorage.getItem("token");
         const options = {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(item)
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(dataToSend)
         };
         const response = await fetch(url, options);
         if (response.ok) {
@@ -138,8 +187,10 @@ const getState = ({ getStore, getActions, setStore }) => {
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
-      }, getbills: async () => {
+      },
+      getbills: async () => {
         const url = process.env.BACKEND_URL + "/api/bills";
+        const token = localStorage.getItem("token")
         const options = {
           method: "GET",
           headers: { "Content-Type": "application/json" }
@@ -149,11 +200,12 @@ const getState = ({ getStore, getActions, setStore }) => {
           const data = await response.json();
           const detail = data.results;
           setStore({ bills: detail });
-          setStore({ billsItems:detail.items});
+          setStore({ billsItems: detail.items });
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
-      }, getMybills: async (userId) => {
+      },
+      getMybills: async (userId) => {
         const url = process.env.BACKEND_URL + "/api/users/" + userId + "/bills";
         const options = {
           method: "GET",
@@ -164,11 +216,12 @@ const getState = ({ getStore, getActions, setStore }) => {
           const data = await response.json();
           const detail = data.results;
           setStore({ bills: detail });
-          setStore({ billsItems:detail.items});
+          setStore({ billsItems: detail.items });
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
-      }, getOffers: async () => {
+      },
+      getOffers: async () => {
         const url = process.env.BACKEND_URL + "/api/offers";
         const options = {
           method: "GET",
@@ -182,7 +235,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
-      }, getSuscriptions: async () => {
+      },
+      getSuscriptions: async () => {
         const url = process.env.BACKEND_URL + "/api/suscriptions";
         const options = {
           method: "GET",
@@ -196,7 +250,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
-      }, getUpload: async () => {
+      },
+      getUpload: async () => {
         const url = process.env.BACKEND_URL + "/api/upload";
         const options = {
           method: "GET",
@@ -210,7 +265,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
-      }, getReviews: async () => {
+      },
+      getReviews: async () => {
         const url = process.env.BACKEND_URL + "/api/Reviews";
         const options = {
           method: "GET",
@@ -229,7 +285,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         const url = `${process.env.BACKEND_URL}/stripe-key`
         const options = {
           method: 'GET',
-          headers: {'Content-Type': 'application/json'}
+          headers: { 'Content-Type': 'application/json' }
         }
         const response = await fetch(url, options);
         if (response.ok) {
@@ -244,14 +300,16 @@ const getState = ({ getStore, getActions, setStore }) => {
       processPayment: async () => {
         const stripe = await loadStripe(getStore().stripePublicKey)
         const url = `${process.env.BACKEND_URL}/payment`
+        const token = localStorage.getItem("token")
         const options = {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${getStore().token}`
+            'Authorization': `Bearer ${token}`
           },
           body: JSON.stringify({})
         }
+        console.log(options);
         const response = await fetch(url, options);
         if (response.ok) {
           const data = await response.json();

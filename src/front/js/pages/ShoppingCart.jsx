@@ -2,6 +2,7 @@ import React from "react";
 import { CardShopping } from "../component/CardShopping.jsx";
 import { Link } from "react-router-dom";
 import { ProductsOverFlow } from "../component/ProductsOverFlow.jsx";
+import { BotonPago } from "../component/BotonPago.jsx";
 
 
 export const ShoppingCart = () => {
@@ -38,9 +39,7 @@ export const ShoppingCart = () => {
                                 </div>
                             </div>
                             <div className="d-grid mt-2">
-                                <Link to="/" className="btn btn-primary">
-                                    Acceder al pago
-                                </Link>
+                                <BotonPago />
                             </div>
                         </div>
                         <hr />

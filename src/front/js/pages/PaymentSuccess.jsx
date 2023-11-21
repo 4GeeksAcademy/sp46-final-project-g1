@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 export const PaymentSuccess = () => {
     // Cambiar Bills.status a "Paid"
+    useEffect(() => {
+            // ejecuto el actions que hace el put para cambiar el status de la factura
+            // para eso debo saber cual es el id de la factura que estan pagando
+    }, [])
 
     return (
         <div className="text-center mt-5">
