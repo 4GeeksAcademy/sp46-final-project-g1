@@ -12,7 +12,7 @@ export const Navbar = () => {
           </Link>
         </div>
         <div className="d-none d-xxl-block">
-          <div className="ms-5 container d-flex">
+          <div className="ms-5 container d-flex flex-row-reverse">
             <div className="input-group w-75">
               <input className="form-control me-sm-2 bg-primary-subtle" type="search" placeholder="Buscar" />
               <span className="input-group-btn">
