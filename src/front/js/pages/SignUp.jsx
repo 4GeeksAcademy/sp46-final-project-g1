@@ -3,11 +3,12 @@ import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
 
 
-export const Login = () => {
+export const SignUp = () => {
   const { store, actions } = useContext(Context);
   const [ email, setEmail ] = useState('');
   const [ password, setPassword ] = useState('');
-  const [ firtsName, setFirtsName]
+  const [ firtsName, setFirtsName] = useState('');
+  const [ lastName, setlastName] = useState('');
   const [ viewPassword, setViewPassword ] = useState(false);
 
   const navigate = useNavigate()
