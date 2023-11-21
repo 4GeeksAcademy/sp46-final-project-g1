@@ -3,11 +3,11 @@ const getState = ({ getStore, getActions, setStore }) => {
     store: {
       users: {},
       user: {},
-      products: [] ,
+      products: [],
       categories: [],
       shoppingCarts: {},
       shoppingCartItems: {},
-      currentItemCart: {quantity: 0},
+      currentItemCart: { quantity: 0 },
       bills: [],
       billsItems: [],
       offers: [],
@@ -20,7 +20,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       { title: "SECOND", background: "white", initial: "white" }]
     },
     actions: {
-      
+
       getUsers: async () => {
         const url = process.env.BACKEND_URL + "/api/users";
         const options = {
@@ -74,8 +74,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         if (response.ok) {
           const data = await response.json();
           const detail = data.results;
-          setStore({ shoppingcarts: detail.cart});
-          setStore({ shoppingCartItems: detail.items});
+          setStore({ shoppingcarts: detail.cart });
+          setStore({ shoppingCartItems: detail.items });
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
@@ -90,8 +90,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         const response = await fetch(url, options);
         if (response.ok) {
           const data = await response.json();
-          setStore({currentItemCart: {}})
-          setStore({currentItemCart: {quantity: 0}})
+          setStore({ currentItemCart: {} })
+          setStore({ currentItemCart: { quantity: 0 } })
           console.log(data);
         } else {
           console.log("ERROR:", response.status, response.statusText);
@@ -133,7 +133,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           const data = await response.json();
           const detail = data.results;
           setStore({ bills: detail });
-          setStore({ billsItems:detail.items});
+          setStore({ billsItems: detail.items });
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
@@ -194,6 +194,59 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log("ERROR:", response.status, response.statusText);
         }
       },
+
+      uploadFile: async fileToUpload => {
+				// const data = new FormData();
+				// console.log("data", fileToUpload)
+				// data.append("image", fileToUpload);
+				// const url = "https://api.cloudinary.com/v1_1/ddpetmio/image/upload";
+				// const options = {
+				// 	method: 'POST',
+				// 	body: data,
+				// 	headers: {
+				// 		Authorization: `Basic ${process.env.API_KEY}:${process.env.API_SECRET}`,
+				// 		'Content-Type': 'application/json'
+				// 	}
+				// };
+				// const response = await fetch(url, options);
+				// if (response.ok) {
+				// 	const data = await response.json();
+				// 	console.log('URL de la imagen subida:', data.url);
+				// } else {
+				// 	const error = await response.json();
+				// 	console.error('Error al subir la imagen:', error.message);
+				//   };
+
+				let data = new FormData();
+				// console.log("data", fileToUpload);
+				data.append("image", fileToUpload);
+
+				// let response = fetch('https://api.cloudinary.com/v1_1/ddpetmio/image/upload', {
+				// 	method: "POST",
+				// 	body: data,
+				// 	headers: {
+				// 		Authorization: `Basic ${process.env.API_KEY}:${process.env.API_SECRET}`,
+				// 	},
+				// });
+				const url = process.env.BACKEND_URL + '/api/upload';
+				const options = {
+					method: "POST",
+					body: data,
+					headers: {
+						Authorization: `Basic ${process.env.API_KEY}:${process.env.API_SECRET}`,
+					},
+				};
+        console.log(options)
+				const response = await fetch(url, options)
+				if (response.ok) {
+					const data = await response.json();
+					console.log(data)
+					// Aqui 
+				} else {
+					console.log('error', response.status, response.text)
+				}
+			},
+
       // Use getActions to call a function within a fuction
       exampleFunction: () => {
         getActions().changeColor(0, "green");

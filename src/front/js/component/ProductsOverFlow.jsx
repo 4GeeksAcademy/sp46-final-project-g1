@@ -8,11 +8,15 @@ export const ProductsOverFlow = () => {
     const { store, actions } = useContext(Context);
 
     return (
-        <div className="container">
-            <div className="container d-flex justify-content-center">
-                {store.products.map((product) =>
-                    <Card key={product.id} product={product} />
-                )}
+        <div class="container text-center">
+            <div class="row row-cols-1 row-cols-lg-5 g-2 g-lg-3">
+                {store.products.slice(0, 5).map((product) => (
+                    <div class="col">
+                        <div class="p-3">
+                            <Card key={product.id} product={product} />
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     )
