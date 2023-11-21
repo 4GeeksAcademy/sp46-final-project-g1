@@ -39,6 +39,7 @@ class Products(db.Model):
     description = db.Column(db.String(300), nullable=False)
     products_detail = db.Column(db.String(300), nullable=False)
     pricing = db.Column(db.Float, nullable=False)
+    stripe_price = db.Column(db.String(50), unique=False, nullable=False)
     weight = db.Column(db.Float)
     stock = db.Column(db.Integer, nullable=False)
     subscribeable = db.Column(db.Boolean, nullable=False)
@@ -55,6 +56,7 @@ class Products(db.Model):
                 "description": self.description,
                 "products_detail": self.products_detail,
                 "pricing": self.pricing,
+                "stripe_price": self.stripe_price,
                 "weight": self.weight,
                 "stock": self.stock,
                 "subscribeable": self.subscribeable,
