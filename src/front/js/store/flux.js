@@ -15,6 +15,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       upload: [],
       reviews: [],
       favorites: [],
+      stripePublicKey: '',
       message: null,
       demo: [{ title: "FIRST", background: "white", initial: "white" },
       { title: "SECOND", background: "white", initial: "white" }]
@@ -39,6 +40,21 @@ const getState = ({ getStore, getActions, setStore }) => {
         const url = process.env.BACKEND_URL + "/api/products";
         const options = {
           method: "GET",
+          headers: { "Content-Type": "application/json" }
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          const detail = data.results;
+          console.log(detail);
+          setStore({ products: detail });
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
+        }
+      }, postProducts: async () => {
+        const url = process.env.BACKEND_URL + "/api/products";
+        const options = {
+          method: "POST",
           headers: { "Content-Type": "application/json" }
         };
         const response = await fetch(url, options);
@@ -111,7 +127,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       }, putShoppingcarts: async (item) => {
         const url = process.env.BACKEND_URL + "/api/shoppingcarts";
         const options = {
-          method: "GET",
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(item)
         };
@@ -134,6 +150,21 @@ const getState = ({ getStore, getActions, setStore }) => {
           const detail = data.results;
           setStore({ bills: detail });
           setStore({ billsItems: detail.items });
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
+        }
+      }, getMybills: async (userId) => {
+        const url = process.env.BACKEND_URL + "/api/users/" + userId + "/bills";
+        const options = {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          const detail = data.results;
+          setStore({ bills: detail });
+          setStore({ billsItems:detail.items});
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
@@ -194,7 +225,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log("ERROR:", response.status, response.statusText);
         }
       },
-
       uploadFile: async fileToUpload => {
 				// const data = new FormData();
 				// console.log("data", fileToUpload)
@@ -246,7 +276,42 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.log('error', response.status, response.text)
 				}
 			},
-
+      getStripePublicKey: async () => {
+        const url = `${process.env.BACKEND_URL}/stripe-key`
+        const options = {
+          method: 'GET',
+          headers: {'Content-Type': 'application/json'}
+        }
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          setStore({ stripePublicKey: data.publicKey });
+          return true
+        } else {
+          console.log('Error:', response.status, response.statusText);
+          return false
+        }
+      },
+      processPayment: async () => {
+        const stripe = await loadStripe(getStore().stripePublicKey)
+        const url = `${process.env.BACKEND_URL}/payment`
+        const options = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${getStore().token}`
+          },
+          body: JSON.stringify({})
+        }
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          stripe.redirectToCheckout({ sessionId: data.sessionId });
+        } else {
+          console.log('Error:', response.status, response.statusText);
+        }
+      },
       // Use getActions to call a function within a fuction
       exampleFunction: () => {
         getActions().changeColor(0, "green");

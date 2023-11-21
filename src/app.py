@@ -13,6 +13,7 @@ from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 # from models import Person
+import stripe
 
 
 ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
@@ -37,6 +38,11 @@ app.register_blueprint(api, url_prefix='/api')  # Add all endpoints form the API
 
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_API_KEY")
 jwt = JWTManager(app)
+# Stripe setting
+stripe_keys = {'secret_key': os.getenv("STRIPE_SECRET_KEY"),
+              'publishable_key': os.getenv("STRIPE_PUBLISHABLE_KEY")}
+stripe.api_key = stripe_keys['secret_key']
+front_url = os.getenv("FRONTEND_URL")
 
 
 # Handle/serialize errors like a JSON object
@@ -93,7 +99,6 @@ def stripe_payment():
     except Exception as e:
         response_body = {'message': str(e)}
         return response_body, 403
-    # return jsonify(clientSecret=session.client_secret)
 
 
 # This only runs if `$ python src/main.py` is executed

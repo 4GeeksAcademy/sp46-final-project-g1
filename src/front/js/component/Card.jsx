@@ -20,8 +20,7 @@ export const Card = (props) => {
     // }
 
     return (
-        <section>
-            <div className="container py-4">
+            <div className="container">
                 <div className="card" style={{ width: '15rem' }}>
                     <div className="d-flex justify-content-end p-3">
                         <button type="button" className="btn btn-outline-primary btn-sm rounded-circle d-flex align-items-center justify-content-center shadow-1-strong"
@@ -29,9 +28,9 @@ export const Card = (props) => {
                             <i className="far fa-heart"></i>
                         </button>
                     </div>
-                    <Link to="/product">
+                    <Link to="/product" className="text-center">
                         <img src="https://www.dia.es/product_images/130332/130332_ISO_0_ES.jpg"
-                            className="card-img-top object-fit-fill" alt="Pienso" />
+                            className="card-img-top object-fit-fill" alt="Pienso" style={{ width: '50%', height: '50%' }} />
                     </Link>
                     <div className="card-body text-dark">
                         <div className="d-flex mb-2">
@@ -59,5 +58,6 @@ export const Card = (props) => {
             </div>
             <Modal />
         </section>
+
     )
 }

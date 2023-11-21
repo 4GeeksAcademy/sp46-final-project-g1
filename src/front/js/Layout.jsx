@@ -16,6 +16,10 @@ import { ShoppingCart } from "./pages/ShoppingCart.jsx";
 import { Category } from "./pages/Category.jsx";
 import { Login } from "./pages/Login.jsx";
 import { UploadImage } from "./pages/UploadImage.jsx";
+import { PaymentSuccess } from "./pages/PaymentSuccess.jsx";
+import { PaymentCanceled } from "./pages/PaymentCanceled.jsx";
+import { BotonPagoTest } from "./pages/BotonPagoTest.jsx";
+
 
 
 // Create your first component
@@ -42,6 +46,9 @@ const Layout = () => {
                         <Route element={<ShoppingCart />} path="/shopping-cart" />
                         <Route element={<Category />} path="/category" />
                         <Route element={<UploadImage />} path="/upload-image" />
+                        <Route element={<PaymentSuccess />} path="/payment-success"/>
+                        <Route element={<PaymentCanceled />} path="/payment-canceled"/>
+                        <Route element={<BotonPagoTest />} path="/boton-pago" />
                     </Routes>
                     <Footer />
                 </ScrollToTop>
