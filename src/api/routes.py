@@ -395,7 +395,8 @@ def shopping_cart_items():
                                   shopping_cart_id=cart.id)
     db.session.add(cart_item)
     db.session.commit()
-    # cart['total_price'] += cart_item['item_price'] * cart_item['quantity']
+    cart_item_data = cart_item.serialize()
+    cart.total_price += cart_item_data['item_price'] * cart_item_data['quantity']
     db.session.commit()
     results['cart'] = cart.serialize()
     cart_items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
