@@ -21,7 +21,7 @@ export const Home = () => {
 							className="d-block w-100 object-fit-cover" style={{ height: "450px" }} alt="road trip dog" />
 						<div className="carousel-caption d-flex align-items-start flex-column">
 							<h4 className="text-dark"><strong>Bienvenido! Aquí encontrarás<br />los mejores productos para tu mejor amigo</strong></h4>
-							<Link to="/" className="btn btn-danger"><i className="fas fa-paw me-2"></i>Productos</Link>
+							<Link to="/category" className="btn btn-danger"><i className="fas fa-paw me-2"></i>Categorías</Link>
 						</div>
 					</div>
 					<div className="carousel-item">
@@ -50,14 +50,16 @@ export const Home = () => {
 					<span className="visually-hidden">Next</span>
 				</button>
 			</div>
-			<div className="container">
-				<h1 className="mb-2 text-center mt-5 fw-semibold text-dark">Top productos</h1>
+			<div className="container d-flex align-items-center flex-column mb-3">
+				<h1 className="mb-2 text-center mb-4 mt-4 fw-semibold text-dark">Top productos</h1>
 				<ProductsOverFlow />
 			</div>
 			<div className="container">
+				<h1 className="text-center fw-semibold text-dark my-4">Ofertas 🔥</h1>
 				<CardOffers />
 			</div>
 			<div className="container mb-5">
+				<h1 className="text-center my-4 fw-semibold text-dark">Categorías</h1>
 				<CardCategory />
 			</div>
 		</div>
