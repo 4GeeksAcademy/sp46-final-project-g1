@@ -30,6 +30,11 @@ def handle_login():
                          'results': results}
         return response_body, 200
     cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.user_id == user.id)).scalar()
+    if not cart:
+        response_body = {'message': 'Token created',
+                         'token': access_token,
+                         'results': results}
+        return response_body, 200
     items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
     results['cart'] = cart.serialize() if cart else {}
     results['item'] = [cart_item.serialize() for cart_item in items] if items else {}
@@ -367,14 +372,15 @@ def handle_shopping_carts():
     return response_body, 401 
 
 
-@api.route('/shopping-cart-items', methods=['POST'])
+@api.route('/shopping-cart-items/<int:products_id>', methods=['POST'])
 @jwt_required()
-def shopping_cart_items():
+def shopping_cart_items(products_id):
     current_identity = get_jwt_identity()
     if current_identity[1]:
         response_body = {'message': 'administradores no pueden realizar compras'}
         return response_body, 401
     cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.user_id == current_identity[0])).scalar()
+    product = db.session.get(Products, products_id)
     results = {}
     if not cart:
         cart = ShoppingCarts(total_price=0, 
@@ -384,13 +390,14 @@ def shopping_cart_items():
         db.session.commit()
     request_body = request.get_json()
     cart_item = ShoppingCartItems(quantity=request_body['quantity'], 
-                                  item_price=request_body['item_price'],
+                                  item_price=product.pricing,
                                   shipping_item_price=request_body['shipping_item_price'],
-                                  product_id=request_body['product_id'],
+                                  product_id=product.id,
                                   shopping_cart_id=cart.id)
     db.session.add(cart_item)
     db.session.commit()
-    # cart['total_price'] += cart_item['item_price'] * cart_item['quantity']
+    cart_item_data = cart_item.serialize()
+    cart.total_price += cart_item_data['item_price'] * cart_item_data['quantity']
     db.session.commit()
     results['cart'] = cart.serialize()
     cart_items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
@@ -601,6 +608,8 @@ def handle_upload():
     my_image.url = result['secure_url']
     my_image.save()
     return jsonify(my_image.serialize()), 200
+
+
 
 """
 @api.route('/offers', methods=['GET'])  # la idea es que los usuarios que tengan un producto en favoritos, si ese producto recibe una oferta, notificar al usuario.

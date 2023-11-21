@@ -1,39 +1,20 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Card } from "./Card.jsx"
+import { Context } from "../store/appContext.js";
+
 
 
 export const ProductsOverFlow = () => {
+    const { store, actions } = useContext(Context);
 
     return (
         <div className="container">
-            <div class="container">
-                <div class="row row-cols-2 row-cols-lg-5 g-2 g-lg-3">
-                    <div class="col">
-                        <div>
-                            <Card />
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div>
-                            <Card />
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div>
-                            <Card />
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div>
-                            <Card />
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div>
-                            <Card />
-                        </div>
-                    </div>
-                </div>
+
+            <div className="container d-flex justify-content-center">
+                {store.products.map((product) =>
+                    <Card key={product.id} product={product} />
+                )}
+
             </div>
             {/* <div className="container d-flex justify-content-center">
                 <div className="d-flex">

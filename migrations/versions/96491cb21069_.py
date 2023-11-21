@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 03b4dbdfcdff
+Revision ID: 96491cb21069
 Revises: 
-Create Date: 2023-11-04 09:39:51.683439
+Create Date: 2023-11-21 14:12:15.886879
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '03b4dbdfcdff'
+revision = '96491cb21069'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -23,6 +23,12 @@ def upgrade():
     sa.Column('name', sa.String(length=80), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
+    )
+    op.create_table('user_image',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('url', sa.String(length=255), nullable=False),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('url')
     )
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -58,6 +64,7 @@ def upgrade():
     sa.Column('description', sa.String(length=300), nullable=False),
     sa.Column('products_detail', sa.String(length=300), nullable=False),
     sa.Column('pricing', sa.Float(), nullable=False),
+    sa.Column('stripe_price', sa.String(length=50), nullable=False),
     sa.Column('weight', sa.Float(), nullable=True),
     sa.Column('stock', sa.Integer(), nullable=False),
     sa.Column('subscribeable', sa.Boolean(), nullable=False),
@@ -166,5 +173,6 @@ def downgrade():
     op.drop_table('products')
     op.drop_table('bills')
     op.drop_table('users')
+    op.drop_table('user_image')
     op.drop_table('categories')
     # ### end Alembic commands ###
