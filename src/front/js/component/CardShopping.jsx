@@ -9,8 +9,8 @@ export const CardShopping = () => {
 
     const handleDelete = async () => {
         // determinar el shoppingItemId y pasarlo como segundo parametro en el await
-        const shoppingItemId = 0;
-        await actions.deleteShoppingCartItem(store.user.id, shoppingItemId)
+        const ShoppingCartItems = 0;
+        await actions.deleteShoppingCartItem(store.user.id, store.ShoppingCartItems.id)
         // borrar del array via metodo filter el elemento que acabo de enviar y actualizar el store
     }
 
