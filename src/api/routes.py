@@ -560,7 +560,7 @@ def user_bills(user_id):
     
 
 
-@api.route('/bills/<int:bills_id>', methods=['GET', 'DELETE'])  #TODO working
+@api.route('/bills/<int:bills_id>', methods=['GET', 'PUT', 'DELETE'])  #TODO working
 @jwt_required()
 def bills(bills_id):
     current_identity = get_jwt_identity()
