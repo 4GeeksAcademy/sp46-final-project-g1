@@ -9,11 +9,22 @@ export const ProductsOverFlow = () => {
 
     return (
         <div className="container">
+
             <div className="container d-flex justify-content-center">
                 {store.products.map((product) =>
                     <Card key={product.id} product={product} />
                 )}
+
             </div>
+            {/* <div className="container d-flex justify-content-center">
+                <div className="d-flex">
+                    <Card />
+                    <Card />
+                    <Card />
+                    <Card />
+                    <Card />
+                </div>
+            </div> */}
         </div>
     )
 }
