@@ -2,6 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
+from datetime import timedelta
 from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
@@ -37,6 +38,7 @@ setup_commands(app)  # add the admin
 app.register_blueprint(api, url_prefix='/api')  # Add all endpoints form the API with a "api" prefix
 
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_API_KEY")
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 jwt = JWTManager(app)
 # Stripe setting
 stripe_keys = {'secret_key': os.getenv("STRIPE_SECRET_KEY"),
@@ -83,25 +85,25 @@ def stripe_payment():
     if identity[1]:
         response_body['message'] = "Administradores no realizan compras"
         return response_body, 401
-    #try:
+    try:
     # Genero el listado de items
-    bill = db.session.execute(db.select(Bills).where(Bills.user_id == identity[0],
-                                                     Bills.status == 'pending')).scalar()
-    
-    bill_items = db.session.execute(db.select(BillItems).where(BillItems.bill_id == bill.id)).scalars()
-    bill_items_list = [item.serialize() for item in bill_items]
-    line_items = [{'price': item['stripe_price'], 'quantity': item['quantity']} for item in bill_items_list]
-    # Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-    session = stripe.checkout.Session.create(line_items=line_items,
-                                             mode='payment',
-                                             success_url=front_url + '/payment-success',
-                                             cancel_url=front_url + '/payment-canceled')
-    response_body['results'] = {'bill': bill.serialize()}
-    response_body['sessionId'] = session['id']
-    return response_body, 200
-    """except Exception as e:
+        bill = db.session.execute(db.select(Bills).where(Bills.user_id == identity[0],
+                                                        Bills.status == 'pending')).scalar()
+        
+        bill_items = db.session.execute(db.select(BillItems).where(BillItems.bill_id == bill.id)).scalars()
+        bill_items_list = [item.serialize() for item in bill_items]
+        line_items = [{'price': item['stripe_price'], 'quantity': item['quantity']} for item in bill_items_list]
+        # Provide the exact Price ID (for example, pr_1234) of the product you want to sell
+        session = stripe.checkout.Session.create(line_items=line_items,
+                                                mode='payment',
+                                                success_url=front_url + '/payment-success',
+                                                cancel_url=front_url + '/payment-canceled')
+        response_body['results'] = {'bill': bill.serialize()}
+        response_body['sessionId'] = session['id']
+        return response_body, 200
+    except Exception as e:
         response_body = {'message': str(e)}
-        return response_body, 403"""
+        return response_body, 403
 
 
 # This only runs if `$ python src/main.py` is executed
