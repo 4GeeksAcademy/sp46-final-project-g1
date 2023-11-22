@@ -6,17 +6,20 @@ export const QuantityButton = () => {
     const [quantity, setQuantity] = useState(1);
     const {store, actions} = useContext(Context);
 
-    const handleDecrement = () => {
+    const handleDecrement = async () => {
         if (quantity > 1) {
             setQuantity(prevCount => prevCount - 1)
             store.currenItemCart.quantity = quantity
+            await actions.putShoppingcarts()
+
         }
     }
 
-    const handleIncrement = () => {
+    const handleIncrement = async () => {
         if (quantity < 10) {
             setQuantity(prevCount => prevCount + 1)
             store.currenItemCart.quantity = quantity
+            await actions.putShoppingcarts()
         }
     }
 

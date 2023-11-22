@@ -568,7 +568,7 @@ def user_bills(user_id):
     
 
 
-@api.route('/bills/<int:bills_id>', methods=['GET', 'DELETE'])  #TODO working
+@api.route('/bills/<int:bills_id>', methods=['GET', 'PUT', 'DELETE'])  #TODO working
 @jwt_required()
 def bills(bills_id):
     current_identity = get_jwt_identity()
@@ -593,6 +593,11 @@ def bills(bills_id):
             bill_list.append(current_bill)
         response_body = {'message': f'Facturas de usuario', 'results': bill_list}
         return response_body, 200
+    if request.method == 'PUT':
+        bill = db.session.execute(db.select(Bills).where(Bills.id == bills_id, Bills.user_id == current_identity[0])).scalar()
+        bill.status = "paid"
+        db.session.commit()
+        response_body['message'] = "Factura pagada"
     if request.method == 'DELETE':
         response_body = {'message': 'no se pueden borrar las facturas'}
         return response_body, 200 

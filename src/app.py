@@ -7,7 +7,7 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
 from api.utils import APIException, generate_sitemap
-from api.models import db
+from api.models import db, Bills, BillItems
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
@@ -82,23 +82,23 @@ def stripe_payment():
     if identity[1]:
         response_body['message'] = "Administradores no realizan compras"
         return response_body, 401
-    try:
-        # Genero el listado de items
-        bill = db.session.execute(db.select(Bills).where(Bills.user_id == identity[0],
-                                                         Bills.status == 'pending')).scalar()
-        bill_items = db.session.execute(db.select(BillItems).where(BillItems.bill_id == bill.id)).scalars()
-        bill_items_list = [item.serialize() for item in bill_items]
-        line_items = [{'price': item['stripe_price'], 'quantity': item['quantity']} for item in bill_items_list]
-        # Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-        session = stripe.checkout.Session.create(line_items=line_items,
-                                                 mode='payment',
-                                                 success_url=front_url + '/payment-success',
-                                                 cancel_url=front_url + '/payment-canceled')
-        response_body = {'sessionId': session['id']}
-        return response_body, 200
-    except Exception as e:
+    #try:
+    # Genero el listado de items
+    bill = db.session.execute(db.select(Bills).where(Bills.user_id == identity[0],
+                                                    Bills.status == 'pending')).scalar()
+    bill_items = db.session.execute(db.select(BillItems).where(BillItems.bill_id == bill.id)).scalars()
+    bill_items_list = [item.serialize() for item in bill_items]
+    line_items = [{'price': item['stripe_price'], 'quantity': item['quantity']} for item in bill_items_list]
+    # Provide the exact Price ID (for example, pr_1234) of the product you want to sell
+    session = stripe.checkout.Session.create(line_items=line_items,
+                                            mode='payment',
+                                            success_url=front_url + '/payment-success',
+                                            cancel_url=front_url + '/payment-canceled')
+    response_body = {'sessionId': session['id']}
+    return response_body, 200
+    """except Exception as e:
         response_body = {'message': str(e)}
-        return response_body, 403
+        return response_body, 403"""
 
 
 # This only runs if `$ python src/main.py` is executed

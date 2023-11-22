@@ -135,6 +135,7 @@ class BillItems(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     price_per_unit = db.Column(db.Float, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
+    stripe_price = db.Column(db.String(50), unique=False, nullable=False)
     bill_id = db.Column(db.Integer, db.ForeignKey('bills.id'))
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
     bill = db.relationship('Bills', foreign_keys=[bill_id])
@@ -147,6 +148,7 @@ class BillItems(db.Model):
         return {"id": self.id,
                 "price_per_unit": self.price_per_unit,
                 "quantity": self.quantity,
+                "stripe_price": self.stripe_price,
                 "bill_id": self.bill_id,
                 "product_id": self.product_id}
 
