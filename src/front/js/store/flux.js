@@ -6,6 +6,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       users: {},
       user: {},
       products: [],
+      product: {},
       categories: [],
       shoppingCarts: {},
       shoppingCartItems: {},
@@ -26,9 +27,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 
       getUsers: async () => {
         const url = process.env.BACKEND_URL + "/api/users";
+        const token = localStorage.getItem("token")
         const options = {
           method: "GET",
-          headers: { "Content-Type": "application/json" }
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+          }
         };
         const response = await fetch(url, options);
         if (response.ok) {
@@ -39,6 +44,45 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log("ERROR:", response.status, response.statusText);
         }
       },
+      getMyUsers: async (userId) => {
+        const url = process.env.BACKEND_URL + "/api/users" + userId;
+        const token = localStorage.getItem("token")
+        const options = {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+          }
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          const detail = data.results;
+          setStore({ user: detail });
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
+        }
+      }, // falta el PUT
+      putMyUsers: async (userId) => {
+        const url = process.env.BACKEND_URL + "/api/users" + userId;
+        const token = localStorage.getItem("token")
+        const options = {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+          },
+          body: JSON.stringify() // que envio dentro de las comillas??
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          const detail = data.results;
+          setStore({ user: detail });
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
+        }
+      }, // falta  el DELETE de "/api/users" + userId; (preguntar hector)
       getProducts: async () => {
         const url = process.env.BACKEND_URL + "/api/products";
         const options = {
@@ -54,12 +98,32 @@ const getState = ({ getStore, getActions, setStore }) => {
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
+      },getOneProducts: async (productID) => {
+        const url = process.env.BACKEND_URL + "/api/products" + productID;
+        const options = {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          const detail = data.results;
+          console.log(detail);
+          setStore({ product: detail });
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
+        }
       },
       postProducts: async () => {
         const url = process.env.BACKEND_URL + "/api/products";
+        const token = localStorage.getItem("token")
         const options = {
           method: "POST",
-          headers: { "Content-Type": "application/json" }
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(store.products)
         };
         const response = await fetch(url, options);
         if (response.ok) {
@@ -70,7 +134,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
-      },
+      }, // falta el PUT y DELETE de /products/<int:products_id>'
       getCategories: async () => {
         const url = process.env.BACKEND_URL + "/api/categories";
         const options = {
@@ -193,7 +257,9 @@ const getState = ({ getStore, getActions, setStore }) => {
         const token = localStorage.getItem("token")
         const options = {
           method: "GET",
-          headers: { "Content-Type": "application/json" }
+          headers: { "Content-Type": "application/json",
+                     "Authorization": `Bearer ${token}`
+         }
         };
         const response = await fetch(url, options);
         if (response.ok) {
