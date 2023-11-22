@@ -502,42 +502,44 @@ def handle_bills():
         return response_body, 200
     if request.method == 'POST' and not current_identity[1]:
             results = {}
-            try: 
-                cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.user_id == current_identity[0])).scalar()
-                cart_items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
-                cart_items_list = [item.serialize() for item in cart_items]
-                address = db.session.execute(db.select(Users.address).where(Users.id  == current_identity[0])).scalar()
-                request_body = request.get_json()
-                bill = Bills(created_at=datetime.utcnow(),
-                             total_price=cart.total_price,
-                             order_number="1",
-                             status='pending',
-                             bill_address=address,
-                             delivery_address=address,
-                             payment_method='Visa',
-                             user_id=current_identity[0])
-                db.session.add(bill)
+            #try: 
+            cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.user_id == current_identity[0])).scalar()
+            cart_items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
+            cart_items_list = [item.serialize() for item in cart_items]
+            address = db.session.execute(db.select(Users.address).where(Users.id  == current_identity[0])).scalar()
+            request_body = request.get_json()
+            bill = Bills(created_at=datetime.utcnow(),
+                         total_price=cart.total_price,
+                         order_number="1",
+                         status='pending',
+                         bill_address=address,
+                         delivery_address=address,
+                         payment_method='Visa',
+                         user_id=current_identity[0])
+            db.session.add(bill)
+            db.session.commit()
+            results['bill'] = bill.serialize()
+            list_items = []
+            for item in cart_items_list:
+                product = db.session.execute(db.select(Products.stripe_price).where(Products.id == item['product_id'])).scalar()
+                bill_item = BillItems(price_per_unit=item['item_price'],
+                                      quantity=item['quantity'],
+                                      bill_id=bill.id,
+                                      stripe_price=product,
+                                      product_id=item['product_id'])
+                db.session.add(bill_item)
                 db.session.commit()
-                results['bill'] = bill.serialize()
-                list_items = []
-                for item in cart_items_list:
-                    bill_item = BillItems(price_per_unit=item['item_price'],
-                                          quantity=item['quantity'],
-                                          bill_id=bill.id,
-                                          product_id=item['product_id'])
-                    db.session.add(bill_item)
-                    db.session.commit()
-                    list_items.append(bill_item.serialize())
-                results['bill_items'] = list_items
-                for item in cart_items:
-                    db.session.delete(item)
-                db.session.delete(cart)
-                response_body = {'message': 'Bill created', 
-                                'results': results}
-                return response_body, 201
-            except:
-                response_body['message'] = "bad request"
-                return response_body, 403
+                list_items.append(bill_item.serialize())
+            results['bill_items'] = list_items
+            for item in cart_items:
+                db.session.delete(item)
+            db.session.delete(cart)
+            response_body = {'message': 'Bill created', 
+                            'results': results}
+            return response_body, 201
+            #except:
+            #   response_body['message'] = "bad request"
+            #  return response_body, 403
     response_body['message'] = "Acceso Restringido"
     return response_body, 401 
 
