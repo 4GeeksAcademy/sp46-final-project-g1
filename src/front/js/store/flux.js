@@ -11,6 +11,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       shoppingCarts: {},
       shoppingCartItems: [],
       currentItemCart: { quantity: 0 },
+      bill: {},
       bills: [],
       billsItems: [],
       offers: [],
@@ -315,12 +316,13 @@ const getState = ({ getStore, getActions, setStore }) => {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`
           },
-          body: JSON.stringify(store.shoppingCartItems)
+          body: JSON.stringify({})
         };
         const response = await fetch(url, options);
         if (response.ok) {
           const data = await response.json();
           setStore({ shoppingCartItems: {} })
+          setStore({ shoppingCarts: {}})
           console.log(data);
         } else {
           console.log("ERROR:", response.status, response.statusText);
@@ -454,7 +456,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
       processPayment: async () => {
-        const stripe = await loadStripe(getStore().stripePublicKey)
+        const postBills = await getActions().postBills();
+        const stripe = await loadStripe(getStore().stripePublicKey);
         const url = `${process.env.BACKEND_URL}/payment`
         const token = localStorage.getItem("token")
         const options = {
@@ -469,10 +472,31 @@ const getState = ({ getStore, getActions, setStore }) => {
         const response = await fetch(url, options);
         if (response.ok) {
           const data = await response.json();
+          setStore({ bill: data.results})
           console.log(data);
           stripe.redirectToCheckout({ sessionId: data.sessionId });
         } else {
           console.log('Error:', response.status, response.statusText);
+        }
+      },
+      putBillPaid: async (billId) => {
+        const dataToSend = {};
+        const url = process.env.BACKEND_URL + "/api/bills/" + billId;
+        const token = localStorage.getItem("token");
+        const options = {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(dataToSend)
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
         }
       },
       // Use getActions to call a function within a fuction

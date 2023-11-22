@@ -598,6 +598,8 @@ def bills(bills_id):
         bill.status = "paid"
         db.session.commit()
         response_body['message'] = "Factura pagada"
+        response_body['results'] = bill.serialize()
+        return response_body, 200
     if request.method == 'DELETE':
         response_body = {'message': 'no se pueden borrar las facturas'}
         return response_body, 200 
