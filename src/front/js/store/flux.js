@@ -285,6 +285,57 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log("ERROR:", response.status, response.statusText);
         }
       },
+      uploadFile: async fileToUpload => {
+				// const data = new FormData();
+				// console.log("data", fileToUpload)
+				// data.append("image", fileToUpload);
+				// const url = "https://api.cloudinary.com/v1_1/ddpetmio/image/upload";
+				// const options = {
+				// 	method: 'POST',
+				// 	body: data,
+				// 	headers: {
+				// 		Authorization: `Basic ${process.env.API_KEY}:${process.env.API_SECRET}`,
+				// 		'Content-Type': 'application/json'
+				// 	}
+				// };
+				// const response = await fetch(url, options);
+				// if (response.ok) {
+				// 	const data = await response.json();
+				// 	console.log('URL de la imagen subida:', data.url);
+				// } else {
+				// 	const error = await response.json();
+				// 	console.error('Error al subir la imagen:', error.message);
+				//   };
+
+				let data = new FormData();
+				// console.log("data", fileToUpload);
+				data.append("image", fileToUpload);
+
+				// let response = fetch('https://api.cloudinary.com/v1_1/ddpetmio/image/upload', {
+				// 	method: "POST",
+				// 	body: data,
+				// 	headers: {
+				// 		Authorization: `Basic ${process.env.API_KEY}:${process.env.API_SECRET}`,
+				// 	},
+				// });
+				const url = process.env.BACKEND_URL + '/api/upload';
+				const options = {
+					method: "POST",
+					body: data,
+					headers: {
+						Authorization: `Basic ${process.env.API_KEY}:${process.env.API_SECRET}`,
+					},
+				};
+        console.log(options)
+				const response = await fetch(url, options)
+				if (response.ok) {
+					const data = await response.json();
+					console.log(data)
+					// Aqui 
+				} else {
+					console.log('error', response.status, response.text)
+				}
+			},
       getStripePublicKey: async () => {
         const url = `${process.env.BACKEND_URL}/stripe-key`
         const options = {

@@ -5,11 +5,19 @@ from api.utils import generate_sitemap, APIException
 from sqlalchemy import func
 from datetime import datetime
 import cloudinary
+import cloudinary.uploader
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
 import stripe
 
 
 api = Blueprint('api', __name__)
+
+          
+cloudinary.config( 
+  cloud_name = os.getenv("CLOUD_NAME"), 
+  api_key = os.getenv("API_KEY"), 
+  api_secret = os.getenv("API_SECRET") 
+)
 
 
 @api.route("/login", methods=["POST"])
@@ -599,20 +607,26 @@ def bills(bills_id):
 def handle_upload():
     if 'image' not in request.files:
         raise APIException("No image to upload")
-    my_image = UserImage()
-    result = cloudinary.uploader.upload(
-        request.files['image'],
-        public_id=f'sample_folder/profile/my-image-name',
-        crop='limit',
-        width=450,
-        height=450,
-        eager=[{'width': 200, 'height': 200,
-                'crop': 'thumb', 'gravity': 'face',
-                'radius': 100}],
-        tags=['profile_picture'])
-    my_image.url = result['secure_url']
-    my_image.save()
-    return jsonify(my_image.serialize()), 200
+    # image = cloudinary.uploader.upload("https://upload.wikimedia.org/wikipedia/commons/a/ae/Olympic_flag.jpg", 
+    # public_id = "olympic_flag")
+    # print(image)
+    result = cloudinary.uploader.upload(request.files['image'],
+                                        public_id=f'example/my-image-name',
+                                        crop='limit',
+                                        width=450,
+                                        height=450,
+                                        eager=[{'width': 200, 'height': 200,
+                                                'crop': 'thumb', 'gravity': 'face',
+                                                'radius': 100}],
+                                        tags=['profile_picture'])
+    # response_body = {'results': result['secure_url']}
+    print(result)
+    print(result['secure_url'])
+    response_body = {'results': result['url']}
+    return response_body, 200
+    # my_image = UserImage()
+    # my_image.url = result['secure_url']
+    # my_image.save()
 
 
 

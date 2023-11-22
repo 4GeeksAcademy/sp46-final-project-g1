@@ -47,17 +47,17 @@ export const Login = () => {
   // navigate('/')  // con el navigate ir a la pagina que quieras (home)
   
   return (
-    <div className="container mt-4">
-      <h1 className="text-center my-3">Login</h1>
-
+    <div className="container my-5 p-3">
+      <h1 className="text-center text-dark my-3">Login</h1>
+      <div className="container" style={{ width: '50%', height: '50%' }}>
       <form>
-        <div className="form-floating mb-3">
+        <div className="form-floating mb-3 border border-primary rounded">
           <input type="email" value={email} onChange={handleEmail} 
             className="form-control" id="exampleInputEmail1"  placeholder="Email address"
             aria-describedby="emailHelp" />
           <label htmlFor="exampleInputEmail1">Email address</label>
         </div>
-        <div className="input-group mb-3">
+        <div className="input-group mb-3 border border-primary rounded">
           <div className="form-floating">
             <input type={viewPassword ? "text" : "password"} value={password} onChange={handlePassword}
               className="form-control" id="floatingInputGroup1" placeholder="Password" />
@@ -70,7 +70,7 @@ export const Login = () => {
         <button type="button" onClick={login} className="btn btn-primary me-4">Login</button>
         <button type="reset" className="btn btn-secondary">Cancel</button>
       </form>
+      </div>
     </div>
-
   )
 };
