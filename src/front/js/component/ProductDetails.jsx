@@ -3,9 +3,12 @@ import { QuantityButton } from "./QuantityButton.jsx";
 import { ProductsOverFlow } from "./ProductsOverFlow.jsx";
 import { useContext } from "react";
 import { Context } from "../store/appContext.js";
+import { useParams } from "react-router-dom";
 
 export const ProductDetails = (props) => {
     const { store, actions } = useContext(Context);
+    const params = useParams();
+    actions.getOneProducts(params.idProduct);
 
 
     const handleAddItem = async () => {
@@ -56,10 +59,10 @@ export const ProductDetails = (props) => {
                     </div>
                     <div className="col">
                         <div className="p-3">
-                            <div class="container text-center">
-                                <div class="row row-cols-1 row-cols-lg-1 g-2 g-lg-3">
-                                    <div class="col">
-                                        <div class="p-3">
+                            <div className="container text-center">
+                                <div className="row row-cols-1 row-cols-lg-1 g-2 g-lg-3">
+                                    <div className="col">
+                                        <div className="p-3">
                                             <div className="mt-3 text-dark">
                                                 <h3 className="text-start">Hola</h3>
                                                 <p className="text-start mt-3">El alimento para perros Maxi Adult de ROYAL CANIN ha sido específicamente formulado teniendo en cuenta las necesidades nutricionales de tu perro. Este alimento es adecuado para perros de raza grande, a partir de los 15 meses y con un peso adulto de entre 26 y 44 kg.</p>
@@ -76,15 +79,15 @@ export const ProductDetails = (props) => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col">
-                                        <div class="container text-center">
-                                            <div class="row row-cols-1 row-cols-lg-2 g-lg-3">
-                                                <div class="col">
+                                    <div className="col">
+                                        <div className="container text-center">
+                                            <div className="row row-cols-1 row-cols-lg-2 g-lg-3">
+                                                <div className="col">
                                                     <h5 className="text-start text-dark mb-3 fw-bold">Cantidad</h5>
                                                     <QuantityButton />
                                                 </div>
-                                                <div class="col">
-                                                    <div class="p-3 mt-4">
+                                                <div className="col">
+                                                    <div className="p-3 mt-4">
                                                         <div className="d-grid gap-2">
                                                             <button onClick={handleAddItem} className="btn btn-primary" type="button">Añadir al carrito <i className="fas fa-shopping-cart"></i></button>
                                                         </div>

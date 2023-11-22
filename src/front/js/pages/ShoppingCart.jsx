@@ -11,15 +11,15 @@ export const ShoppingCart = () => {
 
     return (
         <div className="container my-5">
-            <div class="container text-center">
-                <div class="row row-cols-1 row-cols-lg-2 g-2 g-lg-3">
-                    <div class="col-lg-8">
-                        <div class="p-3">
+            <div className="container text-center">
+                <div className="row row-cols-1 row-cols-lg-2 g-2 g-lg-3">
+                    <div className="col-lg-8">
+                        <div className="p-3">
                             <CardShopping />
                         </div>
                     </div>
-                    <div class="col-lg-4">
-                        <div class="p-3">
+                    <div className="col-lg-4">
+                        <div className="p-3">
                             <div className="d-flex flex-column mb-3 border border-primary rounded p-3">
                                 <div className="p-2">
                                     <h5 className="text-dark">Resumen de mi pedido</h5>

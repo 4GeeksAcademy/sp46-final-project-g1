@@ -16,29 +16,29 @@ export const CardShopping = (props) => {
 
     return (
         <div className="container border border-primary rounded mb-2">
-            <div class="container text-center">
-                <div class="row row-cols-1 row-cols-lg-4 row-cols-md-2 g-lg-3">
-                    <div class="col col-lg-2">
-                        <div class="p-3">
+            <div className="container text-center">
+                <div className="row row-cols-1 row-cols-lg-4 row-cols-md-2 g-lg-3">
+                    <div className="col col-lg-2">
+                        <div className="p-3">
                             <img src="https://www.dia.es/product_images/130332/130332_ISO_0_ES.jpg"
                                 className="card-img-top object-fit-fill" alt="Pienso" />
                         </div>
                     </div>
-                    <div class="col col-lg-4">
-                        <div class="p-3 text-dark text-start">
+                    <div className="col col-lg-4">
+                        <div className="p-3 text-dark text-start">
                             <p className="m-0">Nombre</p>
                             <p className="m-0">Cantidad: 1</p>
                             <p className="m-0">Peso: 12kg</p>
                             <p className="m-0">Precio: 30.00€</p>
                         </div>
                     </div>
-                    <div class="col col-lg-4">
-                        <div class="p-3 mt-5">
+                    <div className="col col-lg-4">
+                        <div className="p-3 mt-5">
                             <QuantityButton />
                         </div>
                     </div>
-                    <div class="col col-lg-2">
-                        <div class="p-3">
+                    <div className="col col-lg-2">
+                        <div className="p-3">
                             <div className="mt-5 text-end">
                                 <button onClick={handleDelete} type="button" className="btn btn-light"><i className="fas fa-trash-alt"></i></button>
                             </div>
