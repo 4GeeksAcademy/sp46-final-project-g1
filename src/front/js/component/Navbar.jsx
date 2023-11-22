@@ -59,7 +59,7 @@ export const Navbar = () => {
               {/* <span className="border-start border-dark"></span> */}
             </li>
             <li className="nav-item">
-              <div className="btn-group">
+              {/* <div className="btn-group">
                 <button type="button" className="btn btn-primary rounded text-primary-emphasis me-1" data-bs-toggle="dropdown" aria-expanded="false">
                   <i className="fas fa-heart me-2"></i>
                   Favoritos
@@ -69,7 +69,7 @@ export const Navbar = () => {
                   <li>Another action</li>
                   <li>Something else here</li>
                 </ul>
-              </div>
+              </div> */}
             </li>
             <li className="nav-item">
               <Link to="/shopping-cart" onClick={handleAddShoppingCart} className="btn btn-primary text-primary-emphasis">

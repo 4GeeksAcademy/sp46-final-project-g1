@@ -35,7 +35,7 @@ export const Card = (props) => {
                     </Link>
                     <div className="card-body text-dark">
                         <div className="d-flex mb-2">
-                            <Link to="/product">Mas detalles</Link>
+                            <Link to={"/product" + props.id}>Mas detalles</Link>
                         </div>
                         <div className="d-flex justify-content-between mb-1">
                             <h5 className="mb-0">{props.product.name}</h5>
