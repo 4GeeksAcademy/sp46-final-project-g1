@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import injectContext from "./store/appContext";
-import ScrollToTop from "./component/scrollToTop";
+import injectContext from "./store/appContext.js";
+import ScrollToTop from "./component/scrollToTop.js";
 // Import pages and component
 import { Demo } from "./pages/demo";
 import { Single } from "./pages/single";
@@ -43,7 +43,7 @@ const Layout = () => {
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<h1>Not found!</h1>} />
                         <Route element={<Form />} path="/form" />
-                        <Route element={<Product />} path="/product" />
+                        <Route element={<Product />} path="/product:idProduct" />
                         <Route element={<Account />} path="/account" />
                         <Route element={<ShoppingCart />} path="/shopping-cart" />
                         <Route element={<Category />} path="/category" />

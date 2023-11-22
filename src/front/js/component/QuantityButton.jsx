@@ -4,7 +4,7 @@ import { Context } from "../store/appContext";
 
 export const QuantityButton = () => {
     const [quantity, setQuantity] = useState(1);
-    const {store, actions} = useContext(Context);
+    const { store, actions } = useContext(Context);
 
     const handleDecrement = async () => {
         if (quantity > 1) {
