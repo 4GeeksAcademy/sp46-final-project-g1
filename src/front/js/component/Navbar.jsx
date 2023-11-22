@@ -44,6 +44,7 @@ export const Navbar = () => {
                 <li><Link to="/form" className="dropdown-item text-dark">Salir</Link></li>
                 <li><hr className="dropdown-divider" /></li>
                 <li><Link to="/login" className="dropdown-item text-danger">Iniciar Sesión</Link></li>
+                <li><Link to="/signUp" className="dropdown-item text-danger">Crear Cuenta</Link></li>
               </ul>
               {/* <span className="border-start border-dark"></span> */}
             </li>

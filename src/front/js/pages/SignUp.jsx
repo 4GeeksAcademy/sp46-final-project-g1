@@ -46,28 +46,29 @@ export const SignUp = () => {
     // navigate('/')  // con el navigate ir a la pagina que quieras (home)
 
     return (
-        <div className="container mt-4">
-            <h1 className="text-center my-3">SignUp</h1>
+        <div className="container my-5 p-3">
+            <h1 className="text-center text-dark my-3">SignUp</h1>
+            <div className="container" style={{ width: '50%', height: '50%' }}>
             <form>
-                <div className="form-floating mb-3">
+                <div className="form-floating mb-3 border border-primary rounded">
                     <input type="email" value={firtsName} onChange={handleFirtsName}
                         className="form-control" id="exampleInputEmail1" placeholder="Tu nombre"
                         aria-describedby="emailHelp" />
                     <label htmlFor="exampleInputEmail1">Nombre</label>
                 </div>
-                <div className="form-floating mb-3">
+                <div className="form-floating mb-3 border border-primary rounded">
                     <input type="email" value={lastName} onChange={handleLastName}
                         className="form-control" id="exampleInputEmail1" placeholder="Tu apellido"
                         aria-describedby="emailHelp" />
                     <label htmlFor="exampleInputEmail1">Apellido</label>
                 </div>
-                <div className="form-floating mb-3">
+                <div className="form-floating mb-3 border border-primary rounded">
                     <input type="email" value={email} onChange={handleEmail}
                         className="form-control" id="exampleInputEmail1" placeholder="Email address"
                         aria-describedby="emailHelp" />
                     <label htmlFor="exampleInputEmail1">Email address</label>
                 </div>
-                <div className="input-group mb-3">
+                <div className="input-group mb-3 border border-primary rounded">
                     <div className="form-floating">
                         <input type={viewPassword ? "text" : "password"} value={password} onChange={handlePassword}
                             className="form-control" id="floatingInputGroup1" placeholder="Password" />
@@ -80,6 +81,7 @@ export const SignUp = () => {
                 <button type="button" onClick={signUp} className="btn btn-primary me-4">SignUp</button>
                 <button type="reset" className="btn btn-secondary">Cancel</button>
             </form>
+            </div>
         </div>
     )
 };

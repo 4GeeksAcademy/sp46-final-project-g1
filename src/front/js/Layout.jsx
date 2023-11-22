@@ -19,6 +19,7 @@ import { UploadImage } from "./pages/UploadImage.jsx";
 import { PaymentSuccess } from "./pages/PaymentSuccess.jsx";
 import { PaymentCanceled } from "./pages/PaymentCanceled.jsx";
 import { BotonPagoTest } from "./pages/BotonPagoTest.jsx";
+import { SignUp } from "./pages/SignUp.jsx";
 
 
 
@@ -37,6 +38,7 @@ const Layout = () => {
                     <Routes>
                         <Route element={<Home />} path="/" />
                         <Route element={<Login />} path="/login" />
+                        <Route element={<SignUp />} path="/signup" />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<h1>Not found!</h1>} />
