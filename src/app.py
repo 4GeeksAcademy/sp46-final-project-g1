@@ -85,15 +85,15 @@ def stripe_payment():
     #try:
     # Genero el listado de items
     bill = db.session.execute(db.select(Bills).where(Bills.user_id == identity[0],
-                                                    Bills.status == 'pending')).scalar()
+                                                     Bills.status == 'pending')).scalar()
     bill_items = db.session.execute(db.select(BillItems).where(BillItems.bill_id == bill.id)).scalars()
     bill_items_list = [item.serialize() for item in bill_items]
     line_items = [{'price': item['stripe_price'], 'quantity': item['quantity']} for item in bill_items_list]
     # Provide the exact Price ID (for example, pr_1234) of the product you want to sell
     session = stripe.checkout.Session.create(line_items=line_items,
-                                            mode='payment',
-                                            success_url=front_url + '/payment-success',
-                                            cancel_url=front_url + '/payment-canceled')
+                                             mode='payment',
+                                             success_url=front_url + '/payment-success',
+                                             cancel_url=front_url + '/payment-canceled')
     response_body = {'sessionId': session['id']}
     return response_body, 200
     """except Exception as e:

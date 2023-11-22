@@ -305,6 +305,27 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log("ERROR:", response.status, response.statusText);
         }
       },
+      postBills: async () => { // verificar con hector
+        const store = getStore();
+        const url = process.env.BACKEND_URL + "/api/bills";
+        const token = localStorage.getItem("token")
+        const options = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(store.shoppingCartItems)
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          setStore({ shoppingCartItems: {} })
+          console.log(data);
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
+        }
+      },
       getOffers: async () => {
         const url = process.env.BACKEND_URL + "/api/offers";
         const options = {
