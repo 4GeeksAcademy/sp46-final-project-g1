@@ -10,7 +10,7 @@ export const BotonPago = () => {
   useEffect(() => {
     async function setUpStripe() {
       // if (store.member.id) {
-        await actions.getStripePublicKey()
+        await actions.getStripePublicKey();
       /* } else {
         navigate("/")
         alert("You are not a member")

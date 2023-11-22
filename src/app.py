@@ -79,6 +79,7 @@ def get_publishable_key():
 @jwt_required()
 def stripe_payment():
     identity = get_jwt_identity()
+    response_body = {}
     if identity[1]:
         response_body['message'] = "Administradores no realizan compras"
         return response_body, 401
@@ -86,6 +87,7 @@ def stripe_payment():
     # Genero el listado de items
     bill = db.session.execute(db.select(Bills).where(Bills.user_id == identity[0],
                                                      Bills.status == 'pending')).scalar()
+    
     bill_items = db.session.execute(db.select(BillItems).where(BillItems.bill_id == bill.id)).scalars()
     bill_items_list = [item.serialize() for item in bill_items]
     line_items = [{'price': item['stripe_price'], 'quantity': item['quantity']} for item in bill_items_list]
@@ -94,7 +96,8 @@ def stripe_payment():
                                              mode='payment',
                                              success_url=front_url + '/payment-success',
                                              cancel_url=front_url + '/payment-canceled')
-    response_body = {'sessionId': session['id']}
+    response_body['results'] = {'bill_id': bill.id}
+    response_body['sessionId'] = session['id']
     return response_body, 200
     """except Exception as e:
         response_body = {'message': str(e)}
