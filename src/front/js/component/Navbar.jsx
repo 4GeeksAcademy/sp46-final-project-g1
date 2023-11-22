@@ -17,7 +17,7 @@ export const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-md bg-primary">
       <div className="container-fluid">
-        <div className="navbar-brand">
+        <div className="navbar-brand ms-4">
           <Link to="/">
             <img src={logoWoofPetShop} style={{ width: "50px", height: "50px" }} alt="" />
           </Link>
@@ -50,7 +50,7 @@ export const Navbar = () => {
                 <i className="fas fa-user me-2"></i>
               </button>
               {store.isLogin ? store.user.email : ""}
-              <ul className="dropdown-menu bg-primary-subtle">
+              <ul className="dropdown-menu dropdown-menu-end bg-primary-subtle">
                 <li><Link to="/login" className="dropdown-item text-danger">Iniciar Sesión</Link></li>
                 <li><hr className="dropdown-divider" /></li>
                 <li><Link to="/account" className="dropdown-item text-dark">Mi cuenta</Link></li>
@@ -74,7 +74,7 @@ export const Navbar = () => {
             <li className="nav-item">
               <Link to="/shopping-cart" onClick={handleAddShoppingCart} className="btn btn-primary text-primary-emphasis">
                 <i className="fas fa-shopping-cart">
-                  <span className="badge text-bg-secondary ms-1">0</span>
+                  <span className="badge text-bg-secondary ms-1">{store.shoppingCartItems.length}</span>
                 </i>
               </Link>
             </li>

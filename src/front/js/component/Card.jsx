@@ -23,19 +23,19 @@ export const Card = (props) => {
         <section>
             <div className="container">
                 <div className="card" style={{ width: '15rem' }}>
-                    <div className="d-flex justify-content-end p-3">
+                    {/* <div className="d-flex justify-content-end p-3">
                         <button type="button" className="btn btn-outline-primary btn-sm rounded-circle d-flex align-items-center justify-content-center shadow-1-strong"
                             style={{ width: '35px', height: '35px' }}>
                             <i className="far fa-heart"></i>
                         </button>
-                    </div>
-                    <Link to="/product" className="text-center">
+                    </div> */}
+                    <Link to="/product" className="text-center my-4">
                         <img src="https://www.dia.es/product_images/130332/130332_ISO_0_ES.jpg"
                             className="card-img-top object-fit-fill" alt="Pienso" style={{ width: '50%', height: '50%' }} />
                     </Link>
                     <div className="card-body text-dark">
                         <div className="d-flex mb-2">
-                            <Link to={"/product" + props.id}>Mas detalles</Link>
+                            <Link to="/product">Mas detalles</Link>
                         </div>
                         <div className="d-flex justify-content-between mb-1">
                             <h5 className="mb-0">{props.product.name}</h5>
