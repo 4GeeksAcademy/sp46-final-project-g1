@@ -96,7 +96,7 @@ def stripe_payment():
                                              mode='payment',
                                              success_url=front_url + '/payment-success',
                                              cancel_url=front_url + '/payment-canceled')
-    response_body['results'] = {'bill_id': bill.id}
+    response_body['results'] = {'bill': bill.serialize()}
     response_body['sessionId'] = session['id']
     return response_body, 200
     """except Exception as e:
