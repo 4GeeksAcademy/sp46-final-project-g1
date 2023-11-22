@@ -8,7 +8,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       products: [],
       categories: [],
       shoppingCarts: {},
-      shoppingCartItems: {},
+      shoppingCartItems: [],
       currentItemCart: { quantity: 0 },
       bills: [],
       billsItems: [],

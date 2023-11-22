@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 export const Form = () => {
     return (
-        <div className="container">
+        <div className="container mb-5">
             <h1 className="d-flex justify-content-center mt-4 text-dark">Información Personal</h1>
             <div className="container bg-primary-subtle rounded" style={{ width: '50%', height: '50%' }}>
                 <form className="text-dark mt-3 p-2">
@@ -51,7 +51,7 @@ export const Form = () => {
                             <input type="text" className="form-control" id="identificationNumber" />
                         </div>
                     </div>
-                    <div className="mt-3">
+                    {/* <div className="mt-3">
                         <label htmlFor="typeOfCard" className="form-label">Método de Pago</label>
                         <div className="mt-1">
                             <div className="form-check form-check-inline">
@@ -89,7 +89,7 @@ export const Form = () => {
                             <input type="text" className="form-control" id="floatingCvv" placeholder="Full Name" />
                             <label htmlFor="floatingCvv">Cvv</label>
                         </div>
-                    </div>
+                    </div> */}
                     <div className="p-3 bg-opacity-10 d-flex justify-content-end mt-3">
                         <button type="submit" className="btn btn-primary me-2">Enviar</button>
                         <Link to="/account" className="btn btn-secondary">
