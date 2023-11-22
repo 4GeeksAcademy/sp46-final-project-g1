@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import injectContext from "./store/appContext";
-import ScrollToTop from "./component/scrollToTop";
+import injectContext from "./store/appContext.js";
+import ScrollToTop from "./component/scrollToTop.js";
 // Import pages and component
 import { Demo } from "./pages/demo";
 import { Single } from "./pages/single";

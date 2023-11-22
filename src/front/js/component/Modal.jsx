@@ -68,11 +68,11 @@ export const Modal = (props) => {
                                     <p className="fw-semibold">63.99 €</p>
                                 </div>
                             </div>
-                            <div className="row mb-3">
-                                <div className="col-4">
+                            <div className="row row-cols-lg-2 row-cols-sm-2 row-cols-xs-2 g-lg-3 my-3">
+                                <div className="col">
                                     <QuantityButton />
                                 </div>
-                                <div className="col-8">
+                                <div className="col">
                                     <div className="d-grid gap-2">
                                         <button onClick={handleAddItem} className="btn btn-primary" type="button">Añadir al carrito <i className="fas fa-shopping-cart"></i></button>
                                     </div>

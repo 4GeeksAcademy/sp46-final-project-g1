@@ -22,9 +22,9 @@ export const BotonPago = () => {
 
   
   return (
-    <div className="d-flex justify-content-end my-5 me-5 pt-4">
-      <div className="align-content-center">
-        <button className="btn btn-warning fw-bold text-dark w-100 " onClick={() => actions.processPayment()}>
+    <div className="container">
+      <div className="d-grid">
+        <button className="btn btn-primary fw-bold text-dark w-100 " onClick={() => actions.processPayment()}>
           Finalizar Compra
         </button>
       </div>

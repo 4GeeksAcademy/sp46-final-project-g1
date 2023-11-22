@@ -3,7 +3,7 @@ import { QuantityButton } from "./QuantityButton.jsx";
 import { Context } from "../store/appContext.js";
 
 
-export const CardShopping = () => {
+export const CardShopping = (props) => {
     const { store, actions } = useContext(Context)
 
 
@@ -25,7 +25,7 @@ export const CardShopping = () => {
                 </div>
                 <div className="col">
                     <div className="p-2 text-dark text-start">
-                        <p className="m-0">Purina, friskies pienso para perros</p>
+                        <p className="m-0">Nombre</p>
                         <p className="m-0">Cantidad: 1</p>
                         <p className="m-0">Peso: 12kg</p>
                         <p className="m-0">Precio: 30.00€</p>
