@@ -20,6 +20,7 @@ export const Card = (props) => {
     // }
 
     return (
+        <section>
             <div className="container">
                 <div className="card" style={{ width: '15rem' }}>
                     <div className="d-flex justify-content-end p-3">
