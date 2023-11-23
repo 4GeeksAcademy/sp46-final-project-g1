@@ -8,8 +8,8 @@ import { useParams } from "react-router-dom";
 
 export const Modal = (props) => {
     const { store, actions } = useContext(Context);
-    const params = useParams();
-    actions.getOneProducts(params.idProduct);
+    // const params = useParams();
+    // actions.getOneProducts(params.idProduct);
 
 
     const handleAddItem = async () => {

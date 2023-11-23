@@ -7,7 +7,7 @@ export const PaymentSuccess = () => {
 
     // Cambiar Bills.status a "Paid"
     useEffect(() => {
-        actions.putBillPaid(store.bill.id)
+        actions.putBillPaid()
             // ejecuto el actions que hace el put para cambiar el status de la factura
             // para eso debo saber cual es el id de la factura que estan pagando
     }, [])
@@ -20,7 +20,6 @@ export const PaymentSuccess = () => {
                         Home
                 </Link>
             </div>
-
         </div>
     )
 }

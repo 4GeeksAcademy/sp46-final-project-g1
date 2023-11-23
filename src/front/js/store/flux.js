@@ -214,7 +214,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
       postShoppingCartItem: async (productID) => {
         const store = getStore();
-        const url = process.env.BACKEND_URL + "/api/shopping-cart-items" + productID;
+        const url = process.env.BACKEND_URL + "/api/shopping-cart-items/" + productID;
         const token = localStorage.getItem("token")
         const options = {
           method: "POST",
@@ -328,7 +328,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         const response = await fetch(url, options);
         if (response.ok) {
           const data = await response.json();
-          setStore({ shoppingCartItems: {} })
+          setStore({ shoppingCartItems: [] })
           setStore({ shoppingCarts: {}})
           console.log(data);
         } else {
@@ -486,9 +486,11 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log('Error:', response.status, response.statusText);
         }
       }, */
-      putBillPaid: async (billId) => {
+      putBillPaid: async () => {
         const dataToSend = {};
-        const url = process.env.BACKEND_URL + "/api/bills/" + billId;
+        const store = getStore();
+        const bill = localStorage.getItem('bill');
+        const url = process.env.BACKEND_URL + "/api/bills/" + bill.id;
         const token = localStorage.getItem("token");
         const options = {
           method: "PUT",
@@ -505,6 +507,17 @@ const getState = ({ getStore, getActions, setStore }) => {
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
+      },
+      setCurrentitemCart: (pricing, id) => {
+        const store = getStore();
+        store.currentItemCart = {
+                  item_price: pricing,
+                  shipping_item_price: 0,
+                  product_id: id
+              }
+      },
+      setNewBill: (data) => {
+        setStore({ bill: data })
       },
       // Use getActions to call a function within a fuction
       exampleFunction: () => {
