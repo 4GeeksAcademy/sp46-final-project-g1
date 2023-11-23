@@ -22,7 +22,7 @@ export const SignUp = () => {
         const url = process.env.BACKEND_URL + "/api/signup";
         const options = {
             method: 'POST',
-            body: JSON.stringify({ email, password, firtsName, lastName }),
+            body: JSON.stringify({ email, password, first_name: firtsName, last_name: lastName }),
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -32,7 +32,6 @@ export const SignUp = () => {
             const data = await response.json();
             console.log(data)
             localStorage.setItem('token', data.token);
-            store.user = data;
             actions.loginData(data);
             setEmail('');
             setPassword('');

@@ -39,6 +39,7 @@ app.register_blueprint(api, url_prefix='/api')  # Add all endpoints form the API
 
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_API_KEY")
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 jwt = JWTManager(app)
 # Stripe setting
 stripe_keys = {'secret_key': os.getenv("STRIPE_SECRET_KEY"),

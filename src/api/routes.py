@@ -66,6 +66,7 @@ def handle_logout():
 def handle_signup():
     request_body = request.get_json()
     response_body = {}
+    results = {}
     try: 
         email = request_body['email'].lower()
     except:
@@ -89,10 +90,11 @@ def handle_signup():
                      is_admin=False)
     db.session.add(new_user)
     db.session.commit()
+    results['user'] = new_user.serialize()
     access_token = create_access_token(identity=[new_user.id, new_user.is_admin])
     response_body = {'message': 'Usuario creado',
                      'token': access_token,
-                     'results': new_user.serialize()}
+                     'results': results}
     return response_body, 201
 
 """

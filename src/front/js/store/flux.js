@@ -28,8 +28,10 @@ const getState = ({ getStore, getActions, setStore }) => {
     actions: {
       loginData: (data) => {
         setStore({user: data.results.user});
-        setStore({shoppingCarts: data.results.cart});
-        setStore({shoppingCartItems: data.results.item});
+        const cart = data.results.cart ? data.results.cart : []
+        setStore({shoppingCarts: cart});
+        const cartItem = data.results.item ? data.results.item : []
+        setStore({shoppingCartItems: cartItem});
         // store.bills = 
         // store.billsItem =
         setStore({isLogin: true});
@@ -490,7 +492,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         const dataToSend = {};
         const store = getStore();
         const bill = localStorage.getItem('bill');
-        const url = process.env.BACKEND_URL + "/api/bills/" + bill.id;
+        const url = process.env.BACKEND_URL + "/api/bills/" + bill;
         const token = localStorage.getItem("token");
         const options = {
           method: "PUT",
