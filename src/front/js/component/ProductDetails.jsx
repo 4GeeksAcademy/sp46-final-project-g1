@@ -65,7 +65,7 @@ export const ProductDetails = (props) => {
                                     <div className="col">
                                         <div className="p-3">
                                             <div className="mt-3 text-dark">
-                                                <h3 className="text-start">{store.product.name}</h3>
+                                                <h3 className="text-dark text-start fw-semibold">{store.product.name}</h3>
                                                 <p className="text-start mt-3">{store.product.description}</p>
                                                 <div className="d-flex justify-content-between">
                                                     <h5 className="text-start text-dark mb-3 fw-bold">Formato</h5>

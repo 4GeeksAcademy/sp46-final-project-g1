@@ -78,10 +78,13 @@ def handle_signup():
         return response_body, 403
     email = request_body.get('email')
     password = request_body.get('password')
+    first_name = request_body.get('first_name')
+    last_name = request_body.get('last_name')
+
     new_user = Users(email=request_body['email'], 
                      password=request_body['password'],
-                     first_name=request_body.get('first_name'),
-                     last_name=request_body.get('last_name'),
+                     first_name=request_body['first_name'],
+                     last_name=request_body['last_name'],
                      is_active=True, 
                      is_admin=False)
     db.session.add(new_user)

@@ -24,7 +24,7 @@ export const Home = () => {
 							className="d-block w-100 object-fit-cover" style={{ height: "450px" }} alt="road trip dog" />
 						<div className="carousel-caption d-flex align-items-start flex-column">
 							<h4 className="text-dark"><strong>Bienvenido! Aquí encontrarás<br />los mejores productos para tu mejor amigo</strong></h4>
-							<Link to="/category" className="btn btn-danger"><i className="fas fa-paw me-2"></i>Categorías</Link>
+							<Link to="/login" className="btn btn-danger"><i className="fas fa-paw me-2"></i>Iniciar sesión</Link>
 						</div>
 					</div>
 					<div className="carousel-item">
@@ -32,7 +32,7 @@ export const Home = () => {
 							className="d-block w-100 object-fit-cover" style={{ height: "450px" }} alt="dog window" />
 						<div className="carousel-caption d-flex align-items-start flex-column">
 							<h4 className="text-light"><strong>Woof! Woof! Ya te registraste?</strong></h4>
-							<Link to="/" className="btn btn-danger"><i className="fas fa-user me-2"></i>Iniciar sesión</Link>
+							<Link to="/signup" className="btn btn-danger"><i className="fas fa-user me-2"></i>Crear cuenta</Link>
 						</div>
 					</div>
 					<div className="carousel-item">

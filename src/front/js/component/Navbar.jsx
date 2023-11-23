@@ -21,7 +21,7 @@ export const Navbar = () => {
             <img src={logoWoofPetShop} style={{ width: "50px", height: "50px" }} alt="" />
           </Link>
         </div>
-        <div className="d-none d-xxl-block">
+        {/* <div className="d-none d-xxl-block">
           <div className="ms-5 container d-flex flex-row-reverse">
             <div className="input-group w-75">
               <input className="form-control me-sm-2 bg-primary-subtle" type="search" placeholder="Buscar" />
@@ -32,7 +32,7 @@ export const Navbar = () => {
               </span>
             </div>
           </div>
-        </div>
+        </div> */}
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
         </button>
@@ -50,16 +50,14 @@ export const Navbar = () => {
                 {store.isLogin ? store.user.first_name : "Iniciar Sesión"}
               </button>
               <ul className="dropdown-menu dropdown-menu-end bg-primary-subtle">
-                <li>
-                  <Link to="/login" className="dropdown-item text-danger">
-                    {store.isLogin ? 'Cerrar Sesión': 'Iniciar Sesión'}
-                  </Link>
-                </li>
-                <li><hr className="dropdown-divider" /></li>
                 <li><Link to="/account" className="dropdown-item text-dark">Mi cuenta</Link></li>
                 <li><Link to="/form" className="dropdown-item text-dark">Salir</Link></li>
                 <li><hr className="dropdown-divider" /></li>
-                <li><Link to="/login" className="dropdown-item text-danger">Iniciar Sesión</Link></li>
+                <li>
+                  <Link to="/login" className="dropdown-item text-danger">
+                    {store.isLogin ? 'Cerrar Sesión' : 'Iniciar Sesión'}
+                  </Link>
+                </li>
                 <li><Link to="/signup" className="dropdown-item text-danger">Crear Cuenta</Link></li>
               </ul>
               {/* <span className="border-start border-dark"></span> */}
