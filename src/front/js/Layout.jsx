@@ -49,7 +49,7 @@ const Layout = () => {
                         <Route element={<h1>Not found!</h1>} />
                         <Route element={<Form />} path="/form" />
                         <Route element={<Product />} path="/products/:idProduct" />
-                        <Route element={<Account />} path="/account" />
+                        <Route element={<Account />} path="/account/:idAccount" />
                         <Route element={<ShoppingCart />} path="/shopping-cart" />
                         <Route element={<Category />} path="/category" />
                         <Route element={<UploadImage />} path="/upload-image" />

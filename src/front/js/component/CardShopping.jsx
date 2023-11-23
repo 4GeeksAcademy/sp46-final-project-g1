@@ -15,7 +15,7 @@ export const CardShopping = (props) => {
     }
 
     return (
-        <div className="container border border-primary rounded mb-2">
+        <div className="container border border-primary rounded mb-2 p-3">
             <div className="container text-center">
                 <div className="row row-cols-1 row-cols-lg-4 row-cols-md-2 g-lg-3">
                     <div className="col col-lg-2">

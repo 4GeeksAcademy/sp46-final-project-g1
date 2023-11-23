@@ -1,8 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 
 export const Account = () => {
+    const params = useParams();
+    actions.getMyUsers(params.idAccount);
+
 
     return (
         <div className="container">

@@ -11,15 +11,17 @@ export const ProductDetails = (props) => {
     const params = useParams();
     actions.getOneProducts(params.idProduct);
 
+    // const handleAddItem = () => {
 
-    const handleAddItem = async () => {
-        store.currentItemCart = {
-            item_price: props.product.pricing,
-            shipping_item_price: 0,
-            product_id: props.product.id
-        }
-        await actions.postShoppingCartItem()
-    }
+    // }
+    // const handleAddItem = async () => {
+    //     store.currentItemCart = {
+    //         item_price: props.product.pricing,
+    //         shipping_item_price: 0,
+    //         product_id: props.product.id
+    //     }
+    //     await actions.postShoppingCartItem()
+    // }
 
     return (
         <div className="container text-center">
@@ -90,7 +92,7 @@ export const ProductDetails = (props) => {
                                                 <div className="col">
                                                     <div className="p-3 mt-4">
                                                         <div className="d-grid gap-2">
-                                                            <button onClick={handleAddItem} className="btn btn-primary" type="button">Añadir al carrito <i className="fas fa-shopping-cart"></i></button>
+                                                            <button className="btn btn-primary" type="button">Añadir al carrito <i className="fas fa-shopping-cart"></i></button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -103,11 +105,10 @@ export const ProductDetails = (props) => {
                     </div>
                 </div>
             </div>
-            <hr />
-            <div className="mb-5">
+            {/* <div className="mb-5">
                 <h3 className="mb-5 text-center mt-5 fw-semibold text-dark">Te podría interesar...</h3>
                 <ProductsOverFlow />
-            </div>
+            </div> */}
         </div>
     )
 }

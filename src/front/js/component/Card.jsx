@@ -29,7 +29,7 @@ export const Card = (props) => {
                             <i className="far fa-heart"></i>
                         </button>
                     </div> */}
-                    <Link to="/product" className="text-center my-4">
+                    <Link to={"/products/" + props.product.id} className="text-center my-4">
                         <img src="https://www.dia.es/product_images/130332/130332_ISO_0_ES.jpg"
                             className="card-img-top object-fit-fill" alt="Pienso" style={{ width: '50%', height: '50%' }} />
                     </Link>
