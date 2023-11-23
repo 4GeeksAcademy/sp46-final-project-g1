@@ -8,11 +8,11 @@ export const Form = () => {
     const [name, setName] = useState(store.user.first_name);
     const [lastName, setLastName] = useState(store.user.last_name);
     const [email, setEmail] = useState(store.user.email);
-    const [password, setPassword ] = useState(store.user.password);
+    const [password, setPassword] = useState(store.user.password);
     const [address, setAddress] = useState(store.user.address);
     const [idNumber, setIdNumber] = useState(store.user.identification_number);
     const [typeIdNumber, setTypeIdNumber] = useState(store.user.identification_type);
-    const [viewPassword, setViewPassword ] = useState(false);
+    const [viewPassword, setViewPassword] = useState(false);
 
     const navigate = useNavigate()
 
@@ -50,7 +50,7 @@ export const Form = () => {
                         <label htmlFor="exampleInputEmail" className="form-label mt-3">Email</label>
                         <input type="email" value={email} onChange={handleEmail} className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
                     </div>
-                    <div className="input-group mb-3 border border-primary rounded">
+                    <div className="input-group mt-2">
                         <div className="form-floating">
                             <input type={viewPassword ? "text" : "password"} value={password} onChange={handlePassword}
                                 className="form-control" id="floatingInputGroup1" placeholder="Password" />
@@ -62,21 +62,27 @@ export const Form = () => {
                     </div>
                     <div className="form-group">
                         <label htmlFor="exampleInputAddress" className="form-label mt-3">Dirección</label>
-                        <input type="text"  value={address} onChange={handleAddress} className="form-control" id="exampleInputAddress" autoComplete="off" />
+                        <input type="text" value={address} onChange={handleAddress} className="form-control" id="exampleInputAddress" autoComplete="off" />
                     </div>
-                    <div className="row mt-3">
-                        <div className="col-6">
-                            <label htmlFor="exampleSelect1" className="form-label">Identificación</label>
-                            <select value={typeIdNumber} onChange={handleTypeIdNumber} className="form-select" id="identification">
-                                <option selected>Tipo</option>
-                                <option>Dni</option>
-                                <option>Nie</option>
-                                <option>Pasaporte</option>
-                            </select>
-                        </div>
-                        <div className="col-6">
-                            <label htmlFor="postalcode" className="form-label">Número de identificación</label>
-                            <input type="text" value={idNumber} onChange={handleIdNumber} className="form-control" id="identificationNumber" />
+                    <div className="container text-start">
+                        <div className="row row-cols-1 row-cols-lg-2">
+                            <div className="col">
+                                <div className="mt-2 text-start">
+                                    <label htmlFor="exampleSelect1" className="form-label">Identificación</label>
+                                    <select value={typeIdNumber} onChange={handleTypeIdNumber} className="form-select" id="identification">
+                                        <option selected>Tipo</option>
+                                        <option>Dni</option>
+                                        <option>Nie</option>
+                                        <option>Pasaporte</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="col">
+                                <div className="mt-2 text-start">
+                                    <label htmlFor="postalcode" className="form-label">Número de identificación</label>
+                                    <input type="text" value={idNumber} onChange={handleIdNumber} className="form-control" id="identificationNumber" />
+                                </div>
+                            </div>
                         </div>
                     </div>
                     {/* <div className="mt-3">
@@ -118,11 +124,21 @@ export const Form = () => {
                             <label htmlFor="floatingCvv">Cvv</label>
                         </div>
                     </div> */}
-                    <div className="p-3 bg-opacity-10 d-flex justify-content-end mt-3">
-                        <button type="submit" className="btn btn-primary me-2">Enviar</button>
-                        <Link to="/account" className="btn btn-secondary">
-                            Cancelar
-                        </Link>
+                    <div className="container text-center mt-3">
+                        <div className="row row-cols-1 row-cols-lg-5">
+                            <div className="col d-flex justify-content-center">
+                                <div className="p-3">
+                                    <button type="submit" className="btn btn-primary me-2">Enviar</button>
+                                </div>
+                            </div>
+                            <div className="col d-flex justify-content-center">
+                                <div className="p-3">
+                                    <Link to="/account" className="btn btn-secondary">
+                                        Cancelar
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>

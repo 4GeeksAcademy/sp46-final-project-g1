@@ -5,9 +5,9 @@ import { Link } from "react-router-dom";
 export const CardCategory = () => {
 
     return (
-        <div className="container mt-4">
-            <div className="row row-cols-lg-4 row-cols-sm-2 row-cols-xs-1 g-lg-3">
-                <div className="col">
+        <div className="container mt-4 m-auto">
+            <div className="row row-cols-sm-2 row-cols-xs-1 row-cols-xl-4">
+                <div className="col col-lg-6 d-flex justify-content-center">
                     <div className="p-3">
                         <Link to="/category" className="text-decoration-none">
                             <div className="card" style={{ width: "18rem" }}>
@@ -22,7 +22,7 @@ export const CardCategory = () => {
                         </Link>
                     </div>
                 </div>
-                <div className="col">
+                <div className="col col-lg-6 d-flex justify-content-center">
                     <div className="p-3">
                         <Link to="/category" className="text-decoration-none">
                             <div className="card" style={{ width: "18rem" }}>
@@ -37,7 +37,7 @@ export const CardCategory = () => {
                         </Link>
                     </div>
                 </div>
-                <div className="col">
+                <div className="col col-lg-6 d-flex justify-content-center">
                     <div className="p-3">
                         <Link to="/category" className="text-decoration-none">
                             <div className="card" style={{ width: "18rem" }}>
@@ -52,7 +52,7 @@ export const CardCategory = () => {
                         </Link>
                     </div>
                 </div>
-                <div className="col">
+                <div className="col col-lg-6 d-flex justify-content-center">
                     <div className="p-3">
                         <Link to="/category" className="text-decoration-none">
                             <div className="card" style={{ width: "18rem" }}>
