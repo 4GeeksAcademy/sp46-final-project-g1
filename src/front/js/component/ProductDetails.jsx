@@ -3,12 +3,10 @@ import { QuantityButton } from "./QuantityButton.jsx";
 import { ProductsOverFlow } from "./ProductsOverFlow.jsx";
 import { useContext } from "react";
 import { Context } from "../store/appContext.js";
-import { useParams } from "react-router-dom";
+
 
 export const ProductDetails = (props) => {
     const { store, actions } = useContext(Context);
-    const params = useParams();
-    actions.getOneProducts(params.idProduct);
 
 
     const handleAddItem = async () => {

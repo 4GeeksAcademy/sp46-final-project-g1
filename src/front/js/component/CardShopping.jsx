@@ -26,10 +26,10 @@ export const CardShopping = (props) => {
                     </div>
                     <div className="col col-lg-4">
                         <div className="p-3 text-dark text-start">
-                            <p className="m-0">Nombre</p>
+                            <p className="m-0">{() => props.product.name}</p>
                             <p className="m-0">Cantidad: 1</p>
-                            <p className="m-0">Peso: 12kg</p>
-                            <p className="m-0">Precio: 30.00€</p>
+                            <p className="m-0">Peso: {() => props.product.weight}</p>
+                            <p className="m-0">Precio: {() => props.product.pricing}</p>
                         </div>
                     </div>
                     <div className="col col-lg-4">

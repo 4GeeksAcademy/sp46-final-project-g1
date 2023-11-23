@@ -17,7 +17,7 @@ export const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-md bg-primary">
       <div className="container-fluid">
-        <div className="navbar-brand">
+        <div className="navbar-brand ms-4">
           <Link to="/">
             <img src={logoWoofPetShop} style={{ width: "50px", height: "50px" }} alt="" />
           </Link>
@@ -81,7 +81,7 @@ export const Navbar = () => {
             <li className="nav-item">
               <Link to="/shopping-cart" onClick={handleAddShoppingCart} className="btn btn-primary text-primary-emphasis">
                 <i className="fas fa-shopping-cart">
-                  <span className="badge text-bg-secondary ms-1">0</span>
+                  <span className="badge text-bg-secondary ms-1">{store.shoppingCartItems.length}</span>
                 </i>
               </Link>
             </li>

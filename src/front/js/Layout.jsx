@@ -19,6 +19,11 @@ import { UploadImage } from "./pages/UploadImage.jsx";
 import { PaymentSuccess } from "./pages/PaymentSuccess.jsx";
 import { PaymentCanceled } from "./pages/PaymentCanceled.jsx";
 import { BotonPagoTest } from "./pages/BotonPagoTest.jsx";
+import { PoliticaDePrivacidad } from "./pages/PoliticaDePrivacidad.jsx"
+import { Uso } from "./pages/Uso.jsx";
+import { CondicionesDeEnvio } from "./pages/CondicionesDeEnvio.jsx";
+import { Faqs } from "./pages/Faqs.jsx";
+import { Disclaimer } from "./pages/Disclaimer.jsx";
 import { SignUp } from "./pages/SignUp.jsx";
 
 
@@ -43,7 +48,7 @@ const Layout = () => {
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<h1>Not found!</h1>} />
                         <Route element={<Form />} path="/form" />
-                        <Route element={<Product />} path="/product:idProduct" />
+                        <Route element={<Product />} path="/product" />
                         <Route element={<Account />} path="/account" />
                         <Route element={<ShoppingCart />} path="/shopping-cart" />
                         <Route element={<Category />} path="/category" />
@@ -51,6 +56,11 @@ const Layout = () => {
                         <Route element={<PaymentSuccess />} path="/payment-success"/>
                         <Route element={<PaymentCanceled />} path="/payment-canceled"/>
                         <Route element={<BotonPagoTest />} path="/boton-pago" />
+                        <Route element={<PoliticaDePrivacidad />} path="/politica-de-privacidad" />
+                        <Route element={<Uso />} path="/uso" />
+                        <Route element={<CondicionesDeEnvio />} path="/condiciones-de-envio" />
+                        <Route element={<Faqs />} path="/faqs" />
+                        <Route element={<Disclaimer />} path="/disclaimer" />
                     </Routes>
                     <Footer />
                 </ScrollToTop>
