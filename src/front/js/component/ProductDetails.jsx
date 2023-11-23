@@ -3,10 +3,13 @@ import { QuantityButton } from "./QuantityButton.jsx";
 import { ProductsOverFlow } from "./ProductsOverFlow.jsx";
 import { useContext } from "react";
 import { Context } from "../store/appContext.js";
+import { useParams } from "react-router-dom";
 
 
 export const ProductDetails = (props) => {
     const { store, actions } = useContext(Context);
+    const params = useParams();
+    actions.getOneProducts(params.idProduct);
 
 
     const handleAddItem = async () => {
@@ -62,16 +65,16 @@ export const ProductDetails = (props) => {
                                     <div className="col">
                                         <div className="p-3">
                                             <div className="mt-3 text-dark">
-                                                <h3 className="text-start">Hola</h3>
-                                                <p className="text-start mt-3">El alimento para perros Maxi Adult de ROYAL CANIN ha sido específicamente formulado teniendo en cuenta las necesidades nutricionales de tu perro. Este alimento es adecuado para perros de raza grande, a partir de los 15 meses y con un peso adulto de entre 26 y 44 kg.</p>
+                                                <h3 className="text-start">{store.product.name}</h3>
+                                                <p className="text-start mt-3">{store.product.description}</p>
                                                 <div className="d-flex justify-content-between">
                                                     <h5 className="text-start text-dark mb-3 fw-bold">Formato</h5>
                                                     <h5 className="text-start text-dark mb-3 fw-bold">Precio</h5>
                                                 </div>
                                                 <div className="container d-flex justify-content-between">
-                                                    <p>Saco de 4 kg</p>
+                                                    <p>Saco de {store.product.weight} kg</p>
                                                     <div className="price">
-                                                        <p className="fw-semibold mb-0">22.00 €</p>
+                                                        <p className="fw-semibold mb-0">{store.product.pricing} €</p>
                                                     </div>
                                                 </div>
                                             </div>

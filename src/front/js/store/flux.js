@@ -121,7 +121,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
       getOneProducts: async (productID) => {
-        const url = process.env.BACKEND_URL + "/api/products" + productID;
+        const url = process.env.BACKEND_URL + "/api/products/" + productID;
         const options = {
           method: "GET",
           headers: { "Content-Type": "application/json" }
@@ -129,7 +129,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         const response = await fetch(url, options);
         if (response.ok) {
           const data = await response.json();
-          const detail = data.results;
+          const detail = data;
           console.log(detail);
           setStore({ product: detail });
         } else {

@@ -6,7 +6,6 @@ import { Context } from "../store/appContext.js";
 
 export const Navbar = () => {
   const { store, actions } = useContext(Context);
-  console.log(store.user)
 
 
   const handleAddShoppingCart = () => {
@@ -48,9 +47,9 @@ export const Navbar = () => {
             <li className="nav-item dropdown">
               <button type="button" className="btn btn-primary rounded text-primary-emphasis dropdown-toggle" data-bs-toggle="dropdown" id="navbarDropdown" aria-expanded="false">
                 <i className="fas fa-user me-2"></i>
-                {store.isLogin ? store.user.first_name : ""}
+                {store.isLogin ? store.user.first_name : "Iniciar Sesión"}
               </button>
-              <ul className="dropdown-menu bg-primary-subtle">
+              <ul className="dropdown-menu dropdown-menu-end bg-primary-subtle">
                 <li>
                   <Link to="/login" className="dropdown-item text-danger">
                     {store.isLogin ? 'Cerrar Sesión': 'Iniciar Sesión'}
