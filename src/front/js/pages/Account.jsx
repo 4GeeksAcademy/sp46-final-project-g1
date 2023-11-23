@@ -4,8 +4,6 @@ import { useParams } from "react-router-dom";
 
 
 export const Account = () => {
-    const params = useParams();
-    actions.getMyUsers(params.idAccount);
 
 
     return (

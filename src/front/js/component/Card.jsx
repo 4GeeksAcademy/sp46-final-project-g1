@@ -10,14 +10,14 @@ export const Card = (props) => {
     const { store, actions } = useContext(Context);
 
 
-    // const handleAddItem = async () => {
-    //     store.currentItemCart = {
-    //         item_price: props.product.pricing,
-    //         shipping_item_price: 0,
-    //         product_id: props.product.id
-    //     }
-    //     await actions.postShoppingCartItem()
-    // }
+    const handleAddItem = async () => {
+        store.currentItemCart = {
+            item_price: props.product.pricing,
+            shipping_item_price: 0,
+            product_id: props.product.id
+        }
+        await actions.postShoppingCartItem()
+    }
 
     return (
         <section>
@@ -31,7 +31,7 @@ export const Card = (props) => {
                     </div> */}
                     <Link to={"/products/" + props.product.id} className="text-center my-4">
                         <img src="https://www.dia.es/product_images/130332/130332_ISO_0_ES.jpg"
-                            className="card-img-top object-fit-fill" alt="Pienso" style={{ width: '50%', height: '50%' }} />
+                            className="card-img-top object-fit-fill" alt="Pienso" style={{ width: '150px', height: '150px' }} />
                     </Link>
                     <div className="card-body text-dark">
                         {/* <Link to={"/people/" + props.id}>
@@ -51,7 +51,7 @@ export const Card = (props) => {
                             <Link to={"/products/" + props.product.id}>Mas detalles</Link>
                         </div>
                         <div className="d-grid">
-                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Añadir al carrito<i className="fas fa-shopping-cart ms-2"></i></button>
+                            <button type="button" onClick={handleAddItem} className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Añadir al carrito<i className="fas fa-shopping-cart ms-2"></i></button>
                         </div>
                         {/* <div className="d-grid">
                             <QuantityButton />
@@ -60,7 +60,7 @@ export const Card = (props) => {
                     </div>
                 </div>
             </div>
-            <Modal />
+            {/* <Modal /> */}
         </section>
 
     )
