@@ -1,4 +1,4 @@
-import { loadStripe } from '@stripe/stripe-js';
+// import { loadStripe } from '@stripe/stripe-js';
 
 const getState = ({ getStore, getActions, setStore }) => {
   return {
@@ -26,7 +26,14 @@ const getState = ({ getStore, getActions, setStore }) => {
       { title: "SECOND", background: "white", initial: "white" }]
     },
     actions: {
-
+      loginData: (data) => {
+        setStore({user: data.results.user});
+        setStore({shoppingCarts: data.results.cart});
+        setStore({shoppingCartItems: data.results.item});
+        // store.bills = 
+        // store.billsItem =
+        setStore({isLogin: true});
+      },
       getUsers: async () => {
         const url = process.env.BACKEND_URL + "/api/users";
         const token = localStorage.getItem("token")
@@ -108,12 +115,12 @@ const getState = ({ getStore, getActions, setStore }) => {
         if (response.ok) {
           const data = await response.json();
           const detail = data.results;
-          console.log(detail);
           setStore({ products: detail });
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
-      },getOneProducts: async (productID) => {
+      },
+      getOneProducts: async (productID) => {
         const url = process.env.BACKEND_URL + "/api/products" + productID;
         const options = {
           method: "GET",
@@ -439,7 +446,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.log('error', response.status, response.text)
 				}
 			},
-      getStripePublicKey: async () => {
+      /*       getStripePublicKey: async () => {
         const url = `${process.env.BACKEND_URL}/stripe-key`
         const options = {
           method: 'GET',
@@ -478,7 +485,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         } else {
           console.log('Error:', response.status, response.statusText);
         }
-      },
+      }, */
       putBillPaid: async (billId) => {
         const dataToSend = {};
         const url = process.env.BACKEND_URL + "/api/bills/" + billId;

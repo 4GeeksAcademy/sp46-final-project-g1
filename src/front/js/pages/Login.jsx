@@ -27,20 +27,14 @@ export const Login = () => {
     const response = await fetch(url, options)
     if (response.ok) {
       const data = await response.json();
-      console.log(data)
+      console.log(data);
       localStorage.setItem('token', data.token);
-      store.user = data.results;
-      // store.shoppingCarts = data.cart;
-      // store.shoppincartItem = 
-      // store.bills = 
-      // store.billsItem =
-      setEmail('');
-      setPassword('');
-      navigate("/")
+      actions.loginData(data);
+      navigate("/");
     } else {
       // tratar el error
-      console.log('Error: ', response.status, response.statusText)
-      return { Error: 'response error', status: response.status, statusText: response.statusText }
+      console.log('Error: ', response.status, response.statusText);
+      return { Error: 'response error', status: response.status, statusText: response.statusText };
     }
   }
   
