@@ -11,9 +11,9 @@ export const ProductsOverFlow = () => {
         <div className="container text-center">
             <div className="row row-cols-lg-7 row-cols-sm-2 row-cols-xs-2 row-cols-xl-5">
                 {store.products.slice(0, 5).map((product) => (
-                    <div className="col col-lg-4">
+                    <div className="col col-lg-4" key={product.id}>
                         <div className="p-3">
-                            <Card key={product.id} product={product} />
+                            <Card product={product} id={product.id} />
                         </div>
                     </div>
                 ))}

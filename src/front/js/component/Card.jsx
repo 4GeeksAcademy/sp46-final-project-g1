@@ -35,8 +35,11 @@ export const Card = (props) => {
                     </Link>
                     <div className="card-body text-dark">
                         <div className="d-flex mb-2">
-                            <Link to="/product">Mas detalles</Link>
+                            <Link to={"/products/" + props.product.id}>Mas detalles</Link>
                         </div>
+                        {/* <Link to={"/people/" + props.id}>
+                            <button type="button" className="btn btn-dark ms-0 border border-warning">Learn More</button>
+                        </Link> */}
                         <div className="d-flex justify-content-between mb-1">
                             <h5 className="mb-0">{props.product.name}</h5>
                             <h5 className="text-dark mb-0">{props.product.pricing} $</h5>
@@ -46,6 +49,7 @@ export const Card = (props) => {
                             {/* <div className="ms-auto text-warning">
                                 <StarReating />
                             </div> */}
+                            <h5>{props.product.id}</h5>
                         </div>
                         <div className="d-grid">
                             <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Añadir al carrito<i className="fas fa-shopping-cart ms-2"></i></button>
