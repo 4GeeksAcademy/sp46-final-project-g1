@@ -1,4 +1,4 @@
-import { loadStripe } from '@stripe/stripe-js';
+// import { loadStripe } from '@stripe/stripe-js';
 
 const getState = ({ getStore, getActions, setStore }) => {
   return {
@@ -11,6 +11,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       shoppingCarts: {},
       shoppingCartItems: [],
       currentItemCart: { quantity: 0 },
+      bill: {},
       bills: [],
       billsItems: [],
       offers: [],
@@ -25,7 +26,14 @@ const getState = ({ getStore, getActions, setStore }) => {
       { title: "SECOND", background: "white", initial: "white" }]
     },
     actions: {
-
+      loginData: (data) => {
+        setStore({user: data.results.user});
+        setStore({shoppingCarts: data.results.cart});
+        setStore({shoppingCartItems: data.results.item});
+        // store.bills = 
+        // store.billsItem =
+        setStore({isLogin: true});
+      },
       getUsers: async () => {
         const url = process.env.BACKEND_URL + "/api/users";
         const token = localStorage.getItem("token")
@@ -107,12 +115,12 @@ const getState = ({ getStore, getActions, setStore }) => {
         if (response.ok) {
           const data = await response.json();
           const detail = data.results;
-          console.log(detail);
           setStore({ products: detail });
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
-      },getOneProducts: async (productID) => {
+      },
+      getOneProducts: async (productID) => {
         const url = process.env.BACKEND_URL + "/api/products" + productID;
         const options = {
           method: "GET",
@@ -315,12 +323,13 @@ const getState = ({ getStore, getActions, setStore }) => {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`
           },
-          body: JSON.stringify(store.shoppingCartItems)
+          body: JSON.stringify({})
         };
         const response = await fetch(url, options);
         if (response.ok) {
           const data = await response.json();
           setStore({ shoppingCartItems: {} })
+          setStore({ shoppingCarts: {}})
           console.log(data);
         } else {
           console.log("ERROR:", response.status, response.statusText);
@@ -437,7 +446,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.log('error', response.status, response.text)
 				}
 			},
-      getStripePublicKey: async () => {
+      /*       getStripePublicKey: async () => {
         const url = `${process.env.BACKEND_URL}/stripe-key`
         const options = {
           method: 'GET',
@@ -454,7 +463,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
       processPayment: async () => {
-        const stripe = await loadStripe(getStore().stripePublicKey)
+        const postBills = await getActions().postBills();
+        const stripe = await loadStripe(getStore().stripePublicKey);
         const url = `${process.env.BACKEND_URL}/payment`
         const token = localStorage.getItem("token")
         const options = {
@@ -469,10 +479,31 @@ const getState = ({ getStore, getActions, setStore }) => {
         const response = await fetch(url, options);
         if (response.ok) {
           const data = await response.json();
+          setStore({ bill: data.results})
           console.log(data);
           stripe.redirectToCheckout({ sessionId: data.sessionId });
         } else {
           console.log('Error:', response.status, response.statusText);
+        }
+      }, */
+      putBillPaid: async (billId) => {
+        const dataToSend = {};
+        const url = process.env.BACKEND_URL + "/api/bills/" + billId;
+        const token = localStorage.getItem("token");
+        const options = {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(dataToSend)
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+        } else {
+          console.log("ERROR:", response.status, response.statusText);
         }
       },
       // Use getActions to call a function within a fuction

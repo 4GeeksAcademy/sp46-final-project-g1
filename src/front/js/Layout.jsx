@@ -24,6 +24,7 @@ import { Uso } from "./pages/Uso.jsx";
 import { CondicionesDeEnvio } from "./pages/CondicionesDeEnvio.jsx";
 import { Faqs } from "./pages/Faqs.jsx";
 import { Disclaimer } from "./pages/Disclaimer.jsx";
+import { SignUp } from "./pages/SignUp.jsx";
 
 
 
@@ -42,6 +43,7 @@ const Layout = () => {
                     <Routes>
                         <Route element={<Home />} path="/" />
                         <Route element={<Login />} path="/login" />
+                        <Route element={<SignUp />} path="/signup" />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<h1>Not found!</h1>} />

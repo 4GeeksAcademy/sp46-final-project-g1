@@ -48,13 +48,20 @@ export const Navbar = () => {
             <li className="nav-item dropdown">
               <button type="button" className="btn btn-primary rounded text-primary-emphasis dropdown-toggle" data-bs-toggle="dropdown" id="navbarDropdown" aria-expanded="false">
                 <i className="fas fa-user me-2"></i>
+                {store.isLogin ? store.user.first_name : ""}
               </button>
-              {store.isLogin ? store.user.email : ""}
-              <ul className="dropdown-menu dropdown-menu-end bg-primary-subtle">
-                <li><Link to="/login" className="dropdown-item text-danger">Iniciar Sesión</Link></li>
+              <ul className="dropdown-menu bg-primary-subtle">
+                <li>
+                  <Link to="/login" className="dropdown-item text-danger">
+                    {store.isLogin ? 'Cerrar Sesión': 'Iniciar Sesión'}
+                  </Link>
+                </li>
                 <li><hr className="dropdown-divider" /></li>
                 <li><Link to="/account" className="dropdown-item text-dark">Mi cuenta</Link></li>
                 <li><Link to="/form" className="dropdown-item text-dark">Salir</Link></li>
+                <li><hr className="dropdown-divider" /></li>
+                <li><Link to="/login" className="dropdown-item text-danger">Iniciar Sesión</Link></li>
+                <li><Link to="/signup" className="dropdown-item text-danger">Crear Cuenta</Link></li>
               </ul>
               {/* <span className="border-start border-dark"></span> */}
             </li>
