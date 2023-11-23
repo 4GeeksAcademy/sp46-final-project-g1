@@ -3,10 +3,13 @@ import { useContext } from "react";
 import { Context } from "../store/appContext.js";
 import { QuantityButton } from "./QuantityButton.jsx";
 import { Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 
 export const Modal = (props) => {
     const { store, actions } = useContext(Context);
+    const params = useParams();
+    actions.getOneProducts(params.idProduct);
 
 
     const handleAddItem = async () => {
@@ -37,8 +40,10 @@ export const Modal = (props) => {
                                     </div>
                                     <div className="col">
                                         <div className="p-2 text-dark text-start">
-                                            <p className="m-0">Purina, friskies pienso para perros</p>
-                                            <Link to="/product" data-bs-toggle="tooltip" title="Tooltip">Mas detalles</Link>
+                                            <p className="m-0">{store.product.name}</p>
+                                            {/* <div className="d-flex mb-4">
+                                                <Link to={"/products/" + props.product.id}>Mas detalles</Link>
+                                            </div> */}
                                         </div>
                                     </div>
                                 </div>

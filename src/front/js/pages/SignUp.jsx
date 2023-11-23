@@ -12,8 +12,8 @@ export const SignUp = () => {
     const [viewPassword, setViewPassword] = useState(false);
 
     const navigate = useNavigate()
-    const handleFirtsName = (event) => setFirtsName(event.target.value) 
-    const handleLastName = (event) => setLastName(event.target.value) 
+    const handleFirtsName = (event) => setFirtsName(event.target.value)
+    const handleLastName = (event) => setLastName(event.target.value)
     const handleEmail = (event) => setEmail(event.target.value)
     const handlePassword = event => setPassword(event.target.value)
     const handleViewPasswort = () => setViewPassword(!viewPassword)
@@ -25,16 +25,19 @@ export const SignUp = () => {
             body: JSON.stringify({ email, password, firtsName, lastName }),
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
         }
         const response = await fetch(url, options)
         if (response.ok) {
             const data = await response.json();
             console.log(data)
             localStorage.setItem('token', data.token);
-            store.user = data.results;
+            store.user = data;
+            actions.loginData(data);
             setEmail('');
             setPassword('');
+            setFirtsName('');
+            setLastName('');
             navigate("/")
         } else {
             // tratar el error
@@ -49,38 +52,36 @@ export const SignUp = () => {
         <div className="container my-5 p-3">
             <h1 className="text-center text-dark my-3">SignUp</h1>
             <div className="container" style={{ width: '50%', height: '50%' }}>
-            <form>
-                <div className="form-floating mb-3 border border-primary rounded">
-                    <input type="email" value={firtsName} onChange={handleFirtsName}
-                        className="form-control" id="exampleInputEmail1" placeholder="Tu nombre"
-                        aria-describedby="emailHelp" />
-                    <label htmlFor="exampleInputEmail1">Nombre</label>
-                </div>
-                <div className="form-floating mb-3 border border-primary rounded">
-                    <input type="email" value={lastName} onChange={handleLastName}
-                        className="form-control" id="exampleInputEmail1" placeholder="Tu apellido"
-                        aria-describedby="emailHelp" />
-                    <label htmlFor="exampleInputEmail1">Apellido</label>
-                </div>
-                <div className="form-floating mb-3 border border-primary rounded">
-                    <input type="email" value={email} onChange={handleEmail}
-                        className="form-control" id="exampleInputEmail1" placeholder="Email address"
-                        aria-describedby="emailHelp" />
-                    <label htmlFor="exampleInputEmail1">Email address</label>
-                </div>
-                <div className="input-group mb-3 border border-primary rounded">
-                    <div className="form-floating">
-                        <input type={viewPassword ? "text" : "password"} value={password} onChange={handlePassword}
-                            className="form-control" id="floatingInputGroup1" placeholder="Password" />
-                        <label htmlFor="floatingInputGroup1">Password</label>
+                <form>
+                    <div className="form-floating mb-3 border border-primary rounded">
+                        <input type="text" value={firtsName} onChange={handleFirtsName}
+                            className="form-control" id="firstname" placeholder="Tu nombre" />
+                        <label htmlFor="firstname">Nombre</label>
                     </div>
-                    <span className="input-group-text" onClick={handleViewPasswort}>
-                        {viewPassword ? <i className="far fa-eye-slash"></i> : <i className="far fa-eye"></i>}
-                    </span>
-                </div>
-                <button type="button" onClick={signUp} className="btn btn-primary me-4">SignUp</button>
-                <button type="reset" className="btn btn-secondary">Cancel</button>
-            </form>
+                    <div className="form-floating mb-3 border border-primary rounded">
+                        <input type="text" value={lastName} onChange={handleLastName}
+                            className="form-control" id="lastname" placeholder="Tu apellido"/>
+                        <label htmlFor="lastname">Apellido</label>
+                    </div>
+                    <div className="form-floating mb-3 border border-primary rounded">
+                        <input type="email" value={email} onChange={handleEmail}
+                            className="form-control" id="exampleInputEmail1" placeholder="Email address"
+                            aria-describedby="emailHelp" />
+                        <label htmlFor="exampleInputEmail1">Email address</label>
+                    </div>
+                    <div className="input-group mb-3 border border-primary rounded">
+                        <div className="form-floating">
+                            <input type={viewPassword ? "text" : "password"} value={password} onChange={handlePassword}
+                                className="form-control" id="floatingInputGroup1" placeholder="Password" />
+                            <label htmlFor="floatingInputGroup1">Password</label>
+                        </div>
+                        <span className="input-group-text" onClick={handleViewPasswort}>
+                            {viewPassword ? <i className="far fa-eye-slash"></i> : <i className="far fa-eye"></i>}
+                        </span>
+                    </div>
+                    <button type="button" onClick={signUp} className="btn btn-primary me-4">SignUp</button>
+                    <button type="reset" className="btn btn-secondary">Cancel</button>
+                </form>
             </div>
         </div>
     )
