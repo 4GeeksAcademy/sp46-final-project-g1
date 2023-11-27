@@ -29,7 +29,7 @@ export const ShoppingCart = () => {
                                     <div className="d-flex justify-content-between mt-3">
                                         <div className="text-dark">
                                             <p className="m-0">Productos</p>
-                                            <p>Envío</p>
+                                            <p className="m-0">Envío</p>
                                         </div>
                                         <div className="text-dark">
                                             <p className="m-0">30.00€</p>
