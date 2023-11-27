@@ -9,6 +9,7 @@ import { Context } from "../store/appContext.js";
 export const ShoppingCart = () => {
     const { store, actions } = useContext(Context)
 
+
     return (
         <div className="container my-5">
             <div className="container text-center">
@@ -18,7 +19,6 @@ export const ShoppingCart = () => {
                             {store.shoppingCartItems.map((product) => (
                                 <CardShopping key={product.id} product={product} />
                             ))}
-                            <CardShopping />
                         </div>
                     </div>
                     <div className="col-lg-4">
@@ -29,7 +29,7 @@ export const ShoppingCart = () => {
                                     <div className="d-flex justify-content-between mt-3">
                                         <div className="text-dark">
                                             <p className="m-0">Productos</p>
-                                            <p>Envío</p>
+                                            <p className="m-0">Envío</p>
                                         </div>
                                         <div className="text-dark">
                                             <p className="m-0">30.00€</p>
@@ -53,12 +53,15 @@ export const ShoppingCart = () => {
                                 </div>
                                 <hr />
                                 <div className="p-2">
-                                    <div className="d-flex align-items-center flex-column">
-                                        <div>
-                                            <h6 className="text-dark mt-3">Pago 100% seguro</h6>
-                                        </div>
-                                        <div className="p-3">
-                                            <img src="https://www.tiendanimal.es/on/demandware.static/Sites-TiendanimalES-Site/-/default/dw559bc14b/images/logos-payment.svg" alt="" />
+                                    <div className="container text-center">
+                                        <div className="row row-cols-1 row-cols-lg-1">
+                                            <div className="col">
+                                                <h6 className="text-dark mt-3">Pago 100% seguro</h6>
+                                            </div>
+                                            <div className="col d-flex justify-content-center">
+                                                <img src="https://www.tiendanimal.es/on/demandware.static/Sites-TiendanimalES-Site/-/default/dw559bc14b/images/logos-payment.svg"
+                                                    alt="" style={{ height: "20px" }} />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

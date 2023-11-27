@@ -5,11 +5,9 @@ import { CardOffers } from "../component/CardOffers.jsx";
 import { CardCategory } from "../component/CardCategory.jsx";
 
 
-
-	
-
 export const Home = () => {
 	
+
 	return (
 		<div className="body">
 			<div id="carouselExampleIndicators" className="carousel slide">
@@ -23,7 +21,7 @@ export const Home = () => {
 						<img src="https://kb.rspca.org.au/wp-content/uploads/2021/07/collie-beach-bokeh.jpg"
 							className="d-block w-100 object-fit-cover" style={{ height: "450px" }} alt="road trip dog" />
 						<div className="carousel-caption d-flex align-items-start flex-column">
-							<h4 className="text-dark"><strong>Bienvenido! Aquí encontrarás<br />los mejores productos para tu mejor amigo</strong></h4>
+							<h4 className="text-dark text-start"><strong>Bienvenido! Aquí encontrarás<br />los mejores productos para tu mejor amigo</strong></h4>
 							<Link to="/login" className="btn btn-danger"><i className="fas fa-paw me-2"></i>Iniciar sesión</Link>
 						</div>
 					</div>
@@ -31,7 +29,7 @@ export const Home = () => {
 						<img src="https://assets-au-01.kc-usercontent.com/ab37095e-a9cb-025f-8a0d-c6d89400e446/fba30a1f-3490-4761-9f92-f28bf27e46ff/article-interpreting-body-language-in-dogs.jpg"
 							className="d-block w-100 object-fit-cover" style={{ height: "450px" }} alt="dog window" />
 						<div className="carousel-caption d-flex align-items-start flex-column">
-							<h4 className="text-light"><strong>Woof! Woof! Ya te registraste?</strong></h4>
+							<h4 className="text-light text-start"><strong>Woof! Woof! Ya te registraste?</strong></h4>
 							<Link to="/signup" className="btn btn-danger"><i className="fas fa-user me-2"></i>Crear cuenta</Link>
 						</div>
 					</div>
@@ -39,7 +37,7 @@ export const Home = () => {
 						<img src="https://naturesmiracle.la/cl/wp-content/uploads/sites/2/2020/12/iStock-1013878116-1-scaled.jpg"
 							className="d-block w-100 object-fit-cover" style={{ height: "450px" }} alt="dog park" />
 						<div className="carousel-caption d-flex align-items-start flex-column">
-							<h4 className="text-light"><strong>Estoy oliendo algo sabroso! <br />Mira todos nuestros productos</strong></h4>
+							<h4 className="text-light text-start"><strong>Estoy oliendo algo sabroso! <br />Mira todos nuestros productos</strong></h4>
 							<Link to="/category" className="btn btn-danger"><i className="fas fa-bone fa-spin me-2"></i>Categorías</Link>
 						</div>
 					</div>
