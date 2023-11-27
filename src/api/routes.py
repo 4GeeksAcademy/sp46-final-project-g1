@@ -404,7 +404,7 @@ def shopping_cart_items(products_id):
     request_body = request.get_json()
     cart_item = ShoppingCartItems(quantity=request_body['quantity'], 
                                   item_price=product.pricing,
-                                  shipping_item_price=request_body['shipping_item_price'],
+                                  shipping_item_price=float(request_body['shipping_item_price']),
                                   product_id=product.id,
                                   shopping_cart_id=cart.id)
     db.session.add(cart_item)
@@ -417,7 +417,7 @@ def shopping_cart_items(products_id):
     list_items = []
     for item in cart_items:
             list_items.append(item.serialize())
-    results['items'] = list_items
+    results['item'] = list_items
     response_body = {'message': 'Shopping Cart with all items', 
                      'results': results}
     return response_body, 201
@@ -428,26 +428,41 @@ def shopping_cart_items(products_id):
 def handle_cart_items_id(user_id, cart_item_id):
     current_identity = get_jwt_identity()
     response_body = {}
+    results = {}
     if current_identity[1]:
         response_body['message'] = "Area no para administradores"
         return response_body, 401
-    try:
-        cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.user_id == current_identity[0])).scalar()
-        cart_item = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id, 
-                                                                          ShoppingCartItems.id == cart_item_id)).scalar()
-        if request.method == 'PUT':
-            request_body = request.get_json()
-            cart_item.quantity = request_body.get('quantity')
-            db.session.commit()
-            response_body['message'] = "Shopping Cart Item updated"
-        if request.method == 'DELETE':
-            db.session.delete(cart_item)
-            db.session.commit()
-            response_body['message'] = "Shopping Cart Item deleted"
-        return response_body, 200 
-    except:
-        response_body['message'] = "Bad request"
-        return response_body, 403
+    #try:
+    cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.user_id == current_identity[0])).scalar()
+    cart_item = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id, 
+                                                                        ShoppingCartItems.id == cart_item_id)).scalar()
+    if request.method == 'PUT':
+        request_body = request.get_json()
+        cart_item.quantity = request_body.get('quantity')
+        db.session.commit()
+        response_body['message'] = "Shopping Cart Item updated"
+    if request.method == 'DELETE':
+        db.session.delete(cart_item)
+        db.session.commit()
+        cart_items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
+        list_items = []
+        total = 0
+        for item in cart_items:
+                list_items.append(item.serialize())
+                cart_item_data = item.serialize()
+                #foo = item.serialize()
+                #print(foo)
+                total += cart_item_data['item_price'] * cart_item_data['quantity']
+        cart.total_price = total
+        db.session.commit()
+        results["cart"] = cart.serialize()
+        results['item'] = list_items
+        response_body = {'message': 'Shopping Cart item deleted', 
+                         'results': results}
+    return response_body, 200 
+    #except:
+        #response_body['message'] = "Bad request"
+        #return response_body, 403
 
 
 
@@ -509,6 +524,7 @@ def handle_bills():
             results = {}
             #try: 
             cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.user_id == current_identity[0])).scalar()
+            print(cart.total_price)
             cart_items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
             cart_items_list = [item.serialize() for item in cart_items]
             address = db.session.execute(db.select(Users.address).where(Users.id  == current_identity[0])).scalar()
@@ -540,7 +556,7 @@ def handle_bills():
                 db.session.delete(item)
             db.session.delete(cart)
             response_body = {'message': 'Bill created', 
-                            'results': results}
+                             'results': results}
             return response_body, 201
             #except:
             #   response_body['message'] = "bad request"

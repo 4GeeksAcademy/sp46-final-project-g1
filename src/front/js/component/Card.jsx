@@ -4,20 +4,15 @@ import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { Context } from "../store/appContext.js";
 import { QuantityButton } from "./QuantityButton.jsx";
-import { Modal } from "./Modal.jsx"
 
 export const Card = (props) => {
     const { store, actions } = useContext(Context);
 
 
     const handleAddItem = async () => {
-        store.currentItemCart = {
-            item_price: props.product.pricing,
-            shipping_item_price: 0,
-            product_id: props.product.id
-        }
-        await actions.postShoppingCartItem()
-    }
+        actions.currentItemCart(props.product.pricing, 0, props.product.id, 1)
+        await actions.postShoppingCartItem(props.product.id)
+    } // como hacemos quje se actualice el logo del carrito en el navBar?? 
 
     return (
         <section>
@@ -51,7 +46,7 @@ export const Card = (props) => {
                             <Link to={"/products/" + props.product.id}>Mas detalles</Link>
                         </div>
                         <div className="d-grid">
-                            <button type="button" onClick={handleAddItem} className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Añadir al carrito<i className="fas fa-shopping-cart ms-2"></i></button>
+                            <button type="button" onClick={handleAddItem} className="btn btn-primary">Añadir al carrito<i className="fas fa-shopping-cart ms-2"></i></button>
                         </div>
                         {/* <div className="d-grid">
                             <QuantityButton />
@@ -60,7 +55,6 @@ export const Card = (props) => {
                     </div>
                 </div>
             </div>
-            {/* <Modal /> */}
         </section>
 
     )
