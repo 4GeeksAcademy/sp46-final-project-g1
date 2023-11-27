@@ -10,8 +10,10 @@ export const CardShopping = (props) => {
     const handleDelete = async () => {
         // determinar el shoppingItemId y pasarlo como segundo parametro en el await
         const ShoppingCartItems = 0;
+        console.log(store.shoppingCartItems[0]);
         await actions.deleteShoppingCartItem(store.user.id, store.ShoppingCartItems.id)
         // borrar del array via metodo filter el elemento que acabo de enviar y actualizar el store
+        // TODO preguntar hector
     }
 
     return (
@@ -26,10 +28,10 @@ export const CardShopping = (props) => {
                     </div>
                     <div className="col col-lg-4">
                         <div className="p-3 text-dark text-start">
-                            <p className="m-0">{() => props.product.name}</p>
+                            <p className="m-0">{props.product.name}</p>
                             <p className="m-0">Cantidad: 1</p>
-                            <p className="m-0">Peso: {() => props.product.weight}</p>
-                            <p className="m-0">Precio: {() => props.product.pricing}</p>
+                            <p className="m-0">Peso: {props.product.weight}</p>
+                            <p className="m-0">Precio: {props.product.pricing}</p>
                         </div>
                     </div>
                     <div className="col col-lg-4">
