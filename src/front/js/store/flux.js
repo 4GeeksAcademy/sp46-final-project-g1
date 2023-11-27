@@ -245,6 +245,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           setStore({ currentItemCart: { quantity: 0 } })
           // actualizar el store shoppingCartItems
           setStore({ shoppingCartItems: data.results.item})
+          setStore({shoppingCarts: data.results.cart})
           console.log(data);
         } else {
           console.log("ERROR:", response.status, response.statusText);
@@ -264,7 +265,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         if (response.ok) {
           const data = await response.json();
           setStore({ shoppingCartItems: data.results.item});
-          console.log(shoppingCartItems);
+          setStore({ shoppingCarts: data.results.cart});
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }

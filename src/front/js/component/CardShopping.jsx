@@ -15,11 +15,8 @@ export const CardShopping = (props) => {
 
 
     const handleDelete = async () => {
-        // determinar el shoppingItemId y pasarlo como segundo parametro en el await
-        actions.currentItems() // con el actions currentItemCart funciona el DELETE pero no actualizaa
+        // actions.currentItems() // con el actions currentItemCart funciona el DELETE pero no actualizaa
         await actions.deleteShoppingCartItem(store.user.id, props.item.id)
-        // borrar del array via metodo filter el elemento que acabo de enviar y actualizar el store
-        // TODO preguntar hector
     }
 
     return (
@@ -41,7 +38,10 @@ export const CardShopping = (props) => {
                     </div>
                     <div className="col col-lg-4">
                         <div className="p-3 mt-5">
-                            <QuantityButton />
+                           {/* <QuantityButton /> */}
+                           {/* genero un form con un input type:number y en el submit agregar un handleQuantity (en ese handle ir al put de)
+                            */}
+                            
                         </div>
                     </div>
                     <div className="col col-lg-2">

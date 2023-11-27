@@ -6,10 +6,11 @@ import { Context } from "../store/appContext.js";
 
 export const Navbar = () => {
   const { store, actions } = useContext(Context);
+  const shoppingCartId = store.shoppingCarts.id
 
 
   const handleAddShoppingCart = () => {
-    actions.getMyShoppingcarts()
+    actions.getMyShoppingcarts(shoppingCartId)
   };
 
 
@@ -87,11 +88,13 @@ export const Navbar = () => {
               </div> */}
             </li>
             <li className="nav-item">
-              <Link to="/shopping-cart" onClick={handleAddShoppingCart} className="btn btn-primary text-primary-emphasis">
-                <i className="fas fa-shopping-cart">
-                  <span className="badge text-bg-secondary ms-1">{store.shoppingCartItems.length}</span>
-                </i>
-              </Link>
+              <span onClick={handleAddShoppingCart}>
+                <Link to="/shopping-cart" className="btn btn-primary text-primary-emphasis">
+                  <i className="fas fa-shopping-cart">
+                    <span className="badge text-bg-secondary ms-1">{store.shoppingCartItems.length}</span>
+                  </i>
+                </Link>
+              </span>
             </li>
           </ul>
         </div>
