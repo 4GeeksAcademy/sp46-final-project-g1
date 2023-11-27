@@ -11,12 +11,7 @@ export const Card = (props) => {
 
 
     const handleAddItem = async () => {
-        store.currentItemCart = {
-            item_price: props.product.pricing,
-            shipping_item_price: 0,
-            product_id: props.product.id,
-            quantity: 1
-        }
+        actions.currentItemCart(props.product.pricing, 0, props.product.id, 1)
         await actions.postShoppingCartItem(props.product.id)
     } // como hacemos quje se actualice el logo del carrito en el navBar?? 
 

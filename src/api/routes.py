@@ -404,7 +404,7 @@ def shopping_cart_items(products_id):
     request_body = request.get_json()
     cart_item = ShoppingCartItems(quantity=request_body['quantity'], 
                                   item_price=product.pricing,
-                                  shipping_item_price=request_body['shipping_item_price'],
+                                  shipping_item_price=float(request_body['shipping_item_price']),
                                   product_id=product.id,
                                   shopping_cart_id=cart.id)
     db.session.add(cart_item)
@@ -417,7 +417,7 @@ def shopping_cart_items(products_id):
     list_items = []
     for item in cart_items:
             list_items.append(item.serialize())
-    results['items'] = list_items
+    results['item'] = list_items
     response_body = {'message': 'Shopping Cart with all items', 
                      'results': results}
     return response_body, 201

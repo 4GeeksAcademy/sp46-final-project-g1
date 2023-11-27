@@ -26,6 +26,14 @@ const getState = ({ getStore, getActions, setStore }) => {
       { title: "SECOND", background: "white", initial: "white" }]
     },
     actions: {
+      currentItemCart: (pricing, shippingPrice, productID, quantity) => {
+        setStore ({currentItemCart: {
+          item_price: pricing,
+          shipping_item_price: shippingPrice,
+          product_id: productID,
+          quantity: quantity
+        }})
+      },
       loginData: (data) => {
         setStore({user: data.results.user});
         const cart = data.results.cart ? data.results.cart : []
@@ -231,6 +239,8 @@ const getState = ({ getStore, getActions, setStore }) => {
           const data = await response.json();
           setStore({ currentItemCart: {} })
           setStore({ currentItemCart: { quantity: 0 } })
+          // actualizar el store shoppingCartItems
+          setStore({ shoppingCartItems: data.results.item})
           console.log(data);
         } else {
           console.log("ERROR:", response.status, response.statusText);

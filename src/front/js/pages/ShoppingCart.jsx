@@ -15,8 +15,8 @@ export const ShoppingCart = () => {
                 <div className="row row-cols-1 row-cols-lg-2 g-2 g-lg-3">
                     <div className="col-lg-8">
                         <div className="p-3">
-                            {store.shoppingCartItems.map((product) => (
-                                <CardShopping key={product.id} product={product} />
+                            {store.shoppingCartItems.map((item) => (
+                                <CardShopping key={item.id} item={item} />
                             ))}
                         </div>
                     </div>
