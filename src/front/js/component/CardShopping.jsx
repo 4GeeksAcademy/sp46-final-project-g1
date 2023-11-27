@@ -16,8 +16,7 @@ export const CardShopping = (props) => {
 
     const handleDelete = async () => {
         // determinar el shoppingItemId y pasarlo como segundo parametro en el await
-        const ShoppingCartItems = 0;
-        console.log(store.shoppingCartItems[0]);
+        actions.currentItems() // con el actions currentItemCart funciona el DELETE pero no actualizaa
         await actions.deleteShoppingCartItem(store.user.id, props.item.id)
         // borrar del array via metodo filter el elemento que acabo de enviar y actualizar el store
         // TODO preguntar hector

@@ -43,9 +43,7 @@ export const BotonPago = () => {
     if (response.ok) {
       const data = await response.json();
       console.log(data.results.bill);
-      // actions.setNewBill(data.results.bill);
       localStorage.setItem('bill', JSON.stringify(data.results.bill.id));
-      // setStore({ bill: data.results })
       console.log(data);
       stripe.redirectToCheckout({ sessionId: data.sessionId });
     } else {

@@ -443,7 +443,13 @@ def handle_cart_items_id(user_id, cart_item_id):
         if request.method == 'DELETE':
             db.session.delete(cart_item)
             db.session.commit()
-            response_body['message'] = "Shopping Cart Item deleted"
+            cart_items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
+            list_items = []
+            for item in cart_items:
+                    list_items.append(item.serialize())
+            results['item'] = list_items
+            response_body = {'message': 'Shopping Cart item deleted', 
+                             'results': results}
         return response_body, 200 
     except:
         response_body['message'] = "Bad request"
@@ -509,6 +515,7 @@ def handle_bills():
             results = {}
             #try: 
             cart = db.session.execute(db.select(ShoppingCarts).where(ShoppingCarts.user_id == current_identity[0])).scalar()
+            print(cart.total_price)
             cart_items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
             cart_items_list = [item.serialize() for item in cart_items]
             address = db.session.execute(db.select(Users.address).where(Users.id  == current_identity[0])).scalar()
@@ -540,7 +547,7 @@ def handle_bills():
                 db.session.delete(item)
             db.session.delete(cart)
             response_body = {'message': 'Bill created', 
-                            'results': results}
+                             'results': results}
             return response_body, 201
             #except:
             #   response_body['message'] = "bad request"

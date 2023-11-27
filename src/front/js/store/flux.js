@@ -26,6 +26,10 @@ const getState = ({ getStore, getActions, setStore }) => {
       { title: "SECOND", background: "white", initial: "white" }]
     },
     actions: {
+      currentItems: () => {
+        const cartItem = data.results.item ? data.results.item : []
+        setStore({shoppingCartItems: cartItem});
+      },
       currentItemCart: (pricing, shippingPrice, productID, quantity) => {
         setStore ({currentItemCart: {
           item_price: pricing,
@@ -259,6 +263,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         const response = await fetch(url, options);
         if (response.ok) {
           const data = await response.json();
+          setStore({ shoppingCartItems: data.results.item});
+          console.log(shoppingCartItems);
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }

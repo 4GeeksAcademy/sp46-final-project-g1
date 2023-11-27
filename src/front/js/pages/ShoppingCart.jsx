@@ -4,10 +4,12 @@ import { Link } from "react-router-dom";
 import { ProductsOverFlow } from "../component/ProductsOverFlow.jsx";
 import { BotonPago } from "../component/BotonPago.jsx";
 import { Context } from "../store/appContext.js";
+import { ShoppingCartList } from "../component/ShoppingCartList.jsx";
 
 
 export const ShoppingCart = () => {
     const { store, actions } = useContext(Context)
+
 
     return (
         <div className="container my-5">
@@ -25,15 +27,10 @@ export const ShoppingCart = () => {
                             <div className="d-flex flex-column mb-3 border border-primary rounded p-3">
                                 <div className="p-2">
                                     <h5 className="text-dark">Resumen de mi pedido</h5>
-                                    <div className="d-flex justify-content-between mt-3">
-                                        <div className="text-dark">
-                                            <p className="m-0">Productos</p>
-                                            <p>Envío</p>
-                                        </div>
-                                        <div className="text-dark">
-                                            <p className="m-0">30.00€</p>
-                                            <p>3.99€</p>
-                                        </div>
+                                    <div className="p-3">
+                                        {store.shoppingCartItems.map((item) => (
+                                            <ShoppingCartList key={item.id} item={item} />
+                                        ))}
                                     </div>
                                 </div>
                                 <hr />
@@ -43,7 +40,7 @@ export const ShoppingCart = () => {
                                             <h5 className="text-dark">Total</h5>
                                         </div>
                                         <div className="text-dark">
-                                            <p>33.99€</p>
+                                            <p>{store.shoppingCarts.total_price} €</p>
                                         </div>
                                     </div>
                                     <div className="d-grid mt-2">
