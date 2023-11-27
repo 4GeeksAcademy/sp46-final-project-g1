@@ -49,12 +49,15 @@ export const ShoppingCart = () => {
                                 </div>
                                 <hr />
                                 <div className="p-2">
-                                    <div className="d-flex align-items-center flex-column">
-                                        <div>
-                                            <h6 className="text-dark mt-3">Pago 100% seguro</h6>
-                                        </div>
-                                        <div className="p-3">
-                                            <img src="https://www.tiendanimal.es/on/demandware.static/Sites-TiendanimalES-Site/-/default/dw559bc14b/images/logos-payment.svg" alt="" />
+                                    <div className="container text-center">
+                                        <div className="row row-cols-1 row-cols-lg-1">
+                                            <div className="col">
+                                                <h6 className="text-dark mt-3">Pago 100% seguro</h6>
+                                            </div>
+                                            <div className="col d-flex justify-content-center">
+                                                <img src="https://www.tiendanimal.es/on/demandware.static/Sites-TiendanimalES-Site/-/default/dw559bc14b/images/logos-payment.svg"
+                                                    alt="" style={{ height: "20px" }} />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
