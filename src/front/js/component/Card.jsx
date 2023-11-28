@@ -29,9 +29,6 @@ export const Card = (props) => {
                             className="card-img-top object-fit-fill" alt="Pienso" style={{ width: '150px', height: '150px' }} />
                     </Link>
                     <div className="card-body text-dark">
-                        {/* <Link to={"/people/" + props.id}>
-                            <button type="button" className="btn btn-dark ms-0 border border-warning">Learn More</button>
-                        </Link> */}
                         <div className="d-flex justify-content-between mb-1">
                             <h5 className="mb-0">{props.product.name}</h5>
                             <h5 className="text-dark mb-0">{props.product.pricing} $</h5>
@@ -48,10 +45,6 @@ export const Card = (props) => {
                         <div className="d-grid">
                             <button type="button" onClick={handleAddItem} className="btn btn-primary">Añadir al carrito<i className="fas fa-shopping-cart ms-2"></i></button>
                         </div>
-                        {/* <div className="d-grid">
-                            <QuantityButton />
-                            <button onClick={handleAddItem} className="btn btn-primary mt-2" type="button">Añadir al carrito <i className="fas fa-shopping-cart"></i></button>
-                        </div> */}
                     </div>
                 </div>
             </div>

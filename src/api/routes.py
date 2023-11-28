@@ -444,21 +444,19 @@ def handle_cart_items_id(user_id, cart_item_id):
     if request.method == 'DELETE':
         db.session.delete(cart_item)
         db.session.commit()
-        cart_items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
-        list_items = []
-        total = 0
-        for item in cart_items:
-                list_items.append(item.serialize())
-                cart_item_data = item.serialize()
-                #foo = item.serialize()
-                #print(foo)
-                total += cart_item_data['item_price'] * cart_item_data['quantity']
-        cart.total_price = total
-        db.session.commit()
-        results["cart"] = cart.serialize()
-        results['item'] = list_items
-        response_body = {'message': 'Shopping Cart item deleted', 
-                         'results': results}
+        response_body['message'] = "Shopping Cart Item Deleted"
+    cart_items = db.session.execute(db.select(ShoppingCartItems).where(ShoppingCartItems.shopping_cart_id == cart.id)).scalars()
+    list_items = []
+    total = 0
+    for item in cart_items:
+            list_items.append(item.serialize())
+            cart_item_data = item.serialize()
+            total += cart_item_data['item_price'] * cart_item_data['quantity']
+    cart.total_price = total
+    db.session.commit()
+    results["cart"] = cart.serialize()
+    results['item'] = list_items
+    response_body['results'] = results
     return response_body, 200 
     #except:
         #response_body['message'] = "Bad request"
