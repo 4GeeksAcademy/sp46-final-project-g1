@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import logoWoofPetShop from "../../img/logo-pet-shop.jpg"
 import { Context } from "../store/appContext.js";
+import { Logout } from "./Logout.jsx";
 
 
 export const Navbar = () => {
@@ -22,18 +23,6 @@ export const Navbar = () => {
             <img src={logoWoofPetShop} style={{ width: "50px", height: "50px" }} alt="" />
           </Link>
         </div>
-        {/* <div className="d-none d-xxl-block">
-          <div className="ms-5 container d-flex flex-row-reverse">
-            <div className="input-group w-75">
-              <input className="form-control me-sm-2 bg-primary-subtle" type="search" placeholder="Buscar" />
-              <span className="input-group-btn">
-                <button className="btn btn-default text-primary-emphasis" type="submit">
-                  <i className="fa fa-search"></i>
-                </button>
-              </span>
-            </div>
-          </div>
-        </div> */}
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
         </button>
@@ -57,9 +46,7 @@ export const Navbar = () => {
                   </Link></li>
                   : ''}
                 {store.isLogin ?
-                  <li><Link to="/form" className="dropdown-item text-dark">
-                    Salir
-                  </Link></li>
+                  <li><Logout /></li>
                   : ''}
                 {store.isLogin ? '' :
                   <li><Link to="/login" className="dropdown-item text-danger">

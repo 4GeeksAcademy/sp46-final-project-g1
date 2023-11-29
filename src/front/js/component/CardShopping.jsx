@@ -1,19 +1,18 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { QuantityButton } from "./QuantityButton.jsx";
 import { Context } from "../store/appContext.js";
 
 
 export const CardShopping = (props) => {
     const { store, actions } = useContext(Context)
-
-    const currentProduct = store.products.filter((product) => product.id == props.item.product_id )
-    //const product = currentProduct[0]
-    // const productId = product.id
-    //const productName = product.name
-    //const productUrl = product.image_url
-
-
-
+    const [quantity, setQuantity] = useState(1)
+    const currentProduct = store.products.filter((product) => product.id == props.item.product_id)
+    const handleQuantity = (event) => { setQuantity(event.target.value) }
+    const handleOnSubmit = (event) => {
+        event.preventDefault();
+        actions.updateQuantityItemCart(props.item.id, quantity);
+        actions.putShoppingCarts();
+    }
     const handleDelete = async () => {
         // actions.currentItems() // con el actions currentItemCart funciona el DELETE pero no actualizaa
         await actions.deleteShoppingCartItem(store.user.id, props.item.id)
@@ -38,10 +37,19 @@ export const CardShopping = (props) => {
                     </div>
                     <div className="col col-lg-4">
                         <div className="p-3 mt-5">
-                           {/* <QuantityButton /> */}
-                           {/* genero un form con un input type:number y en el submit agregar un handleQuantity (en ese handle ir al put de)
+                            {/* <QuantityButton /> */}
+                            {/* genero un form con un input type:number y en el submit agregar un handleQuantity (en ese handle ir al put de)
                             */}
-                            
+                            <form className="form" onSubmit={handleOnSubmit}>
+                                <div className="form-outline" style={{ width: "22rem" }}>
+                                    <label className="form-label" htmlFor="typeNumber">Number input</label>
+                                    <input min="1" max="100" type="number" id="typeNumber" className="form-control"
+                                        value={quantity} onChange={handleQuantity} />
+                                </div>
+                                <div className="form-outline">
+                                    <button type="submit" className="btn btn-primary">Modificar </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                     <div className="col col-lg-2">

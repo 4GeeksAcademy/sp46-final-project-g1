@@ -26,27 +26,46 @@ const getState = ({ getStore, getActions, setStore }) => {
       { title: "SECOND", background: "white", initial: "white" }]
     },
     actions: {
+      logout: () => {
+        setStore({
+          users: [],
+          user: {},
+          shoppingCarts: {},
+          shoppingCartItems: [],
+          currentItemCart: { quantity: 0 },
+          bill: {},
+          bills: [],
+          billsItems: [],
+          suscriptions: [],
+          upload: [],
+          favorites: [],
+          isLogin: false,
+          stripePublicKey: ''
+        })
+      },
       currentItems: () => {
         const cartItem = data.results.item ? data.results.item : []
-        setStore({shoppingCartItems: cartItem});
+        setStore({ shoppingCartItems: cartItem });
       },
       currentItemCart: (pricing, shippingPrice, productID, quantity) => {
-        setStore ({currentItemCart: {
-          item_price: pricing,
-          shipping_item_price: shippingPrice,
-          product_id: productID,
-          quantity: quantity
-        }})
+        setStore({
+          currentItemCart: {
+            item_price: pricing,
+            shipping_item_price: shippingPrice,
+            product_id: productID,
+            quantity: quantity
+          }
+        })
       },
       loginData: (data) => {
-        setStore({user: data.results.user});
+        setStore({ user: data.results.user });
         const cart = data.results.cart ? data.results.cart : []
-        setStore({shoppingCarts: cart});
+        setStore({ shoppingCarts: cart });
         const cartItem = data.results.item ? data.results.item : []
-        setStore({shoppingCartItems: cartItem});
+        setStore({ shoppingCartItems: cartItem });
         // store.bills = 
         // store.billsItem =
-        setStore({isLogin: true});
+        setStore({ isLogin: true });
       },
       getUsers: async () => {
         const url = process.env.BACKEND_URL + "/api/users";
@@ -55,7 +74,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}` 
+            "Authorization": `Bearer ${token}`
           }
         };
         const response = await fetch(url, options);
@@ -74,7 +93,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}` 
+            "Authorization": `Bearer ${token}`
           }
         };
         const response = await fetch(url, options);
@@ -106,7 +125,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}` 
+            "Authorization": `Bearer ${token}`
           },
           body: JSON.stringify(dataToSend)
         };
@@ -200,7 +219,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         if (response.ok) {
           const data = await response.json();
           const detail = data.results;
-          setStore({ shoppingcarts: detail.cart });
+          setStore({ shoppingCarts: detail.cart });
           setStore({ shoppingCartItems: detail.items });
         } else {
           console.log("ERROR:", response.status, response.statusText);
@@ -220,7 +239,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         if (response.ok) {
           const data = await response.json();
           const detail = data.results;
-          setStore({ shoppingcarts: detail.cart });
+          setStore({ shoppingCarts: detail.cart });
           setStore({ shoppingCartItems: detail.items });
         } else {
           console.log("ERROR:", response.status, response.statusText);
@@ -244,8 +263,8 @@ const getState = ({ getStore, getActions, setStore }) => {
           setStore({ currentItemCart: {} })
           setStore({ currentItemCart: { quantity: 0 } })
           // actualizar el store shoppingCartItems
-          setStore({ shoppingCartItems: data.results.item})
-          setStore({shoppingCarts: data.results.cart})
+          setStore({ shoppingCartItems: data.results.item })
+          setStore({ shoppingCarts: data.results.cart })
           console.log(data);
         } else {
           console.log("ERROR:", response.status, response.statusText);
@@ -264,15 +283,19 @@ const getState = ({ getStore, getActions, setStore }) => {
         const response = await fetch(url, options);
         if (response.ok) {
           const data = await response.json();
-          setStore({ shoppingCartItems: data.results.item});
-          setStore({ shoppingCarts: data.results.cart});
+          setStore({ shoppingCartItems: data.results.item });
+          setStore({ shoppingCarts: data.results.cart });
         } else {
           console.log("ERROR:", response.status, response.statusText);
         }
       },
-      putShoppingcarts: async () => {
+      updateQuantityItemCart: (cartItemId, quantity) => {
+        const dataToStore = {id: cartItemId, quantity: quantity}
+        setStore({currenItemCart: dataToStore})
+      }, 
+      putShoppingCarts: async () => {
         const store = getStore();
-        const dataToSend = {quantity: store.currenItemCart.quantity}
+        const dataToSend = { quantity: store.currenItemCart.quantity }
         const userId = store.user.id
         const cartItemId = store.currenItemCart.id
         const url = process.env.BACKEND_URL + "/api/users/" + userId + "/shopping-cart-items/" + cartItemId;
@@ -288,6 +311,11 @@ const getState = ({ getStore, getActions, setStore }) => {
         const response = await fetch(url, options);
         if (response.ok) {
           const data = await response.json();
+          setStore({ currentItemCart: {} })
+          setStore({ currentItemCart: { quantity: 0 } })
+          // actualizar el store shoppingCartItems
+          setStore({ shoppingCartItems: data.results.item })
+          setStore({ shoppingCarts: data.results.cart })
           console.log(data);
         } else {
           console.log("ERROR:", response.status, response.statusText);
@@ -298,9 +326,10 @@ const getState = ({ getStore, getActions, setStore }) => {
         const token = localStorage.getItem("token")
         const options = {
           method: "GET",
-          headers: { "Content-Type": "application/json",
-                     "Authorization": `Bearer ${token}`
-         }
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
         };
         const response = await fetch(url, options);
         if (response.ok) {
@@ -319,7 +348,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}` 
+            "Authorization": `Bearer ${token}`
           }
         };
         const response = await fetch(url, options);
@@ -348,7 +377,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         if (response.ok) {
           const data = await response.json();
           setStore({ shoppingCartItems: [] })
-          setStore({ shoppingCarts: {}})
+          setStore({ shoppingCarts: {} })
           console.log(data);
         } else {
           console.log("ERROR:", response.status, response.statusText);
@@ -415,56 +444,56 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
       uploadFile: async fileToUpload => {
-				// const data = new FormData();
-				// console.log("data", fileToUpload)
-				// data.append("image", fileToUpload);
-				// const url = "https://api.cloudinary.com/v1_1/ddpetmio/image/upload";
-				// const options = {
-				// 	method: 'POST',
-				// 	body: data,
-				// 	headers: {
-				// 		Authorization: `Basic ${process.env.API_KEY}:${process.env.API_SECRET}`,
-				// 		'Content-Type': 'application/json'
-				// 	}
-				// };
-				// const response = await fetch(url, options);
-				// if (response.ok) {
-				// 	const data = await response.json();
-				// 	console.log('URL de la imagen subida:', data.url);
-				// } else {
-				// 	const error = await response.json();
-				// 	console.error('Error al subir la imagen:', error.message);
-				//   };
+        // const data = new FormData();
+        // console.log("data", fileToUpload)
+        // data.append("image", fileToUpload);
+        // const url = "https://api.cloudinary.com/v1_1/ddpetmio/image/upload";
+        // const options = {
+        // 	method: 'POST',
+        // 	body: data,
+        // 	headers: {
+        // 		Authorization: `Basic ${process.env.API_KEY}:${process.env.API_SECRET}`,
+        // 		'Content-Type': 'application/json'
+        // 	}
+        // };
+        // const response = await fetch(url, options);
+        // if (response.ok) {
+        // 	const data = await response.json();
+        // 	console.log('URL de la imagen subida:', data.url);
+        // } else {
+        // 	const error = await response.json();
+        // 	console.error('Error al subir la imagen:', error.message);
+        //   };
 
-				let data = new FormData();
-				// console.log("data", fileToUpload);
-				data.append("image", fileToUpload);
+        let data = new FormData();
+        // console.log("data", fileToUpload);
+        data.append("image", fileToUpload);
 
-				// let response = fetch('https://api.cloudinary.com/v1_1/ddpetmio/image/upload', {
-				// 	method: "POST",
-				// 	body: data,
-				// 	headers: {
-				// 		Authorization: `Basic ${process.env.API_KEY}:${process.env.API_SECRET}`,
-				// 	},
-				// });
-				const url = process.env.BACKEND_URL + '/api/upload';
-				const options = {
-					method: "POST",
-					body: data,
-					headers: {
-						Authorization: `Basic ${process.env.API_KEY}:${process.env.API_SECRET}`,
-					},
-				};
+        // let response = fetch('https://api.cloudinary.com/v1_1/ddpetmio/image/upload', {
+        // 	method: "POST",
+        // 	body: data,
+        // 	headers: {
+        // 		Authorization: `Basic ${process.env.API_KEY}:${process.env.API_SECRET}`,
+        // 	},
+        // });
+        const url = process.env.BACKEND_URL + '/api/upload';
+        const options = {
+          method: "POST",
+          body: data,
+          headers: {
+            Authorization: `Basic ${process.env.API_KEY}:${process.env.API_SECRET}`,
+          },
+        };
         console.log(options)
-				const response = await fetch(url, options)
-				if (response.ok) {
-					const data = await response.json();
-					console.log(data)
-					// Aqui 
-				} else {
-					console.log('error', response.status, response.text)
-				}
-			},
+        const response = await fetch(url, options)
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data)
+          // Aqui 
+        } else {
+          console.log('error', response.status, response.text)
+        }
+      },
       /*       getStripePublicKey: async () => {
         const url = `${process.env.BACKEND_URL}/stripe-key`
         const options = {
@@ -530,10 +559,10 @@ const getState = ({ getStore, getActions, setStore }) => {
       setCurrentitemCart: (pricing, id) => {
         const store = getStore();
         store.currentItemCart = {
-                  item_price: pricing,
-                  shipping_item_price: 0,
-                  product_id: id
-              }
+          item_price: pricing,
+          shipping_item_price: 0,
+          product_id: id
+        }
       },
       setNewBill: (data) => {
         setStore({ bill: data })
