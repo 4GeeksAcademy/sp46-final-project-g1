@@ -119,7 +119,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           identification_type: store.user.identification_type,
           payment_method: store.user.payment_method
         }
-        const url = process.env.BACKEND_URL + "/api/users" + userId;
+        const url = process.env.BACKEND_URL + "/api/users/" + userId;
         const token = localStorage.getItem("token")
         const options = {
           method: "PUT",

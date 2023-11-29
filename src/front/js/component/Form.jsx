@@ -31,6 +31,8 @@ export const Form = () => {
         await actions.putMyUsers()
         navigate("/account")
     }
+
+
     return (
         <div className="container mb-5">
             <h1 className="d-flex justify-content-center mt-4 text-dark">Información Personal</h1>

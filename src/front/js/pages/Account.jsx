@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
+import { Context } from "../store/appContext";
 
 
 export const Account = () => {
-
+    const { store, actions } = useContext(Context);
 
     return (
         <div className="container">
@@ -23,28 +24,28 @@ export const Account = () => {
                             <div className="card-body text-start mt-4 text-dark">
                                 <dl>
                                     <dt>Nombre</dt>
-                                    <dd>Pedro</dd>
+                                    <dd>{store.user.first_name}</dd>
                                 </dl>
                                 <dl>
                                     <dt>Apellidos</dt>
-                                    <dd>Perez</dd>
+                                    <dd>{store.user.last_name}</dd>
                                 </dl>
                                 <dl>
                                     <dt>Email</dt>
-                                    <dd>pedro@gmail.com</dd>
+                                    <dd>{store.user.email}</dd>
                                 </dl>
                                 <dl>
-                                    <dt>Teléfono</dt>
-                                    <dd>123456789</dd>
+                                    <dt>Número de identificación</dt>
+                                    <dd>{store.user.identification_type + ':' +' '}{store.user.identification_number}</dd>
                                 </dl>
                                 <dl>
                                     <dt>Address</dt>
-                                    <dd>Calle inventada, 10. Madrid</dd>
+                                    <dd>{store.user.address}</dd>
                                 </dl>
                             </div>
                         </div>
                     </div>
-                    <div className="col border border-primary">
+                    {/* <div className="col border border-primary">
                         <div className="p-3">
                             <div className="d-flex">
                                 <h5>Mis pedidos</h5>
@@ -88,7 +89,7 @@ export const Account = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>
