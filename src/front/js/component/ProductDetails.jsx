@@ -6,10 +6,15 @@ import { Context } from "../store/appContext.js";
 import { useParams } from "react-router-dom";
 
 
-export const ProductDetails = (props) => {
+export const ProductDetails = () => {
     const { store, actions } = useContext(Context);
     const params = useParams();
     actions.getOneProducts(params.idProduct);
+
+    const handleAddItem = async () => {
+        actions.currentItemCart(store.product.pricing, 0, store.product.id, 1)
+        await actions.postShoppingCartItem(store.product.id)
+    }
 
     // const handleAddItem = () => {
 
@@ -92,7 +97,7 @@ export const ProductDetails = (props) => {
                                                 <div className="col">
                                                     <div className="p-3 mt-4">
                                                         <div className="d-grid gap-2">
-                                                            <button className="btn btn-primary" type="button">Añadir al carrito <i className="fas fa-shopping-cart"></i></button>
+                                                            <button className="btn btn-primary" onClick={handleAddItem} type="button">Añadir al carrito <i className="fas fa-shopping-cart"></i></button>
                                                         </div>
                                                     </div>
                                                 </div>
