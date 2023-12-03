@@ -25,6 +25,7 @@ import { CondicionesDeEnvio } from "./pages/CondicionesDeEnvio.jsx";
 import { Faqs } from "./pages/Faqs.jsx";
 import { Disclaimer } from "./pages/Disclaimer.jsx";
 import { SignUp } from "./pages/SignUp.jsx";
+import { AddProduct } from "./pages/AddProduct.jsx";
 
 
 
@@ -56,6 +57,7 @@ const Layout = () => {
                         <Route element={<PaymentSuccess />} path="/payment-success"/>
                         <Route element={<PaymentCanceled />} path="/payment-canceled"/>
                         <Route element={<BotonPagoTest />} path="/boton-pago" />
+                        <Route element={<AddProduct /> } path="add-product" />
                         <Route element={<PoliticaDePrivacidad />} path="/politica-de-privacidad" />
                         <Route element={<Uso />} path="/uso" />
                         <Route element={<CondicionesDeEnvio />} path="/condiciones-de-envio" />
