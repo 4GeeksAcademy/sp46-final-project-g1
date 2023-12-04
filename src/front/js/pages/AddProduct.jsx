@@ -112,15 +112,9 @@ export const AddProduct = () => {
                             style={{ width: '50%', height: '50%' }} />)}
                     </div>
                     <div className="text-start ms-1 mt-3">
-                        <div className="row row-cols-1 row-cols-lg-6">
-                            <div className="col p-2 me-2">
-                                <button type="submit" className="btn btn-primary">Crear</button>
-                            </div>
-                            <div className="col p-2">
-                                <Link to="/" className="btn btn-secondary">
-                                    Cancelar
-                                </Link>
-                            </div>
+                        <div className="d-grid gap-2 d-md-block mb-3">
+                            <button className="btn btn-primary me-2" type="submit">Crear</button>
+                            <Link to="/" className="btn btn-secondary me-2">Cancelar</Link>
                         </div>
                     </div>
                 </form>
