@@ -6,29 +6,29 @@ import { Context } from "../store/appContext";
 export const AddProduct = () => {
     const { store, actions } = useContext(Context);
     const [files, setFiles] = useState(null);
-    const [ previewImage, setPreviewImage ] = useState(null);
+    const [previewImage, setPreviewImage] = useState(null);
 
 
     const uploadFile = (e) => {
-		e.preventDefault(); // stop website reload
-		if (files) {
-			// if there are any files to upload
-			// call the action and pass the file
-			actions.uploadFile(files[0]);
-		}
-	};
+        e.preventDefault(); // stop website reload
+        if (files) {
+            // if there are any files to upload
+            // call the action and pass the file
+            actions.uploadFile(files[0]);
+        }
+    };
 
-	const handleFileChange = (e) => {
-		setFiles(e.target.files);
+    const handleFileChange = (e) => {
+        setFiles(e.target.files);
 
-		if (e.target.files && e.target.files[0]) {
-			const reader = new FileReader();
-			reader.onload = (e) => {
-				setPreviewImage(e.target.result);
-			};
-			reader.readAsDataURL(e.target.files[0]);
-		}
-	};
+        if (e.target.files && e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setPreviewImage(e.target.result);
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    };
 
     // Mirar la view de UploadImage para saber que falta.
 
@@ -78,19 +78,13 @@ export const AddProduct = () => {
                         <input class="form-control" onChange={handleFileChange} type="file" id="formFile" />
                     </div>
                     <div className="p-3">{previewImage && (
-                        <img className="img-thumbnail" src={previewImage} alt="Selected Image" 
-                        style={{ width: '50%', height: '50%' }} />)}
+                        <img className="img-thumbnail" src={previewImage} alt="Selected Image"
+                            style={{ width: '50%', height: '50%' }} />)}
                     </div>
                     <div className="text-start ms-1 mt-3">
-                        <div className="row row-cols-1 row-cols-lg-6">
-                            <div className="col p-2 me-2">
-                                <button type="submit" className="btn btn-primary">Crear</button>
-                            </div>
-                            <div className="col p-2">
-                                <Link to="/" className="btn btn-secondary">
-                                    Cancelar
-                                </Link>
-                            </div>
+                        <div className="d-grid gap-2 d-md-block mb-3">
+                            <button className="btn btn-primary me-2" type="submit">Crear</button>
+                            <Link to="/" className="btn btn-secondary me-2">Cancelar</Link>
                         </div>
                     </div>
                 </form>
