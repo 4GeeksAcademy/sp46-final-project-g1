@@ -79,45 +79,6 @@ export const Form = () => {
                             </div>
                         </div>
                     </div>
-                    {/* <div className="mt-3">
-                        <label htmlFor="typeOfCard" className="form-label">Método de Pago</label>
-                        <div className="mt-1">
-                            <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="radio" name="inlineRadioOptions" id="mastercard" value="option1" />
-                                <label className="form-check-label" htmlFor="inlineRadio1"><i className="fab fa-cc-mastercard"></i></label>
-                            </div>
-                            <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="radio" name="inlineRadioOptions" id="visa" value="option2" />
-                                <label className="form-check-label" htmlFor="inlineRadio2"><i className="fab fa-cc-visa"></i></label>
-                            </div>
-                            <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="radio" name="inlineRadioOptions" id="amex" value="option3" />
-                                <label className="form-check-label" htmlFor="inlineRadio3"><i className="fab fa-cc-amex"></i></label>
-                            </div>
-                            <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="radio" name="inlineRadioOptions" id="paypal" value="option4" />
-                                <label className="form-check-label" htmlFor="inlineRadio4"><i className="fab fa-cc-paypal"></i></label>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="form-floating mt-3">
-                        <input type="text" className="form-control" id="floatingCardName" placeholder="Full Name" />
-                        <label htmlFor="floatingCardName">Nombre del titular</label>
-                    </div>
-                    <div className="d-flex mt-3">
-                        <div className="flex-grow-1 w-75 form-floating gx-1">
-                            <input type="text" className="form-control" id="floatingCardNumber" placeholder="Card Number" />
-                            <label htmlFor="floatingFullName">Número de tarjeta</label>
-                        </div>
-                        <div className="form-floating ms-1 gx-1 w-50">
-                            <input type="text" className="form-control" id="floatingExpirationDate" placeholder="Full Name" />
-                            <label htmlFor="floatingExpirationDate">Fecha de caducidad</label>
-                        </div>
-                        <div className="form-floating ms-1 gx-1 w-25">
-                            <input type="text" className="form-control" id="floatingCvv" placeholder="Full Name" />
-                            <label htmlFor="floatingCvv">Cvv</label>
-                        </div>
-                    </div> */}
                     <div className="text-start ms-1 mt-3">
                         <div className="d-grid gap-2 d-md-block mb-3">
                             <button className="btn btn-primary me-2" type="submit">Enviar</button>
