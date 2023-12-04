@@ -1,5 +1,4 @@
 import React from "react";
-import { QuantityButton } from "./QuantityButton.jsx";
 import { ProductsOverFlow } from "./ProductsOverFlow.jsx";
 import { useContext } from "react";
 import { Context } from "../store/appContext.js";
@@ -92,7 +91,6 @@ export const ProductDetails = () => {
                                             <div className="row row-cols-1 row-cols-lg-2 g-lg-3">
                                                 <div className="col">
                                                     <h5 className="text-start text-dark mb-3 fw-bold">Cantidad</h5>
-                                                    <QuantityButton />
                                                 </div>
                                                 <div className="col">
                                                     <div className="p-3 mt-4">
