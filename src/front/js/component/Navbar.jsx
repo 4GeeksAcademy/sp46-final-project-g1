@@ -34,6 +34,11 @@ export const Navbar = () => {
                 Categorías
               </Link>
             </li>
+            <li className="nav-item">
+              <Link to="/add-product" className="btn btn-primary me-3 text-primary-emphasis">
+                Agregar Producto
+              </Link>
+            </li>
             <li className="nav-item dropdown">
               <button type="button" className="btn btn-primary rounded text-primary-emphasis dropdown-toggle" data-bs-toggle="dropdown" id="navbarDropdown" aria-expanded="false">
                 <i className="fas fa-user me-2"></i>

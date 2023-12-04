@@ -243,6 +243,7 @@ def handle_post_products():
                                description=request_body.get('description'), 
                                products_detail=request_body.get('products_detail'),
                                pricing=request_body.get('pricing'),
+                               stripe_price=request_body.get('stripe_price'),
                                weight=request_body.get('weight'),
                                stock=request_body.get('stock'),
                                subscribeable=request_body.get('subscribeable'),
