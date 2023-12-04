@@ -12,16 +12,14 @@ export const ProductDetails = () => {
     const handleQuantity = (event) => { setQuantity(event.target.value) }
     const handleOnSubmit = (event) => {
         event.preventDefault();
-       // Tengo que actualizar el currentItemcart
-       //tengo que actualizar el post del carrito
     }
-    
+
     const handleAddItem = async () => {
         actions.currentItemCart(store.product.pricing, 0, store.product.id, quantity)
         await actions.postShoppingCartItem(store.product.id)
     }
 
-    useEffect( () => {
+    useEffect(() => {
         const getData = async () => {
             await actions.getOneProducts(params.idProduct);
         }
@@ -99,7 +97,6 @@ export const ProductDetails = () => {
                                                             <label className="form-label" htmlFor="typeNumber"></label>
                                                             <input min="1" max="100" type="number" id="typeNumber" className="form-control w-25"
                                                                 value={quantity} onChange={handleQuantity} />
-                                                            {/* <button type="submit" className="btn btn-primary ms-3">Modificar </button> */}
                                                         </div>
                                                     </div>
                                                     <div className="col">

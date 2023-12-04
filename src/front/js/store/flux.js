@@ -169,7 +169,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log("ERROR:", response.status, response.statusText);
         }
       },
-      postProducts: async () => {
+      postProducts: async ({name, description, productDetail, pricing, stripeCode, weight, stock, subscribeable, image, category}) => {
         const url = process.env.BACKEND_URL + "/api/products";
         const token = localStorage.getItem("token")
         const options = {
@@ -178,7 +178,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`
           },
-          body: JSON.stringify(store.products)
+          body: JSON.stringify({name, description, products_detail: productDetail, pricing, stripe_price: stripeCode, weight, stock, subscribeable, image_url: image, categorie_id: category})
         };
         const response = await fetch(url, options);
         if (response.ok) {
