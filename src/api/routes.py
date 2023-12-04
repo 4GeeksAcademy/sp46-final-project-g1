@@ -201,7 +201,7 @@ def users(users_id):
             if user is None:
                 return {'message': 'Usuario no encontrado'}, 404
             user.email = request_body.get('email')
-            user.password = request_body.get('password')
+            # user.password = request_body.get('password')
             user.is_admin = False
             user.is_active = request_body.get('is_active')
             user.first_name = request_body.get('first_name')

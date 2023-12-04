@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ProductsOverFlow } from "./ProductsOverFlow.jsx";
 import { useContext } from "react";
 import { Context } from "../store/appContext.js";
@@ -8,24 +8,26 @@ import { useParams } from "react-router-dom";
 export const ProductDetails = () => {
     const { store, actions } = useContext(Context);
     const params = useParams();
-    actions.getOneProducts(params.idProduct);
-
+    const [quantity, setQuantity] = useState(1)
+    const handleQuantity = (event) => { setQuantity(event.target.value) }
+    const handleOnSubmit = (event) => {
+        event.preventDefault();
+       // Tengo que actualizar el currentItemcart
+       //tengo que actualizar el post del carrito
+    }
+    
     const handleAddItem = async () => {
-        actions.currentItemCart(store.product.pricing, 0, store.product.id, 1)
+        actions.currentItemCart(store.product.pricing, 0, store.product.id, quantity)
         await actions.postShoppingCartItem(store.product.id)
     }
 
-    // const handleAddItem = () => {
+    useEffect( () => {
+        const getData = async () => {
+            await actions.getOneProducts(params.idProduct);
+        }
+        getData()
+    }, [])
 
-    // }
-    // const handleAddItem = async () => {
-    //     store.currentItemCart = {
-    //         item_price: props.product.pricing,
-    //         shipping_item_price: 0,
-    //         product_id: props.product.id
-    //     }
-    //     await actions.postShoppingCartItem()
-    // }
 
     return (
         <div className="container text-center">
@@ -89,16 +91,25 @@ export const ProductDetails = () => {
                                     <div className="col">
                                         <div className="container text-center">
                                             <div className="row row-cols-1 row-cols-lg-2 g-lg-3">
-                                                <div className="col">
-                                                    <h5 className="text-start text-dark mb-3 fw-bold">Cantidad</h5>
-                                                </div>
-                                                <div className="col">
-                                                    <div className="p-3 mt-4">
-                                                        <div className="d-grid gap-2">
-                                                            <button className="btn btn-primary" onClick={handleAddItem} type="button">Añadir al carrito <i className="fas fa-shopping-cart"></i></button>
+
+                                                <form className="form ms-3" onSubmit={handleOnSubmit}>
+                                                    <div className="col">
+                                                        <h5 className="text-start text-dark mb-3 fw-bold">Cantidad</h5>
+                                                        <div className="form-outline d-flex" style={{ width: "22rem" }}>
+                                                            <label className="form-label" htmlFor="typeNumber"></label>
+                                                            <input min="1" max="100" type="number" id="typeNumber" className="form-control w-25"
+                                                                value={quantity} onChange={handleQuantity} />
+                                                            {/* <button type="submit" className="btn btn-primary ms-3">Modificar </button> */}
                                                         </div>
                                                     </div>
-                                                </div>
+                                                    <div className="col">
+                                                        <div className="p-3 mt-4">
+                                                            <div className="d-grid gap-2">
+                                                                <button className="btn btn-primary" onClick={handleAddItem} type="submit">Añadir al carrito <i className="fas fa-shopping-cart"></i></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
@@ -108,10 +119,6 @@ export const ProductDetails = () => {
                     </div>
                 </div>
             </div>
-            {/* <div className="mb-5">
-                <h3 className="mb-5 text-center mt-5 fw-semibold text-dark">Te podría interesar...</h3>
-                <ProductsOverFlow />
-            </div> */}
         </div>
     )
 }
