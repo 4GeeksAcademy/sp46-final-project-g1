@@ -163,7 +163,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         if (response.ok) {
           const data = await response.json();
           const detail = data;
-          console.log(detail);
           setStore({ product: detail });
         } else {
           console.log("ERROR:", response.status, response.statusText);

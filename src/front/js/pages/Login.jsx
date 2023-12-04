@@ -62,16 +62,12 @@ export const Login = () => {
             </span>
           </div>
           <div className="container text-center">
-            <div className="row row-cols-2 row-cols-lg-5">
-              <div className="col d-flex justify-content-center">
-                <div className="p-3">
+            <div className="row row-cols-2 row-cols-lg-6">
+              <div className="col">
                   <button type="button" onClick={login} className="btn btn-primary">Login</button>
-                </div>
               </div>
-              <div className="col d-flex justify-content-center">
-                <div className="p-3">
+              <div className="col">
                   <button type="reset" className="btn btn-secondary ms-2">Cancel</button>
-                </div>
               </div>
             </div>
           </div>
