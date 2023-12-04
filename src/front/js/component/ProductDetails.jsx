@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { QuantityButton } from "./QuantityButton.jsx";
 import { ProductsOverFlow } from "./ProductsOverFlow.jsx";
 import { useContext } from "react";
@@ -9,19 +9,23 @@ import { useParams } from "react-router-dom";
 export const ProductDetails = (props) => {
     const { store, actions } = useContext(Context);
     const params = useParams();
-    actions.getOneProducts(params.idProduct);
+    const [quantity, setQuantity] = useState(1)
+    const handleQuantity = (event) => { setQuantity(event.target.value) }
+    const handleOnSubmit = (event) => {
+        event.preventDefault();
+       // Tengo que actualizar el currentItemcart
+       //tengo que actualizar el post del carrito
+    }
 
-    // const handleAddItem = () => {
+    useEffect( () => {
+        const getData = async () => {
+            await actions.getOneProducts(params.idProduct);
+        }
+        getData()
+    }, [])
 
-    // }
-    // const handleAddItem = async () => {
-    //     store.currentItemCart = {
-    //         item_price: props.product.pricing,
-    //         shipping_item_price: 0,
-    //         product_id: props.product.id
-    //     }
-    //     await actions.postShoppingCartItem()
-    // }
+
+
 
     return (
         <div className="container text-center">
@@ -85,17 +89,24 @@ export const ProductDetails = (props) => {
                                     <div className="col">
                                         <div className="container text-center">
                                             <div className="row row-cols-1 row-cols-lg-2 g-lg-3">
-                                                <div className="col">
-                                                    <h5 className="text-start text-dark mb-3 fw-bold">Cantidad</h5>
-                                                    <QuantityButton />
-                                                </div>
-                                                <div className="col">
-                                                    <div className="p-3 mt-4">
-                                                        <div className="d-grid gap-2">
-                                                            <button className="btn btn-primary" type="button">Añadir al carrito <i className="fas fa-shopping-cart"></i></button>
+                                                <form className="form ms-3" onSubmit={handleOnSubmit}>
+                                                    <div className="col">
+                                                        <h5 className="text-start text-dark mb-3 fw-bold">Cantidad</h5>
+                                                        <div className="form-outline d-flex" style={{ width: "22rem" }}>
+                                                            <label className="form-label" htmlFor="typeNumber"></label>
+                                                            <input min="1" max="100" type="number" id="typeNumber" className="form-control w-25"
+                                                                value={quantity} onChange={handleQuantity} />
+                                                            {/* <button type="submit" className="btn btn-primary ms-3">Modificar </button> */}
                                                         </div>
                                                     </div>
-                                                </div>
+                                                    <div className="col">
+                                                        <div className="p-3 mt-4">
+                                                            <div className="d-grid gap-2">
+                                                                <button className="btn btn-primary" type="submit">Añadir al carrito <i className="fas fa-shopping-cart"></i></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
@@ -105,10 +116,7 @@ export const ProductDetails = (props) => {
                     </div>
                 </div>
             </div>
-            {/* <div className="mb-5">
-                <h3 className="mb-5 text-center mt-5 fw-semibold text-dark">Te podría interesar...</h3>
-                <ProductsOverFlow />
-            </div> */}
+            {/*  */}
         </div>
     )
 }

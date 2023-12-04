@@ -43,6 +43,9 @@ const getState = ({ getStore, getActions, setStore }) => {
           stripePublicKey: ''
         })
       },
+      updateUser: ({id, name, lastName, email, address, idNumber, typeIdNumber}) => {
+        setStore({ user: {id, first_name: name, last_name: lastName, email, address, identification_number: idNumber, identification_type: typeIdNumber}})
+      },
       currentItems: () => {
         const cartItem = data.results.item ? data.results.item : []
         setStore({ shoppingCartItems: cartItem });
@@ -110,14 +113,12 @@ const getState = ({ getStore, getActions, setStore }) => {
         const userId = store.user.id
         const dataToSend = {
           email: store.user.email,
-          password: store.user.password,
           is_active: true,
           first_name: store.user.first_name,
           last_name: store.user.last_name,
           address: store.user.address,
           identification_number: store.user.identification_number,
-          identification_type: store.user.identification_type,
-          payment_method: store.user.payment_method
+          identification_type: store.user.identification_type
         }
         const url = process.env.BACKEND_URL + "/api/users/" + userId;
         const token = localStorage.getItem("token")
@@ -163,7 +164,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         if (response.ok) {
           const data = await response.json();
           const detail = data;
-          console.log(detail);
           setStore({ product: detail });
         } else {
           console.log("ERROR:", response.status, response.statusText);

@@ -5,6 +5,7 @@ import { Context } from "../store/appContext";
 
 export const Form = () => {
     const { store, actions } = useContext(Context);
+    const id = store.user.id;
     const [name, setName] = useState(store.user.first_name);
     const [lastName, setLastName] = useState(store.user.last_name);
     const [email, setEmail] = useState(store.user.email);
@@ -28,6 +29,7 @@ export const Form = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        actions.updateUser({id, name, lastName, email, address, idNumber, typeIdNumber})
         await actions.putMyUsers()
         navigate("/account")
     }
@@ -52,16 +54,6 @@ export const Form = () => {
                         <label htmlFor="exampleInputEmail" className="form-label mt-3">Email</label>
                         <input type="email" value={email} onChange={handleEmail} className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
                     </div>
-                    <div className="input-group mt-2">
-                        <div className="form-floating">
-                            <input type={viewPassword ? "text" : "password"} value={password} onChange={handlePassword}
-                                className="form-control" id="floatingInputGroup1" placeholder="Password" />
-                            <label htmlFor="floatingInputGroup1">Password</label>
-                        </div>
-                        <span className="input-group-text" onClick={handleViewPasswort}>
-                            {viewPassword ? <i className="far fa-eye-slash"></i> : <i className="far fa-eye"></i>}
-                        </span>
-                    </div>
                     <div className="form-group">
                         <label htmlFor="exampleInputAddress" className="form-label mt-3">Dirección</label>
                         <input type="text" value={address} onChange={handleAddress} className="form-control" id="exampleInputAddress" autoComplete="off" />
@@ -72,7 +64,7 @@ export const Form = () => {
                                 <div className="mt-2 text-start">
                                     <label htmlFor="exampleSelect1" className="form-label">Identificación</label>
                                     <select value={typeIdNumber} onChange={handleTypeIdNumber} className="form-select" id="identification">
-                                        <option selected>Tipo</option>
+                                        <option>Tipo</option>
                                         <option>Dni</option>
                                         <option>Nie</option>
                                         <option>Pasaporte</option>
