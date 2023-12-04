@@ -16,7 +16,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       billsItems: [],
       offers: [],
       suscriptions: [],
-      upload: [],
+      upload: '',
       reviews: [],
       favorites: [],
       isLogin: false,
@@ -37,7 +37,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           bills: [],
           billsItems: [],
           suscriptions: [],
-          upload: [],
+          upload: '',
           favorites: [],
           isLogin: false,
           stripePublicKey: ''
@@ -169,7 +169,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log("ERROR:", response.status, response.statusText);
         }
       },
-      postProducts: async ({name, description, productDetail, pricing, stripeCode, weight, stock, subscribeable, image, category}) => {
+      postProducts: async ({name, description, productDetail, pricing, stripeCode, weight, stock, subscribeable, imageUrl, category}) => {
         const url = process.env.BACKEND_URL + "/api/products";
         const token = localStorage.getItem("token")
         const options = {
@@ -178,7 +178,8 @@ const getState = ({ getStore, getActions, setStore }) => {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`
           },
-          body: JSON.stringify({name, description, products_detail: productDetail, pricing, stripe_price: stripeCode, weight, stock, subscribeable, image_url: image, categorie_id: category})
+          body: JSON.stringify({name, description, products_detail: productDetail, pricing, stripe_price: stripeCode, weight, stock, subscribeable, 
+                                image_url: imageUrl, categorie_id: category})
         };
         const response = await fetch(url, options);
         if (response.ok) {
@@ -444,38 +445,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
       uploadFile: async fileToUpload => {
-        // const data = new FormData();
-        // console.log("data", fileToUpload)
-        // data.append("image", fileToUpload);
-        // const url = "https://api.cloudinary.com/v1_1/ddpetmio/image/upload";
-        // const options = {
-        // 	method: 'POST',
-        // 	body: data,
-        // 	headers: {
-        // 		Authorization: `Basic ${process.env.API_KEY}:${process.env.API_SECRET}`,
-        // 		'Content-Type': 'application/json'
-        // 	}
-        // };
-        // const response = await fetch(url, options);
-        // if (response.ok) {
-        // 	const data = await response.json();
-        // 	console.log('URL de la imagen subida:', data.url);
-        // } else {
-        // 	const error = await response.json();
-        // 	console.error('Error al subir la imagen:', error.message);
-        //   };
-
         let data = new FormData();
-        // console.log("data", fileToUpload);
         data.append("image", fileToUpload);
-
-        // let response = fetch('https://api.cloudinary.com/v1_1/ddpetmio/image/upload', {
-        // 	method: "POST",
-        // 	body: data,
-        // 	headers: {
-        // 		Authorization: `Basic ${process.env.API_KEY}:${process.env.API_SECRET}`,
-        // 	},
-        // });
         const url = process.env.BACKEND_URL + '/api/upload';
         const options = {
           method: "POST",
@@ -488,52 +459,13 @@ const getState = ({ getStore, getActions, setStore }) => {
         const response = await fetch(url, options)
         if (response.ok) {
           const data = await response.json();
+          const detail = data.results;
+          setStore({ upload: detail });
           console.log(data)
-          // Aqui 
         } else {
           console.log('error', response.status, response.text)
         }
       },
-      /*       getStripePublicKey: async () => {
-        const url = `${process.env.BACKEND_URL}/stripe-key`
-        const options = {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        }
-        const response = await fetch(url, options);
-        if (response.ok) {
-          const data = await response.json();
-          setStore({ stripePublicKey: data.publicKey });
-          return true
-        } else {
-          console.log('Error:', response.status, response.statusText);
-          return false
-        }
-      },
-      processPayment: async () => {
-        const postBills = await getActions().postBills();
-        const stripe = await loadStripe(getStore().stripePublicKey);
-        const url = `${process.env.BACKEND_URL}/payment`
-        const token = localStorage.getItem("token")
-        const options = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({})
-        }
-        console.log(options);
-        const response = await fetch(url, options);
-        if (response.ok) {
-          const data = await response.json();
-          setStore({ bill: data.results})
-          console.log(data);
-          stripe.redirectToCheckout({ sessionId: data.sessionId });
-        } else {
-          console.log('Error:', response.status, response.statusText);
-        }
-      }, */
       putBillPaid: async () => {
         const dataToSend = {};
         const store = getStore();

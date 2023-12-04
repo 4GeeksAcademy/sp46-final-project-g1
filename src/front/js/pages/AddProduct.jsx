@@ -25,21 +25,19 @@ export const AddProduct = () => {
 
     const subscribeable = false
     const productDetail = ''
-    const image = ''
     
     const handleSubmit = async (event) => {
         event.preventDefault();
-        await actions.postProducts({name, description, productDetail, pricing, stripeCode, weight, stock, subscribeable, image, category })
-    }
-
-    const uploadFile = (e) => {
-        e.preventDefault(); // stop website reload
         if (files) {
             // if there are any files to upload
             // call the action and pass the file
-            actions.uploadFile(files[0]);
+            await actions.uploadFile(files[0]);
         }
-    };
+        console.log(files);
+        const imageUrl = store.upload
+        await actions.postProducts({name, description, productDetail, pricing, stripeCode, 
+                                    weight, stock, subscribeable, imageUrl, category })
+    }
 
     const handleFileChange = (e) => {
         setFiles(e.target.files);
@@ -58,7 +56,7 @@ export const AddProduct = () => {
         <div className="container mb-5">
             <h1 className="d-flex justify-content-center mt-4 text-dark">Agregar Producto</h1>
             <div className="container bg-primary-subtle rounded" style={{ width: '50%', height: '50%' }}>
-                <form className="text-dark mt-3 p-2" onClick={handleSubmit}>
+                <form className="text-dark mt-3 p-2" onSubmit={handleSubmit}>
                     <div className="row mt-3">
                         <div className="col-6">
                             <label htmlFor="name" className="form-label">Nombre</label>
