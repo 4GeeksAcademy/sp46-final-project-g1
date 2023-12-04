@@ -60,8 +60,8 @@ export const Form = () => {
                     </div>
                     <div className="container text-start">
                         <div className="row row-cols-1 row-cols-lg-2">
-                            <div className="col">
-                                <div className="mt-2 text-start">
+                            <div className="col p-0">
+                                <div className="mt-2 text-start me-3">
                                     <label htmlFor="exampleSelect1" className="form-label">Identificación</label>
                                     <select value={typeIdNumber} onChange={handleTypeIdNumber} className="form-select" id="identification">
                                         <option>Tipo</option>
@@ -71,7 +71,7 @@ export const Form = () => {
                                     </select>
                                 </div>
                             </div>
-                            <div className="col">
+                            <div className="col p-0">
                                 <div className="mt-2 text-start">
                                     <label htmlFor="postalcode" className="form-label">Número de identificación</label>
                                     <input type="text" value={idNumber} onChange={handleIdNumber} className="form-control" id="identificationNumber" />
@@ -118,20 +118,10 @@ export const Form = () => {
                             <label htmlFor="floatingCvv">Cvv</label>
                         </div>
                     </div> */}
-                    <div className="container text-center mt-3">
-                        <div className="row row-cols-1 row-cols-lg-5">
-                            <div className="col d-flex justify-content-center">
-                                <div className="p-3">
-                                    <button type="submit" className="btn btn-primary me-2">Enviar</button>
-                                </div>
-                            </div>
-                            <div className="col d-flex justify-content-center">
-                                <div className="p-3">
-                                    <Link to="/account" className="btn btn-secondary">
-                                        Cancelar
-                                    </Link>
-                                </div>
-                            </div>
+                    <div className="text-start ms-1 mt-3">
+                        <div className="d-grid gap-2 d-md-block mb-3">
+                            <button className="btn btn-primary me-2" type="submit">Enviar</button>
+                            <Link to="/account" className="btn btn-secondary me-2">Cancelar</Link>
                         </div>
                     </div>
                 </form>

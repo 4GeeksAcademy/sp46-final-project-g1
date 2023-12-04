@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { QuantityButton } from "./QuantityButton.jsx";
 import { ProductsOverFlow } from "./ProductsOverFlow.jsx";
 import { useContext } from "react";
 import { Context } from "../store/appContext.js";
 import { useParams } from "react-router-dom";
 
 
-export const ProductDetails = (props) => {
+export const ProductDetails = () => {
     const { store, actions } = useContext(Context);
     const params = useParams();
     const [quantity, setQuantity] = useState(1)
@@ -16,6 +15,11 @@ export const ProductDetails = (props) => {
        // Tengo que actualizar el currentItemcart
        //tengo que actualizar el post del carrito
     }
+    
+    const handleAddItem = async () => {
+        actions.currentItemCart(store.product.pricing, 0, store.product.id, quantity)
+        await actions.postShoppingCartItem(store.product.id)
+    }
 
     useEffect( () => {
         const getData = async () => {
@@ -23,8 +27,6 @@ export const ProductDetails = (props) => {
         }
         getData()
     }, [])
-
-
 
 
     return (
@@ -89,6 +91,7 @@ export const ProductDetails = (props) => {
                                     <div className="col">
                                         <div className="container text-center">
                                             <div className="row row-cols-1 row-cols-lg-2 g-lg-3">
+
                                                 <form className="form ms-3" onSubmit={handleOnSubmit}>
                                                     <div className="col">
                                                         <h5 className="text-start text-dark mb-3 fw-bold">Cantidad</h5>
@@ -102,7 +105,7 @@ export const ProductDetails = (props) => {
                                                     <div className="col">
                                                         <div className="p-3 mt-4">
                                                             <div className="d-grid gap-2">
-                                                                <button className="btn btn-primary" type="submit">Añadir al carrito <i className="fas fa-shopping-cart"></i></button>
+                                                                <button className="btn btn-primary" onClick={handleAddItem} type="submit">Añadir al carrito <i className="fas fa-shopping-cart"></i></button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -116,7 +119,6 @@ export const ProductDetails = (props) => {
                     </div>
                 </div>
             </div>
-            {/*  */}
         </div>
     )
 }
